@@ -2960,7 +2960,7 @@ NAME:   ebering_necropolis_ghost_sewer_f
 TAGS:   necropolis_subvault_pre_temple_d uniq_necropolis_sewer
 KMONS:  O = player_ghost
 KMONS:  1 = dart slug / clockroach / rat / ball python
-KMONS:  2 = adder / ribbon worm / river rat
+KMONS:  2 = adder / ribbon worm / sewer rat
 KMONS:  3 = bullfrog / brain worm w:5
 KITEM:  d = any potion
 KFEAT:  O = expired_portal

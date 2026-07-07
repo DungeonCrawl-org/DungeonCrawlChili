@@ -32,7 +32,7 @@ function wad_woods_setup(e, uniq, weight, mist, delaynum, sizenum, spreadnum)
             e.mons("elephant")
         elseif you.absdepth() >= 5 then
             e.mons("gnoll / ogre w:1")
-            e.mons("river rat")
+            e.mons("sewer rat")
         else
             e.mons("gnoll")
             e.mons("quokka")

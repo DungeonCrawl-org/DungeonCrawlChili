@@ -226,7 +226,7 @@ function arena_sprint_get_monster_set(round, boss)
             mon_set = {
                 "place:D:3 / place:D:5 / w:4 sigmund / w:2 jessica / w:2 terence",
                 "goblin / hobgoblin / kobold / kobold brigand / ijyb w:6 / pikel w:4",
-                "rat / quokka / river rat / w:2 hell rat / w:6 pargi",
+                "rat / quokka / sewer rat / w:2 hell rat / w:6 pargi",
                 "ball python / adder w:15 / water moccasin w:5",
                 "orc w:40 / orc wizard w:8 / orc priest w:5 / w:5 orc warrior",
                 "gnoll w:35 / hound w:5 / gnoll sergeant / gnoll bouda / crazy yiuf",
@@ -246,7 +246,7 @@ function arena_sprint_get_monster_set(round, boss)
                     orc priest / orc high priest w:1 / blorkula the orcula w:3 / urug w:1",
                 "orc wizard / deep elf pyromancer / fire bat / water elemental",
                 "place:Lair / w:5 yak / w:3 komodo dragon / w:3 basilisk /\
-                    w:1 death yak / river rat / hell rat / w:2 dream sheep",
+                    w:1 death yak / sewer rat / hell rat / w:2 dream sheep",
                 "w:20 merfolk / w:5 merfolk siren / hippogriff w:15 / centaur /\
                     w:1 harpy / w:5 cyclops / w:1 snapping turtle",
                 "w:5 bog body / w:5 tyrant leech / w:5 swamp drake /\

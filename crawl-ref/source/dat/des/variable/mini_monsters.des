@@ -769,7 +769,7 @@ DEPTH: D:10-, Lair
 KMONS: p = plant w:30 / fungus
 : if you.in_branch("D") then
 :   if you.depth() < 13 then
-MONS:  bullfrog / water moccasin / river rat / cane toad w:2 \
+MONS:  bullfrog / water moccasin / sewer rat / cane toad w:2 \
        / blink frog w:2 / komodo dragon w:2
 MONS:  vampire mosquito / swamp drake w:3
 # For earlier Dungeon and Lair, 50% chance of a Lair set or a Swamp set.
@@ -782,7 +782,7 @@ MONS:  vampire mosquito / swamp drake w:2 / swamp dragon w:3 / hydra w:3 / \
 # Lair
 : else
 :   if you.depth() < 4 then
-MONS:  bullfrog / water moccasin / river rat / blink frog / cane toad / \
+MONS:  bullfrog / water moccasin / sewer rat / blink frog / cane toad / \
        komodo dragon
 MONS:  vampire mosquito / swamp drake w:3 / swamp dragon w:1 / hydra w:1
 :   else
@@ -1164,7 +1164,7 @@ DEPTH:   D:11-
 MONS:    rat, bat, frilled lizard, dart slug, endoplasm
 MONS:    clockroach, jackal
 KMONS:   8 = ball python / adder w:8
-KMONS:   A = river rat
+KMONS:   A = sewer rat
 KMONS:   B = vampire bat / fire bat w:8
 KMONS:   C = iguana / basilisk w:8
 KMONS:   D = ribbon worm / tyrant leech
@@ -2002,8 +2002,8 @@ DEPTH:  D:9-, Lair:2-
 MONS:   patrolling necromancer, plant
 : if you.branch() == "Lair" and you.depth() ~= dgn.br_depth(you.branch())
 :   or you.branch() == "D" and you.depth () < 12 then
-MONS:   river rat / wolf / yak / polar bear
-MONS:   river rat simulacrum / wolf simulacrum / \
+MONS:   sewer rat / wolf / yak / polar bear
+MONS:   sewer rat simulacrum / wolf simulacrum / \
         yak simulacrum / polar bear simulacrum
 : else
 MONS:   hell rat / elephant / death yak / hydra
@@ -9528,7 +9528,7 @@ NAME:   wander_guarded_unrand_ratskin
 TAGS:   no_monster_gen no_item_gen
 DEPTH:  D:5-8
 WEIGHT: 3
-MONS:   river rat, hell rat
+MONS:   sewer rat, hell rat
 ITEM:   ratskin_cloak no_pickup
 SUBST:  - = 1 .:50, ' = 112MM.
 : decorative_floor(_G, 'M', "assortment of trash")

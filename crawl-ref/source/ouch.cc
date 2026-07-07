@@ -666,7 +666,7 @@ static void _maybe_spawn_rats(int dam, kill_method_type death_type)
     if (!x_chance_in_y(capped_dam * 3, you.hp_max * 2))
         return;
 
-    auto rats = { MONS_HELL_RAT, MONS_RIVER_RAT };
+    auto rats = { MONS_HELL_RAT, MONS_SEWER_RAT };
     // Choose random in rats where the rat isn't hated by the player's god.
     int seen = 0;
     monster_type mon = MONS_NO_MONSTER;

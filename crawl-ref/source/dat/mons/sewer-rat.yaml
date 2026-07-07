@@ -1,11 +1,11 @@
-name: "river rat"
+name: "sewer rat"
 glyph: {char: "r", colour: lightgreen}
 flags: [warm_blood]
 exp: 13
 genus: rat
 will: 10
 attacks:
- - {type: bite, damage: 10}
+ - {type: bite, damage: 6}
 hd: 2
 hp_10x: 110
 ac: 5

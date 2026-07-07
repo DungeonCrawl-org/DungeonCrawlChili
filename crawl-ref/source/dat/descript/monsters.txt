@@ -2719,11 +2719,6 @@ rime drake
 
 A small but dangerous dragon. Its breath is visible even on the warmest days.
 %%%%
-river rat
-
-A rodent with hair of a most peculiar green colour, and a powerful bite. It
-tends to form great swarms with its kin.
-%%%%
 roaming sludgefish
 
 A mutant sewer fish whose continuous exposure to wild magic has given it an
@@ -2860,6 +2855,11 @@ sewage sovereign
 A hulking mutant swine who feasts like a king upon the abundant fungus of
 its realm and lords over its other denizens with brute force and unstoppable
 bulk.
+%%%%
+sewer rat
+
+A rodent with hair of a most peculiar green colour, and a powerful bite. It takes 
+to the putrid waters of the sewers like a fish and forms large swarms with its kin.
 %%%%
 shadow
 

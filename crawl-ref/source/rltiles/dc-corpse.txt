@@ -52,7 +52,7 @@ komodo_dragon CORPSE_KOMODO_DRAGON
 ## Rodents ('r')
 rat CORPSE_RAT
 quokka CORPSE_QUOKKA
-green_rat CORPSE_RIVER_RAT
+green_rat CORPSE_SEWER_RAT
 orange_rat CORPSE_HELL_RAT
 %sdir mon/animals
 

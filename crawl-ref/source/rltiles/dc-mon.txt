@@ -171,7 +171,7 @@ sideburnok
 ## Rodents ('r')
 %sdir mon/animals
 rat MONS_RAT
-green_rat MONS_RIVER_RAT
+green_rat MONS_SEWER_RAT
 orange_rat MONS_HELL_RAT
 crystal_echidna MONS_CRYSTAL_ECHIDNA
 %rim 1
