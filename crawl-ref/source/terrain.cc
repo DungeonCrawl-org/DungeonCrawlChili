@@ -2501,8 +2501,7 @@ coord_def push_or_teleport_actor_from(const coord_def& pos)
     return act->pos();
 }
 
-/** Close any door at the given position. Handles the grid change, but does not
- * mark terrain or do any event handling.
+/** Close any door at the given position. Does't do any event handling.
  *
  * @param dest The location of the door.
  */
@@ -2516,10 +2515,11 @@ void dgn_close_door(const coord_def &dest)
         env.grid(dest) = DNGN_CLOSED_CLEAR_DOOR;
     else
         env.grid(dest) = DNGN_CLOSED_DOOR;
+
+    set_terrain_changed(dest);
 }
 
-/** Open any door at the given position. Handles the grid change, but does not
- * mark terrain or do any event handling.
+/** Open any door at the given position. Does't do any event handling.
  *
  * @param dest The location of the door.
  */
@@ -2534,10 +2534,11 @@ void dgn_open_door(const coord_def &dest)
         env.grid(dest) = DNGN_OPEN_CLEAR_DOOR;
     else
         env.grid(dest) = DNGN_OPEN_DOOR;
+
+    set_terrain_changed(dest);
 }
 
-/** Breaks any door at the given position. Handles the grid change, but does not
- * mark terrain or do any event handling.
+/** Breaks any door at the given position. Does't do any event handling.
  *
  * @param dest The location of the door.
  */
@@ -2552,6 +2553,8 @@ void dgn_break_door(const coord_def &dest)
         env.grid(dest) = DNGN_BROKEN_CLEAR_DOOR;
     else
         env.grid(dest) = DNGN_BROKEN_DOOR;
+
+    set_terrain_changed(dest);
 }
 
 

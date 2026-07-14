@@ -1260,7 +1260,8 @@ static int _process_disconnected_zones(int x1, int y1, int x2, int y2,
                             && !env.mons[env.mgrid(c)].is_habitable_feat(fill))
                         {
                             monster_die(env.mons[env.mgrid(c)],
-                                        KILL_RESET, NON_MONSTER, true);
+                                        KILL_RESET, NON_MONSTER, true, false,
+                                        true);
                         }
                     }
                 }
@@ -5255,9 +5256,9 @@ static int _dgn_item_corpse(const item_spec &ispec, const coord_def where)
         if (!mon)
             continue;
         mon->position = where;
-        corpse = place_monster_corpse(*mon, true);
-        // Dismiss the monster we used to place the corpse.
-        monster_die(*mon, KILL_RESET, NON_MONSTER, true);
+        corpse = place_corpse_or_gold(*mon, true);
+        // Dismiss and reset the monster we used to place the corpse.
+        monster_die(*mon, KILL_RESET, NON_MONSTER, true, false, true);
     }
 
     if (ispec.props.exists(CORPSE_NEVER_DECAYS))

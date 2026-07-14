@@ -2469,14 +2469,12 @@ static void _xom_open_and_close_doors(int /* sever */)
         case DNGN_RUNED_DOOR:
         case DNGN_RUNED_CLEAR_DOOR:
             dgn_open_door(pos);
-            set_terrain_changed(pos);
             if (you.see_cell(pos))
                 doors_open++;
             break;
         case DNGN_OPEN_DOOR:
         case DNGN_OPEN_CLEAR_DOOR:
             dgn_close_door(pos);
-            set_terrain_changed(pos);
             if (you.see_cell(pos))
                 doors_close++;
             break;
@@ -2946,7 +2944,7 @@ static void _xom_wave_of_despair(int sever)
             dummy.type = MONS_HUMAN; // maybe random floor monsters? player genus?
             dummy.position = *di;
 
-            item_def* corpse = place_monster_corpse(dummy, true);
+            item_def* corpse = place_corpse_or_gold(dummy, true);
             if (corpse)
             {
                 turn_corpse_into_skeleton(*corpse);
