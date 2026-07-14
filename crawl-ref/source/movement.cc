@@ -634,6 +634,13 @@ static void _handle_trying_to_move_into_unpassable_terrain(coord_def targ)
 {
     if (env.grid(targ) == DNGN_OPEN_SEA)
         mpr("The ferocious winds and tides of the open sea thwart your progress.");
+    else if (env.grid(targ) == DNGN_ENDLESS_SLUDGE)
+    {
+        if (you.can_smell())
+            mpr("The horrid stench of the seemingly endless sewage repels you from going further.");
+        else
+            mpr("The rot and filth of the seemingly endless sewage repels you from going further.");
+    }
     else if (env.grid(targ) == DNGN_LAVA_SEA)
         mpr("The endless sea of lava is not a nice place.");
     else if (feat_is_tree(env.grid(targ)) && you_worship(GOD_FEDHAS))

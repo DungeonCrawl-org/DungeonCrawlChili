@@ -5,6 +5,7 @@
 #include "colour.h"
 #include "coord.h"
 #include "coordit.h"
+#include "dungeon.h"
 #include "env.h"
 #include "level-state-type.h"
 #include "terrain.h"
@@ -396,6 +397,11 @@ static bool _is_seen_shallow(coord_def gc, crawl_view_buffer& vbuf)
     return feat == DNGN_SHALLOW_WATER || feat == DNGN_MANGROVE;
 }
 
+static bool _bounds_check(coord_def coord, crawl_view_buffer& vbuf)
+{
+    return (coord.x < 0 || coord.x >= vbuf.size().x || coord.y < 0 || coord.y >= vbuf.size().y);
+}
+
 static void _pack_default_waves(const coord_def &gc, crawl_view_buffer& vbuf)
 {
     auto& cell = vbuf(gc).tile;
@@ -411,16 +417,24 @@ static void _pack_default_waves(const coord_def &gc, crawl_view_buffer& vbuf)
     if (!feat_is_water(feat) && !feat_is_lava(feat))
         return;
 
-    if (feat == DNGN_DEEP_WATER)
+    if (feat == DNGN_DEEP_WATER || feat == DNGN_ENDLESS_SLUDGE)
     {
+        level_id lid = level_id::current();
+
+        // +7 and -- reverse the iteration order
+        if (feat == DNGN_ENDLESS_SLUDGE)
+            colour = GREEN; // Forces murky tile when appropriate.
+        else if (lid.branch == BRANCH_SWAMP || lid == sewer_location)
+            colour = GREEN; // Forces murky tile when appropriate.
+
         // +7 and -- reverse the iteration order
         int tile = tile_dngn_coloured(TILE_DNGN_WAVE_N, colour) + 7;
         for (adjacent_iterator ai(gc); ai; ++ai, --tile)
         {
-            if (ai->x < 0 || ai->x >= vbuf.size().x || ai->y < 0 || ai->y >= vbuf.size().y)
+            if (_bounds_check(*ai, vbuf))
                 continue;
             if (_is_seen_shallow(*ai, vbuf))
-                cell.add_overlay(tile);
+                cell.dngn_overlay[cell.num_dngn_overlay++] = tile;
         }
     }
 

@@ -1589,6 +1589,15 @@ wall_oozing2
 wall_oozing3
 %weight 10
 
+sewer0 STONE_WALL_SEWER
+sewer1
+sewer2
+sewer3
+sewer4
+sewer5
+sewer6
+sewer7
+
 # Ossuaries.
 wall_stone_ossuary0 STONE_WALL_OSSUARY
 wall_stone_ossuary1

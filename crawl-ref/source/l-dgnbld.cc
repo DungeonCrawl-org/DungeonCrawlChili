@@ -2236,6 +2236,77 @@ LUAFN(dgn_delve)
     return 0;
 }
 
+LUAFN(dgn_sewer_iterate)
+{
+    LINES(ls, 1, map, lines);
+
+    UNUSED(ls);
+
+    ASSERT(lines.width() <= GXM);
+    ASSERT(lines.height() <= GYM);
+
+    int water_count = 0;
+    int floor_count = 0;
+    int solid_count = 0;
+    int edge_count = 0;
+    const char *sewerwall = "ab";
+    const char *water = "wW";
+    const char *floor = ".";
+    const char *solid = "abvxc";
+    const char *a = "a";
+
+    for (int x = lines.width(); x >= 0; x--)
+        for (int y = lines.height(); y >= 0; y--)
+        {
+            coord_def c(x, y);
+            if (_valid_coord(ls, lines, x, y, false))
+            {
+                if (strchr(sewerwall, lines(c)))
+                {
+                    for (adjacent_iterator ai(c); ai; ++ai)
+                    {
+                        if (_valid_coord(ls, lines, ai->x, ai->y, false))
+                        {
+                            if (strchr(water, lines(*ai)))
+                                water_count++;
+                            else if (strchr(floor, lines(*ai)))
+                                floor_count++;
+                            else if (strchr(solid, lines(*ai)))
+                                solid_count++;
+                        }
+                        else
+                            edge_count++;
+                    }
+                    if (edge_count > 0)
+                        lines(c) = 'h';
+                    else if (water_count > 4)
+                        lines(c) = 'W';
+                    else if (floor_count >= 2 && coinflip())
+                        lines(c) = '.';
+                    else if (strchr(a, lines(c)))
+                        lines(c) = 'v';
+                    else
+                        lines(c) = 'c';
+                }
+                floor_count = 0;
+                water_count = 0;
+                solid_count = 0;
+                edge_count = 0;
+            }
+        }
+    return 0;
+}
+
+LUAFN(dgn_pass_sewer_info)
+{
+    const int columns = luaL_safe_checkint(ls, 2);
+    const int row_height = luaL_safe_checkint(ls, 3);
+
+    env.properties[SEWER_COLUMNS_KEY] = columns;
+    env.properties[SEWER_ROW_POSITION_KEY] = row_height;
+    return 0;
+}
+
 LUAFN(dgn_farthest_from)
 {
     LINES(ls, 1, map, lines);

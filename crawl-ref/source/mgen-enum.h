@@ -153,6 +153,7 @@ enum band_type
     BAND_GIRAFFES,
     BAND_ABYSSAL_ACOLYTES,
     BAND_HERALD_FOLLOWERS,
+    BAND_BLOWFLIES,
     NUM_BANDS                   // always last
 };
 

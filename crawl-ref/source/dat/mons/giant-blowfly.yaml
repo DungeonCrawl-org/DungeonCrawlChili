@@ -1,0 +1,15 @@
+name: "giant blowfly"
+glyph: {char: "b", colour: darkgrey}
+flags: [flies, confused, no_skeleton, no_exp_gain, no_threat]
+resists: {poison: 3, corr: 1}
+will: 10
+attacks:
+hd: 2
+hp_10x: 300
+ac: 4
+ev: 35
+intelligence: brainless
+speed: 25
+size: tiny
+shape: insect_winged
+shout: buzz

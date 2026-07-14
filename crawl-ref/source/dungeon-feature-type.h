@@ -413,6 +413,7 @@ enum dungeon_feature_type
     DNGN_MOULD_PATCH,
     DNGN_PURIFIED_MUTATION_CATALYST,
 #endif
+    DNGN_ENDLESS_SLUDGE,
 
     NUM_FEATURES
 };

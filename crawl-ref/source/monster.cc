@@ -5372,7 +5372,8 @@ static bool _mons_is_fiery(int mc)
            || mc == MONS_SALAMANDER
            || mc == MONS_SALAMANDER_MYSTIC
            || mc == MONS_MOLTEN_GARGOYLE
-           || mc == MONS_ORB_OF_FIRE;
+           || mc == MONS_ORB_OF_FIRE
+           || mc == MONS_CINDER_NEWT;
 }
 
 bool monster::is_fiery() const
@@ -5625,14 +5626,17 @@ void monster::finalise_movement(const actor* to_blame)
     {
         monster_type genus = mons_genus(type);
 
-        if (genus == MONS_JELLY || genus == MONS_ELEPHANT_SLUG)
+        if (genus == MONS_JELLY || genus == MONS_ELEPHANT_SLUG || type == MONS_GIANT_BLOWFLY)
         {
             prop &= ~FPROP_BLOODY;
             if (you.see_cell(pos()) && !visible_to(&you))
             {
                 string desc =
                     feature_description_at(pos(), false, DESC_THE);
-                mprf("The bloodstain on %s disappears!", desc.c_str());
+                if (type == MONS_GIANT_BLOWFLY)
+                    mprf("The blowfly sucks up the blood from %s!", desc.c_str());
+                else
+                    mprf("The bloodstain on %s disappears!", desc.c_str());
             }
         }
     }

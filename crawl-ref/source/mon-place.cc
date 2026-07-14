@@ -1851,6 +1851,7 @@ static const band_conditions mf_band_condition = { 0, 0, []() {
 
 /// For each monster, what band or bands may follow them?
 static const map<monster_type, band_set> bands_by_leader = {
+    { MONS_GIANT_BLOWFLY,   { {}, {{BAND_BLOWFLIES, {1, 4}, true}}}},
     { MONS_ORC,             { {2}, {{ BAND_ORCS, {2, 5} }}}},
     { MONS_ORC_WIZARD,      { {}, {{ BAND_ORCS, {2, 5} }}}},
     { MONS_ORC_PRIEST,      { {}, {{ BAND_ORC_WARRIOR, {2, 5} }}}},
@@ -2531,6 +2532,7 @@ static const map<band_type, vector<member_possibilities>> band_membership = {
                                   {MONS_VERY_UGLY_THING, 4}}}},
     { BAND_GOLEMS,              {{{MONS_WAR_GARGOYLE, 1},
                                   {MONS_CRYSTAL_GUARDIAN, 1}}}},
+    { BAND_BLOWFLIES,           {{{MONS_GIANT_BLOWFLY, 1}}} },
     { BAND_ORCS,                {{{MONS_ORC_PRIEST, 6},
                                   {MONS_ORC_WIZARD, 7},
                                   {MONS_ORC, 35}}}},

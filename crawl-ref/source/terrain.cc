@@ -528,7 +528,7 @@ bool feat_is_permarock(dungeon_feature_type feat)
 bool feat_is_endless(dungeon_feature_type feat)
 {
     return feat == DNGN_OPEN_SEA || feat == DNGN_LAVA_SEA
-           || feat == DNGN_ENDLESS_SALT;
+           || feat == DNGN_ENDLESS_SALT || feat == DNGN_ENDLESS_SLUDGE;
 }
 
 /** Can this feature be dug?
@@ -559,7 +559,8 @@ bool feat_is_trap(dungeon_feature_type feat)
 bool feat_is_deep_water(dungeon_feature_type feat)
 {
     return feat == DNGN_DEEP_WATER
-           || feat == DNGN_OPEN_SEA;
+           || feat == DNGN_OPEN_SEA
+           || feat == DNGN_ENDLESS_SLUDGE;
 }
 
 /** Is this feature a type of water that is shallow enough to wade through?
@@ -769,7 +770,8 @@ bool feat_is_valid_border(dungeon_feature_type feat)
            || feat_is_tree(feat)
            || feat == DNGN_OPEN_SEA
            || feat == DNGN_LAVA_SEA
-           || feat == DNGN_ENDLESS_SALT;
+           || feat == DNGN_ENDLESS_SALT
+           || feat == DNGN_ENDLESS_SLUDGE;
 }
 
 /** Can this feature be a mimic?

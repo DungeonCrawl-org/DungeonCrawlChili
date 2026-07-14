@@ -99,6 +99,7 @@ static void _builder_monsters();
 static coord_def _place_specific_feature(dungeon_feature_type feat);
 static void _place_branch_entrances(bool use_vaults);
 static void _place_extra_vaults();
+static void _place_sewer_vault();
 static void _place_chance_vaults();
 static void _place_minivaults();
 static int _place_uniques();
@@ -1381,6 +1382,84 @@ static void _fixup_hell_stairs()
     }
 }
 
+static void _place_sewer_stair_vault()
+{
+    int stair_num = 0;
+    int target_stair = -1;
+
+    if (coinflip())
+        target_stair = 1 + random2(3);
+    else
+        return;
+
+    for (rectangle_iterator ri(1); ri; ++ri)
+    {
+        if (feat_is_stone_stair_down(env.grid(*ri)))
+        {
+            stair_num++;
+
+            if (stair_num == target_stair)
+            {
+                if (dgn_vault_at(*ri))
+                    target_stair++;
+                else
+                {
+                    _set_grd(*ri, DNGN_FLOOR);
+                    if (!dgn_place_map(random_map_for_tag("sewer_entrance"), false, false, *ri))
+                        _set_grd(*ri, DNGN_STONE_STAIRS_DOWN_I);
+                }
+            }
+        }
+    }
+}
+
+static void _fixup_sewer_stairs()
+{
+    for (rectangle_iterator ri(1); ri; ++ri)
+    {
+        if (feat_is_stone_stair_down(env.grid(*ri)) &&
+            tile_env.flv(*ri).feat != TILE_DNGN_PORTAL_SEWER)
+        {
+            tile_env.flv(*ri).feat_idx =
+                store_tilename_get_index("dngn_portal_sewer");
+            tile_env.flv(*ri).feat = TILE_DNGN_PORTAL_SEWER;
+            tile_env.flv(*ri).floor_idx =
+                store_tilename_get_index("floor_iron");
+            tile_env.flv(*ri).floor = TILE_FLOOR_IRON;
+            env.grid_colours(*ri) = GREEN;
+            for (adjacent_iterator ai(*ri); ai; ++ai)
+            {
+                if (feat_is_wall(env.grid(*ai))
+                    && feat_is_opaque(env.grid(*ai)) || feat_is_tree(env.grid(*ai)))
+                {
+                    _set_grd(*ai, DNGN_METAL_WALL);
+                    env.grid_colours(*ai) = GREEN;
+                    tile_env.flv(*ai).feat_idx =
+                        store_tilename_get_index("dngn_metal_wall_green");
+                    tile_env.flv(*ai).feat = TILE_DNGN_METAL_WALL_GREEN;
+                }
+                else if (env.grid(*ai) == DNGN_FLOOR)
+                {
+                    if (x_chance_in_y(2, 3))
+                        _set_grd(*ai, DNGN_SHALLOW_WATER);
+                }
+
+                if ((env.grid(*ai) == DNGN_DEEP_WATER))
+                {
+                    tile_env.flv(*ai).feat = TILE_DNGN_SHALLOW_WATER_MURKY;
+                    env.grid_colours(*ai) = LIGHTGREEN;
+                }
+
+                if ((env.grid(*ai) == DNGN_SHALLOW_WATER))
+                {
+                    tile_env.flv(*ai).feat = TILE_DNGN_SHALLOW_WATER_MURKY;
+                    env.grid_colours(*ai) = LIGHTGREEN;
+                }
+            }
+        }
+    }
+}
+
 static void _fixup_pandemonium_stairs()
 {
     for (rectangle_iterator ri(1); ri; ++ri)
@@ -1812,6 +1891,103 @@ static int _num_mons_wanted()
     if (level_id::current() == level_id(BRANCH_ZOT, 5))
         mon_wanted = max(10, mon_wanted - 4);
     return mon_wanted;
+}
+
+static bool _sewer_check(coord_def coord)
+{
+    return (env.grid(coord) == DNGN_STONE_WALL || env.grid(coord) == DNGN_METAL_WALL
+        || env.grid(coord) == DNGN_PERMAROCK_WALL || env.grid(coord) == DNGN_ENDLESS_SLUDGE);
+}
+
+static void _sewer_water()
+{
+    if (level_id::current() != sewer_location)
+        return;
+
+    for (rectangle_iterator ri(coord_def(0, 0), coord_def(GXM - 1, GYM - 1)); ri; ++ri)
+    {
+        if (map_masked(*ri, MMT_NO_POOL))
+            continue;
+
+        if (_sewer_check(*ri))
+        {
+            if (ri->x == 0 || ri->x == 1 || ri->x == GXM - 1 || ri->x == GXM - 2)
+            {
+                if (_sewer_check(coord_def(ri->x, ri->y + 1)) && _sewer_check(coord_def(ri->x, ri->y - 1)))
+                {
+                    env.grid(*ri) = DNGN_ENDLESS_SLUDGE;
+                    if (ri->x == 1)
+                        env.grid(coord_def(0, ri->y)) = DNGN_ENDLESS_SLUDGE;
+                    if (ri->x == GXM - 2)
+                        env.grid(coord_def(GXM - 1, ri->y)) = DNGN_ENDLESS_SLUDGE;
+                }
+            }
+            if (ri->y == 0 || ri->y == 1 || ri->y == GYM - 1 || ri->y == GYM - 2)
+            {
+                if (_sewer_check(coord_def(ri->x + 1, ri->y)) && _sewer_check(coord_def(ri->x - 1, ri->y)))
+                {
+                    env.grid(*ri) = DNGN_ENDLESS_SLUDGE;
+                    if (ri->y == 1)
+                        env.grid(coord_def(ri->x, 0)) = DNGN_ENDLESS_SLUDGE;
+                    if (ri->y == GYM - 2)
+                        env.grid(coord_def(ri->x, GYM - 1)) = DNGN_ENDLESS_SLUDGE;
+                }
+            }
+        }
+
+        if ((env.grid(*ri) == DNGN_FLOOR))
+        {
+            int water = 0;
+            int solid = 0;
+            for (adjacent_iterator ai(*ri); ai; ++ai)
+            {
+                if (env.grid(*ai) == DNGN_SHALLOW_WATER || env.grid(*ai) == DNGN_DEEP_WATER)
+                    water++;
+                if (env.grid(*ai) == DNGN_ROCK_WALL || env.grid(*ai) == DNGN_STONE_WALL || env.grid(*ai) == DNGN_METAL_WALL)
+                    solid++;
+            }
+
+            if (x_chance_in_y(solid, 8) || (water > 3 && solid + water >= 6))
+                env.grid(*ri) = DNGN_SHALLOW_WATER;
+        }
+
+        if ((env.grid(*ri) == DNGN_DEEP_WATER || env.grid(*ri) == DNGN_SHALLOW_WATER))
+        {
+            if (!actor_at(*ri))
+            {
+                bool clumping = false;
+                for (adjacent_iterator ai(*ri); ai; ++ai)
+                {
+                    if (monster_at(*ai) && monster_at(*ai)->type == MONS_WITHERED_PLANT)
+                        clumping = true;
+                }
+                if (one_chance_in(30) || clumping && !one_chance_in(3))
+                {
+                    mgen_data mg;
+                    mg.cls = MONS_WITHERED_PLANT;
+                    mg.pos = *ri;
+                    mg.flags = MG_FORCE_PLACE;
+                    mons_place(mgen_data(mg));
+                }
+            }
+        }
+
+        if ((env.grid(*ri) == DNGN_DEEP_WATER))
+        {
+#ifdef USE_TILE
+            tile_env.bk_bg(*ri) = TILE_DNGN_DEEP_WATER_MURKY;
+#endif
+            env.grid_colours(*ri) = GREEN;
+        }
+
+        if ((env.grid(*ri) == DNGN_SHALLOW_WATER))
+        {
+#ifdef USE_TILE
+            tile_env.bk_bg(*ri) = TILE_DNGN_SHALLOW_WATER_MURKY;
+#endif
+            env.grid_colours(*ri) = LIGHTGREEN;
+        }
+    }
 }
 
 static void _fixup_walls()
@@ -2865,6 +3041,7 @@ static void _post_vault_build()
         && !player_in_branch(BRANCH_SHOALS))
     {
         _prepare_water();
+        _sewer_water();
         if (player_in_branch(BRANCH_LAIR) || !one_chance_in(4))
             _prepare_water();
     }
@@ -2916,8 +3093,17 @@ static void _build_dungeon_level()
             _place_chance_vaults();
         }
 
+        level_id lid = level_id::current();
+        bool above_sewer = lid.branch == sewer_location.branch && lid.depth == (sewer_location.depth - 1);
+
+        if (above_sewer)
+            _place_sewer_stair_vault();
+
         // Ruination and plant clumps.
         _post_vault_build();
+
+        if (above_sewer)
+            _fixup_sewer_stairs();
 
         if (player_in_branch(BRANCH_SLIME))
             _adjust_slime_stairs();
@@ -3604,6 +3790,81 @@ static void _slime_connectivity_fixup()
     }
 }
 
+static void _place_sewer_vault()
+{
+    if (!env.properties.exists(SEWER_COLUMNS_KEY))
+        return;
+
+    int columns = env.properties[SEWER_COLUMNS_KEY].get_int();
+    int row_height = env.properties[SEWER_ROW_POSITION_KEY].get_int();
+    int vault_type = random2(15);
+    coord_def pos;
+
+    if (vault_type < 2)
+    {
+        if (columns == 3)
+            pos.x = GXM / 2;
+        else // if (columns == 2)
+            pos.x = GXM / (3) * random_range(1, 2);
+        if (coinflip())
+            pos.y = row_height;
+        else
+            pos.y = GYM - row_height;
+        const map_def * map = random_map_for_tag("sewer_center");
+
+        if (map)
+            dgn_place_map(map, false, true, pos);
+    }
+    else if (vault_type == 3)
+    {
+        const map_def * map = random_map_for_tag("sewer_special");
+
+        if (map)
+            dgn_place_map(map, false, true, pos);
+    }
+    else if (vault_type < 8)
+    {
+        const map_def * map = random_map_for_tag("sewer_cave");
+
+        pos.x = GXM / (columns + 1) / 2 * (1 + 2 * random_range(0, columns));
+        if (abs(GYM / 2 - row_height) < 5)
+        {
+            pos.y = GYM / 4;
+            if (coinflip())
+                pos.y *= 3;
+        }
+        else
+            pos.y = row_height + random_range(-5, 5);
+
+        if (map)
+            dgn_place_map(map, false, false, pos);
+    }
+    else if (vault_type < 11)
+    {
+        const map_def * map = random_map_for_tag("sewer_edge");
+
+        if (map)
+        {
+            // East/West:
+            if (coinflip())
+            {
+                pos.x = GXM - 1;
+                pos.y = GYM - row_height;
+            }
+            // North/South
+            else
+            {
+                if (columns == 3)
+                    pos.x = GXM / 2;
+                else // if columns == 2;
+                    pos.x = GXM / 3 * random_range(1, 2);
+                pos.y = GYM - 1;
+            }
+            dgn_place_map(map, false, false, pos);
+        }
+    }
+}
+
 // Place vaults with CHANCE: that want to be placed on this level.
 static void _place_chance_vaults()
 {
@@ -3612,6 +3873,10 @@ static void _place_chance_vaults()
     // [ds] If there are multiple CHANCE maps that share an luniq_ or
     // uniq_ tag, only the first such map will be placed. Shuffle the
     // order of chosen maps so we don't have a first-map bias.
+
+    if (lid == sewer_location)
+        _place_sewer_vault();
+
     shuffle_array(maps);
     for (const map_def *map : maps)
     {
@@ -4269,6 +4534,9 @@ static void _place_aquatic_in(vector<coord_def> &places, const vector<pop_entry>
     int num = min(random_range(places.size() / 35, places.size() / 18), 15);
     shuffle_array(places);
 
+    if (level_id::current() == sewer_location)
+        num /= 2; // Sewer is huge.
+
     for (int i = 0; i < num; i++)
     {
         monster_type mon = pick_monster_from(pop, level);
@@ -4335,10 +4603,22 @@ static void _place_aquatic_monsters()
             lava.push_back(*ri);
     }
 
-    _place_aquatic_in(water, fish_population(you.where_are_you, false), level,
-                      true);
-    _place_aquatic_in(lava, fish_population(you.where_are_you, true), level,
-                      false);
+    level_id lid = level_id::current();
+    branch_type place = lid.branch;
+
+    if (lid == sewer_location)
+    {
+        place = BRANCH_SEWER;
+        level = 1;
+    }
+
+    _place_aquatic_in(water, fish_population(place, false), level,
+        true);
+    if (place != BRANCH_SEWER)
+    {
+        _place_aquatic_in(lava, fish_population(place, true), level,
+            false);
+    }
 }
 
 static vector<monster_type> _zombifiables()

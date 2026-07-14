@@ -26,6 +26,9 @@ COMPILE_CHECK(sizeof(feature_property_type) <= sizeof(terrain_property_t));
 #define TEMPLE_MAP_KEY       "temple_map_key"
 #define TEMPLE_SIZE_KEY      "temple_size_key"
 
+#define SEWER_COLUMNS_KEY "sewer_columns_key"
+#define SEWER_ROW_POSITION_KEY "sewer_row_position_key"
+
 #if TAG_MAJOR_VERSION == 34
 #define TOMB_STONE_STAIRS_KEY "tomb_stone_stairs_key"
 #endif
@@ -38,6 +41,9 @@ COMPILE_CHECK(sizeof(feature_property_type) <= sizeof(terrain_property_t));
 #define DESCENT_STAIRS_KEY "descent_stairs_gone"
 
 const unsigned short INVALID_MAP_INDEX = 10000;
+
+const level_id sewer_location = level_id(BRANCH_DUNGEON, 27);
+// BCADDO: Undisable this when ready.
 
 // Should be the larger of GXM/GYM
 #define MAP_SIDE ((GXM) > (GYM) ? (GXM) : (GYM))

@@ -189,6 +189,13 @@ static feature_def feat_defs[] =
 },
 
 {
+    DNGN_ENDLESS_SLUDGE, "the endless sewage", "endless_sludge",
+    DCHAR_WALL, NUM_DCHAR_TYPES,
+    COLOUR_IS(GREEN),
+    FFT_WALL | FFT_SOLID, MF_DEEP_WATER,
+},
+
+{
     DNGN_LAVA_SEA, "the endless lava", "endless_lava",
     DCHAR_WALL, NUM_DCHAR_TYPES,
     COLOUR_IS(RED),

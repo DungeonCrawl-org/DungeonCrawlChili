@@ -81,7 +81,10 @@ void tile_new_level(bool first_time, bool init_unseen)
 
 void tile_init_default_flavour()
 {
-    tile_default_flv(you.where_are_you, tile_env.default_flavour);
+    branch_type br = you.where_are_you;
+    if (level_id::current() == sewer_location)
+        br = BRANCH_SEWER;
+    tile_default_flv(br, tile_env.default_flavour);
 }
 
 void tile_default_flv(branch_type br, tile_flavour &flv)
@@ -269,8 +272,8 @@ void tile_default_flv(branch_type br, tile_flavour &flv)
         return;
 
     case BRANCH_SEWER:
-        flv.wall  = TILE_WALL_OOZING;
-        flv.floor = TILE_FLOOR_SLIME;
+        flv.wall = TILE_WALL_PEBBLE_CYAN;
+        flv.floor = TILE_FLOOR_ROUGH_GREEN;
         return;
 
     case BRANCH_OSSUARY:

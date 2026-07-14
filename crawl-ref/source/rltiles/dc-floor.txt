@@ -1297,6 +1297,9 @@ open_sea DNGN_OPEN_SEA
 %weight 1
 open_sea2
 
+endless_sludge ENDLESS_SLUDGE
+endless_sludge1
+
 %weight 2
 deep_water DNGN_DEEP_WATER
 %weight 1

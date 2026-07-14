@@ -143,8 +143,10 @@ meliai MONS_MELIAI
 clockwork_bee MONS_CLOCKWORK_BEE
 clockwork_bee_inert MONS_CLOCKWORK_BEE_INACTIVE
 %sdir mon/animals
+giant_blowfly MONS_GIANT_BLOWFLY
 
 ## Reptiles and lizards ('l')
+leopard_gecko MONS_LEOPARD_GECKO
 frilled_lizard MONS_FRILLED_LIZARD
 iguana MONS_IGUANA
 crocodile MONS_CROCODILE
@@ -157,6 +159,7 @@ seismosaurus_egg3
 %rim 1
 komodo_dragon MONS_KOMODO_DRAGON
 alligator MONS_ALLIGATOR
+cinder_newt MONS_CINDER_NEWT
 
 ## Slugs ('w')
 %sdir mon/unique

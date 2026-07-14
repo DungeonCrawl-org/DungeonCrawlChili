@@ -5526,6 +5526,12 @@ bool ru_power_leap()
             mpr("You can't leap into the sea!");
             continue;
         }
+        else if (env.grid(beam.target) == DNGN_ENDLESS_SLUDGE)
+        {
+            clear_messages();
+            mpr("You can't leap into the putrid sewage!");
+            continue;
+        }
         else if (env.grid(beam.target) == DNGN_LAVA_SEA)
         {
             clear_messages();
@@ -5836,6 +5842,12 @@ bool uskayaw_line_pass()
         {
             clear_messages();
             mpr("You can't line pass into the sea!");
+            continue;
+        }
+        else if (env.grid(beam.target) == DNGN_ENDLESS_SLUDGE)
+        {
+            clear_messages();
+            mpr("You can't line pass into the putrid sewage!");
             continue;
         }
         else if (env.grid(beam.target) == DNGN_LAVA_SEA)

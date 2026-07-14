@@ -12,6 +12,7 @@
 #include "coordit.h"
 #include "describe.h"
 #include "debug.h"
+#include "dungeon.h"
 #include "duration-type.h"
 #include "env.h"
 #include "tile-env.h"
@@ -207,6 +208,8 @@ tileidx_t tileidx_feature_base(dungeon_feature_type feat)
         return TILE_DNGN_SHALLOW_WATER;
     case DNGN_OPEN_SEA:
         return TILE_DNGN_OPEN_SEA;
+    case DNGN_ENDLESS_SLUDGE:
+        return TILE_ENDLESS_SLUDGE;
     case DNGN_TOXIC_BOG:
         return TILE_DNGN_TOXIC_BOG;
     case DNGN_MUD:
@@ -734,8 +737,7 @@ static tileidx_t _apply_branch_tile_overrides(tileidx_t orig, coord_def gc)
         if (orig == TILE_DNGN_STONE_WALL)
             orig = TILE_STONE_WALL_SNAKE;
     }
-    else if (player_in_branch(BRANCH_SWAMP)
-             || player_in_branch(BRANCH_SEWER))
+    else if (player_in_branch(BRANCH_SWAMP))
     {
         if (orig == TILE_DNGN_STONE_WALL)
             orig = TILE_WALL_STONE_MOSSY;
@@ -853,6 +855,8 @@ static colour_t _feat_colour(coord_def gc)
             return BROWN;
         return COLOUR_UNDEF;
     case DNGN_METAL_WALL:
+        if (level_id::current() == sewer_location)
+            return GREEN;
         switch (you.where_are_you)
         {
         case BRANCH_TARTARUS:

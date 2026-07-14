@@ -4214,6 +4214,9 @@ static bool _monster_move(monster* mons, coord_def& delta)
             place_cloud(CLOUD_FIRE, mons->pos(), 2 + random2(4), mons);
         }
 
+        if (mons->type == MONS_CINDER_NEWT && feat_is_water(env.grid(mons->pos())))
+            place_cloud(CLOUD_STEAM, mons->pos(), 2 + random2(4), mons);
+
         if (mons->has_ench(ENCH_ROLLING))
             place_cloud(CLOUD_DUST, mons->pos(), 2, mons);
 

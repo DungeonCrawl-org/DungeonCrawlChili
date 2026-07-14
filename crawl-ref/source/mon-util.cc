@@ -3732,6 +3732,10 @@ bool monster_shover(const monster& m)
         return false;
     }
 
+    // Veto Cinder Newts when they would leave steam.
+    if (m.type == MONS_CINDER_NEWT && feat_is_water(env.grid(m.pos())))
+        return false;
+
     // Allow the ember to push back to its scarab
     if (m.type == MONS_SOLAR_EMBER)
         return true;

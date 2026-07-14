@@ -1444,6 +1444,8 @@ enum monster_type                      // env.mons[].type
     MONS_ABYSSAL_ACOLYTE,
 #endif
     MONS_GIRAFFE,
+    MONS_CINDER_NEWT,
+    MONS_GIANT_BLOWFLY,
 
     NUM_MONSTERS,               // used for polymorph
 
