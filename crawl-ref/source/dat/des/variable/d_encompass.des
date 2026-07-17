@@ -1070,6 +1070,25 @@ KFEAT:  _ = altar_ecumenical
 KFEAT:  T = altar_ecumenical
 KFEAT:  Z = altar_ecumenical
 KITEM:  o5 = gold / nothing w:1000
+{{
+function goblin_statue()
+    return
+end
+
+set_feature_name("granite_statue", "goblin-shaped statue")
+}}
+MARKER: 7 = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
+MARKER: S = lua:portal_desc { slaved_to="goblin" }
+MARKER: G = lua:props_marker { veto_destroy="veto" }
+MARKER: S = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake goblin", \
+            message_seen="The goblins awaken!", \
+            message_unseen="You hear a commotion.", \
+            master_name="goblin", \
+            veto_destroy="veto", \
+         }
+
 SUBST:  M = tww.!, p = pP!!!!!
 NSUBST: 1 = 1:1 / *:., H = 20:H / 5:% / 160:. / * = .:25 %:1 4
 NSUBST: F = 5:5 / 5 = 55o / * = o:100 R:57
