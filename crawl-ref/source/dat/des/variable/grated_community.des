@@ -251,7 +251,7 @@ ENDMAP
 NAME:   grated_community_mu_spellcaster_home
 : if you.in_branch("D") and you.depth() == 3 then
 MONS:   orc wizard, orc priest / kobold brigand, gnoll bouda / iguana w:5
-MONS:   Jessica / Terence / Natasha w:4, sleepcap / shadow imp
+MONS:   Sigmund / Terence / Natasha w:4, sleepcap / shadow imp
 MONS:   adder / hound w:5
 ITEM:   book of minor magic / book of party tricks / nothing
 ITEM:   scroll of vulnerability / scroll of immolation / nothing
