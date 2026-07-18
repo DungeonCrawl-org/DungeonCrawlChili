@@ -1066,9 +1066,9 @@ KMONS:  5 = goblin / hobgoblin / kobold
 KMONS:  6 = adder / gnoll / hound
 KFEAT:  B = cache_of_baked_goods
 KFEAT:  S = granite_statue
+KFEAT:  Z = fountain_sparkling
 KFEAT:  _ = altar_ecumenical
 KFEAT:  T = altar_ecumenical
-KFEAT:  Z = altar_ecumenical
 KITEM:  o5 = gold / nothing w:1000
 {{
 function goblin_statue()
@@ -1077,8 +1077,16 @@ end
 
 set_feature_name("granite_statue", "goblin-shaped statue")
 }}
+{{
+function snake_fountain()
+    return
+end
+
+set_feature_name("fountain_sparkling", "snake filled fountained")
+}}
 MARKER: 7 = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
 MARKER: S = lua:portal_desc { slaved_to="goblin" }
+MARKER: Z = lua:portal_desc { slaved_to="water moccasin" }
 MARKER: G = lua:props_marker { veto_destroy="veto" }
 MARKER: S = lua:monster_on_death { \
             target="medusa_marker", \
@@ -1086,6 +1094,14 @@ MARKER: S = lua:monster_on_death { \
             message_seen="The goblins awaken!", \
             message_unseen="You hear a commotion.", \
             master_name="goblin", \
+            veto_destroy="veto", \
+         }
+MARKER: Z = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake water moccasin", \
+            message_seen="The water moccasin awaken!", \
+            message_unseen="You hear a hiss.", \
+            master_name="water moccasin", \
             veto_destroy="veto", \
          }
 
@@ -1142,7 +1158,7 @@ xttttttp!!!cHHHH+....!!!!!cccc!!cc+c!...wwww!!!!..!!wwwww!F!F!F!F!F!F..!!!tttttx
 xttttttp!!!cH}HHc!!..!!!!!cH}c!!!..!!.S.wwww!!!!..!!wwwww!F!F!F!F!F!F..!!ttttttx
 cccctt...!!cHHHHc!!..!!!!!cHHc!!!..!!...wwww!!!!..!!wwwww!F!F!F!F!F!F..t!ttttttx
 cHHct.....!cHHHHc!!.3!!!!!c+cc!!!..!!...wwww!!!!..!wwwww!!F!F!F!F!F!F..t!!tttttx
-c}H+..ttp..cccccc!!.Z.................S................................tt!!ttttx
+c}H+..ttp..cccccc!!.T.................S................................tt!!ttttx
 cccctttpp!..................................................S..........tt!!!tttx
  xtttttp!!!..........!!!!!!..!!!!..!!!!!wwww!!!!!!wwwwww!!!...!!!!!!!tttt!t!!ttx
  xtttttp!!!!cc+c!!!..!!!!!cc+c!!c+cc!!!!wwwww!!!!!wwwww!!!!...!!!!!!!ttt!ttt!ttx
