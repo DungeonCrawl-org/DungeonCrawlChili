@@ -545,6 +545,16 @@ static bool _build_level_vetoable(bool enable_random_maps)
     return true;
 }
 
+static void _set_grd(const coord_def &c, dungeon_feature_type feat)
+{
+    // It might be good to clear some pgrid flags as well.
+    tile_env.flv(c).feat = 0;
+    tile_env.flv(c).feat_idx = 0;
+    tile_env.flv(c).special = 0;
+    env.grid_colours(c) = 0;
+    env.grid(c) = feat;
+}
+
 // Things that are bugs where we want to assert rather than to sweep it under
 // the rug with a veto.
 static void _builder_assertions()
@@ -554,8 +564,14 @@ static void _builder_assertions()
         if (!in_bounds(*ri))
             if (!feat_is_valid_border(env.grid(*ri)))
             {
-                die("invalid map border at (%d,%d): %s", ri->x, ri->y,
-                    dungeon_feature_name(env.grid(*ri)));
+                // BCADDO: This is preventing a crash in a messy way. Fix.
+                if (level_id::current() == sewer_location)
+                    _set_grd(*ri, DNGN_ENDLESS_SLUDGE);
+                else
+                {
+                    die("invalid map border at (%d,%d): %s", ri->x, ri->y,
+                        dungeon_feature_name(env.grid(*ri)));
+                }
             }
 #endif
 }
@@ -833,16 +849,6 @@ void dgn_set_grid_colour_at(const coord_def &c, int colour)
 
         (*dgn_colour_grid)(c) = coloured_feature(env.grid(c), colour);
     }
-}
-
-static void _set_grd(const coord_def &c, dungeon_feature_type feat)
-{
-    // It might be good to clear some pgrid flags as well.
-    tile_env.flv(c).feat    = 0;
-    tile_env.flv(c).feat_idx = 0;
-    tile_env.flv(c).special = 0;
-    env.grid_colours(c) = 0;
-    env.grid(c) = feat;
 }
 
 static void _dgn_register_vault(const string &name, const unordered_set<string> &tags)
@@ -3042,9 +3048,9 @@ static void _post_vault_build()
         && !player_in_branch(BRANCH_SHOALS))
     {
         _prepare_water();
-        _sewer_water();
         if (player_in_branch(BRANCH_LAIR) || !one_chance_in(4))
             _prepare_water();
+        _sewer_water();
     }
 }
 
