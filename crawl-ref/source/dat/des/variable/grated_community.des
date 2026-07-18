@@ -34,6 +34,7 @@ TAGS:   no_rotate no_monster_gen no_item_gen no_descent
 TAGS:   vaults_hard vaults_orient_s no_wall_fixup
 ORIENT: float
 DEPTH:  D:3
+PLACE:  D:3
 WEIGHT: 10
 : if you.in_branch("D") and you.depth() == 3 then
 MONS:   patrolling goblin, patrolling hobgoblin, patrolling kobold
