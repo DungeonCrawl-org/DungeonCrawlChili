@@ -503,6 +503,12 @@ public:
     // If true, player has triggered a trap effect by exploring.
     bool trapped;
 
+    // Number of cells newly revealed by exploring.
+    int newly_revealed_cells;
+
+    // If true, the player took a zero-time action.
+    bool took_instant_action;
+
     // TODO burn this API with fire
     bool wield_change;          // redraw weapon
     bool gear_change;           // redraw equip bar
