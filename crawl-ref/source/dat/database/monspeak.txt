@@ -6595,6 +6595,24 @@ Octavia killed
 @The_monster@ says, "Fell for that @foe_god@ stocks bump, again. Curses!"
 
 %%%%
+############ Oskar ######## A filthy, garbage dwelling denizen of the dungeon
+Oskar
+
+@_Oskar_common_@
+
+w:5
+@_Oskar_rare_@
+%%%%
+_Oskar_common_
+
+@The_monster@ says, "The smell isn't that bad."
+
+%%%%
+_Oskar_rare_
+
+@The_monster@ says, "Another body for the garbage pile!"
+
+%%%%
 ############ Pikel ######## A big kobold trading souls of the damned
 Pikel
 
