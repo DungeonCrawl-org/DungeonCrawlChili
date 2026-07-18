@@ -1048,7 +1048,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
 
 ##############################################################
-NAME:   rogga_village (formely known as: kennysheep_town)
+NAME:   rogga_village
+#       (formely known as: kennysheep_town)
 TAGS:   uniq_d_encompass allow_dup unrand no_rotate no_pool_fixup
 ORIENT: encompass
 DEPTH:  D:2
@@ -1056,7 +1057,6 @@ PLACE:  D:2
 WEIGHT: 5000
 KMONS:  op = plant
 KMONS:  P = bush
-KMONS:  Y = Jessica
 KMONS:  7 = Medusa
 KMONS:  1 = goblin / hobgoblin / kobold
 KMONS:  2 = adder / gnoll / hound
@@ -1119,15 +1119,15 @@ xtttp!!!wmH3HHcRRRRRRRRRRcHH3Hmww!!!!wwwwwwwwwwwwwwww.!ppppptpp!!ppppppptp!!xxxx
 xtttp!!!wmHHHHcRRRRRRRRRRcHHHHmww!!!!!!wwwwwwwwwwwwwwww!!!!!!!!!!!!!!!!!!!!!xxxx
 xtttp!!!wcHHHHccccccccccccHHHHcw!!!!!!.!!!!!!!!wwwwwwww.FFFFFFFFFFFFFFFFFFF!!xxx
 xtttp!!!wcccHHHHHHHHHHHHHHHHcccw!!!!!...!!!!!!!!!wwwwwww!!!!!!!!!!!!!!!!!!!!!xxx
-xttpp!!!wRRcHcccccc++ccccccHcRRww!!!..G..!!!!!!!!wwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
-xttp!!!!wRRcHc|**c2HHHHHH2cHcRRww!!cc...cc!!!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
-xttp!!!!wRRcHc***+HHHHHHYHcHcRRw!!.cc.S.cc.!!!!!wwwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
-xttp!!!wRRRcHc|**c2HHHHHH2cHcRRw!...........!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
+xttpp!!!wRRcHcccccc++ccccccHcRRww!!!..S..!!!!!!!!wwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
+xttp!!!!wRRcHc|H*c2HHHHHH2cHcRRww!!cc...cc!!!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
+xttp!!!!wRRcHcH*H+HHHHHH2HcHcRRw!!.cc.S.cc.!!!!!wwwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
+xttp!!!wRRRcHc|H*c2HHHHHH2cHcRRw!...........!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
 xttpp!!wwRRcHccccccccccccccHcRR!..G.S.Z.S.G..!!wwwwwwwwwwFFFFFFFFFFFFFFFFFF!!!!x
 xtttpp!!wcccHHHHHH2HH2HHHHHHcccw!.....7.....!!!wwwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
 xttttp!!wcHHHHccccHHHHccccHHHHcw!!.cc.S.cc.!!!!wwwwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
 xttttp!!wmHHHHcRRcHHHHcRRcHHHHmw!!!cc...cc!!!!wwwwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
-xttttp!!wmH3HHcRRcc++ccRRcHH3Hmw!!!!..G..!!!!wwwwwwwwwwwFFFFFFFFFFFFccccccc!!!!x
+xttttp!!wmH3HHcRRcc++ccRRcHH3Hmw!!!!..S..!!!!wwwwwwwwwwwFFFFFFFFFFFFccccccc!!!!x
 xtttpp!!wcHHHHcRRRR..RRRRcHHHBcww!!!!...!!!!wwwwwwwwwwww!!!!!!!!!!!!cHHH}Hc!!!!x
 xtttppp!wccmmccRRRw..RwRRccmmccw!!!!!...!!!wwwwwwwwwwwwwFFFFFFFFFFFFcHHHHHc!!!!x
 xtttttppwwwwwwwwwww..wwwwwwwwwww!!!!!.S.!!wwwwwwww!!wwww.!!!!!!!!!!!c++cccc!!!!x

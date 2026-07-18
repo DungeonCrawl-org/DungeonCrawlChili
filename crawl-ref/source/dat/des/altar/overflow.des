@@ -1758,17 +1758,7 @@ NAME:    beargit_hepliaklqana_dungeon_heroes
 TAGS:    transparent no_monster_gen patrolling no_trap_gen u
 SHUFFLE: 123, _-G
 : if you.in_branch("D") then
-:     if you.depth() < 5 then
-KMONS:   1 = orc wizard; quarterstaff . robe
-# Extremely early for kobold brigands, but they get a wand of polymorph
-# instead of darts, so less threatening.
-KMONS:   2 = jessica; dagger . robe . wand of polymorph / \
-             kobold brigand ; dagger . wand of polymorph, \
-             kobold brigand ; dagger . wand of polymorph
-KMONS:   3 = orc ; flail . kite shield . chain mail
-# Only generate one ancestor monster for D:3-9
-NSUBST:  123 = 2:.
-:     elseif you.depth() < 7 then
+:     if you.depth() < 7 then
 KMONS:   1 = blorkula the orcula ; quarterstaff good_item . robe / \
              orc wizard ; quarterstaff good_item . robe, \
              orc wizard ; quarterstaff good_item . robe
@@ -2541,7 +2531,7 @@ TAGS:   transparent decor no_wall_fixup
 TAGS:   no_rotate no_vmirror no_monster_gen no_item_gen vaults_room_empty
 DEPTH:  D:3-, Vaults, Depths
 # Boris misses Natasha, Bai Suzhen misses Xu Xian,
-# Maggie fled her order, and Jessica wants to study alone.
+# Maggie fled her order.
 : if you.in_branch("Depths") then
 MONS:   boris
 : elseif you.in_branch("Vaults") then
@@ -2549,7 +2539,7 @@ MONS:   bai suzhen
 : elseif you.depth() > 7 then
 MONS:   maggie
 : else
-MONS:   jessica
+MONS:   sigmund
 : end
 SUBST:  1 = 1....
 TILE:   x = wall_pebble_red
@@ -3586,7 +3576,7 @@ ENDMAP
 NAME:   tgw_sif
 TAGS:   no_item_gen no_monster_gen no_pool_fixup
 : if you.absdepth() <= 4 then
-MONS:   Jessica
+MONS:   Sigmund
 : elseif you.absdepth() <= 6 then
 MONS:   orc wizard w:15 / Blorkula the orcula
 : elseif you.in_branch("Depths") then
@@ -6673,7 +6663,7 @@ local weapons = {["spear"] = 1, ["hand axe"] = 1, ["mace"] = 1,
 kitem("1 = " .. dgn.random_item_def(weapons, nil, "ego:none plus:" .. enchant))
 }}
 KMONS:   1 = gnoll ; animal skin / Terence w:2
-KMONS:   2 = white imp / Jessica w:2
+KMONS:   2 = white imp / Sigmund w:2
 KITEM:   2 = parchment slevel:1
 : elseif you.absdepth() <= 7 then
 :     if crawl.one_chance_in(5) then

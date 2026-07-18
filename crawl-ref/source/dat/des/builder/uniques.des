@@ -165,7 +165,7 @@ DEPTH:  D:3-5
 : place_unique(_G, "Ijyb")
 
 NAME:   uniq_jessica
-DEPTH:  D:2-3
+DEPTH:  D:1
 : place_unique(_G, "Jessica")
 
 NAME:   uniq_jorgrun
