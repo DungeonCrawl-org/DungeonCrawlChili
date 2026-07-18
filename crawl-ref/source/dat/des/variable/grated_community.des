@@ -27,7 +27,7 @@ function grated_community_house_setup(e)
 end
 }}
 
-default-depth: D:12-, !D:$, Vaults, !Vaults:$
+default-depth: D:3
 
 NAME:   index_mu_grated_community
 TAGS:   no_rotate no_monster_gen no_item_gen no_descent
@@ -179,7 +179,6 @@ KMONS: 1 : generate_awake hobgoblin zombie / generate_awake adder zombie
 KMONS: 2 : generate_awake orc zombie / generate_awake hound zombie
 KMONS: 3 = wight / phantom / shadow imp w:2
 KMONS: 4 = wight / phantom
-KMONS: ? = bat skeleton / goblin skeleton / nothing
 KITEM: 34 = any / nothing
 : else
 KMONS: 1 : generate_awake warg draugr / generate_awake komodo dragon draugr
@@ -202,7 +201,7 @@ SUBST: 1 = 2, 3 = 4
 : grated_community_house_setup(_G)
 MAP
 ccccccc
-c?c3c?c
+c4c3c4c
 cgc+cgc
 c.....c
 c.1.1.c
@@ -418,8 +417,9 @@ ENDMAP
 
 # This was originally kept seperate of the other subvaults to push in and hide
 # the escape items from those who teleported in, but that's not really needed.
-NAME:  grated_community_mu_sprite_home
-TAGS:  grated_community_mu_home_escape
+#NAME:  grated_community_mu_sprite_home
+#TAGS:  grated_community_mu_home_escape
+NAME:  grated_community_mu_home_escape
 : if you.in_branch("D") and you.depth() == 3 then
 MONS:  kobold / goblin / hobgoblin, kobold brigand / gnoll bouda w:4
 ITEM:  wand of digging pre_id, scroll of teleportation pre_id
