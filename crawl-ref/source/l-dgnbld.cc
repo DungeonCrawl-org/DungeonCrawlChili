@@ -2421,6 +2421,8 @@ const struct luaL_Reg dgn_build_dlib[] =
     { "height", dgn_height },
     { "primary_vault_dimensions", &dgn_primary_vault_dimensions },
     { "join_the_dots", &dgn_join_the_dots },
+    { "sewer_iterate", &dgn_sewer_iterate },
+    { "pass_sewer_info", &dgn_pass_sewer_info},
     { "make_circle", &dgn_make_circle },
     { "make_diamond", &dgn_make_diamond },
     { "make_rounded_square", &dgn_make_rounded_square },
