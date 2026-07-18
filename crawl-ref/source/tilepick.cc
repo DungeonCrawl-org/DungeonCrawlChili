@@ -3916,7 +3916,6 @@ tileidx_t vary_bolt_tile(tileidx_t tile, int dir, int dist)
     case TILE_BOLT_IRON_SHOT:
     case TILE_BOLT_BLOOD_ARROW:
     case TILE_BOLT_SPLINTERSPRAY:
-    case TILE_BOLT_GARBAGE:
     case TILE_BOLT_PIE:
     case TILE_BOLT_POISON_ARROW:
     case TILE_BOLT_SHADOW_SHOT:
