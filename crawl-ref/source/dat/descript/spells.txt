@@ -2324,6 +2324,10 @@ Throw Frost spell
 
 Throws a small puff of frost.
 %%%%
+Throw Garbage spell
+
+Throws a small piece of garbage.
+%%%%
 Throw Icicle spell
 
 Fires a shard of ice. Due to its strong impact and cutting edges, half of its

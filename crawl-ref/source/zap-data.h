@@ -1766,6 +1766,22 @@ _mon_hex_zap(ZAP_VITRIFY, BEAM_VITRIFY),
 },
 
 {
+    ZAP_THROW_GARBAGE,
+    "garbage",
+    nullptr,
+    nullptr,
+    new dicedef_calculator<3, 20, 0, 1>,
+    new tohit_calculator<16, 1, 25>,
+    BROWN,
+    false,
+    BEAM_MMISSILE,
+    DCHAR_FIRED_MISSILE,
+    false,
+    false,
+    TILE_BOLT_GARBAGE,
+},
+
+{
     ZAP_THROW_PIE,
     "klown pie",
     nullptr,

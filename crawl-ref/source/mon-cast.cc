@@ -2459,6 +2459,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_THROW_BOLAS:
     case SPELL_HARPOON_SHOT:
     case SPELL_SOJOURNING_BOLT:
+    case SPELL_THROW_GARBAGE:
     case SPELL_THROW_PIE:
     case SPELL_NOXIOUS_CLOUD:
     case SPELL_POISONOUS_CLOUD:
