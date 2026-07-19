@@ -476,7 +476,7 @@ ENDMAP
 NAME:     swamp_1
 TAGS:     swamp_1
 KMONS:    1 = place:Swamp:1
-KMONS:    2 = place:Swamp:4
+KMONS:    2 = place:Swamp:$
 : line_setup(_G)
 : general_item_setup(_G)
 : lua_marker('~', props_marker {
@@ -492,7 +492,7 @@ ENDMAP
 NAME:     shoals_1
 TAGS:     shoals_1
 KMONS:    1 = place:Shoals:1
-KMONS:    2 = place:Shoals:4
+KMONS:    2 = place:Shoals:$
 COLOUR:   12 = brown
 : line_setup(_G)
 : general_item_setup(_G)
@@ -509,7 +509,7 @@ ENDMAP
 NAME:     spider_1
 TAGS:     spider_1
 KMONS:    1 = place:Spider:1
-KMONS:    2 = place:Spider:4
+KMONS:    2 = place:Spider:$
 COLOUR:   12 = brown
 : line_setup(_G)
 : general_item_setup(_G)
@@ -526,7 +526,7 @@ ENDMAP
 NAME:     snake_1
 TAGS:     snake_1
 KMONS:    1 = place:Snake:1
-KMONS:    2 = place:Snake:4
+KMONS:    2 = place:Snake:$
 COLOUR:   12 = lightgreen
 COLOUR:   # = yellow
 : line_setup(_G)
@@ -659,7 +659,7 @@ KITEM:    2 = decaying rune of zot
 : line_setup(_G)
 : general_item_setup(_G)
 : lua_marker('~', props_marker {
-:           door_description_suffix=" to Swamp:4",
+:           door_description_suffix=" to the end of Swamp",
 :           })
 MAP
 tttttttttttttt
@@ -678,7 +678,7 @@ KITEM:    2 = barnacled rune of zot
 : line_setup(_G)
 : general_item_setup(_G)
 : lua_marker('~', props_marker {
-:           door_description_suffix=" to Shoals:4",
+:           door_description_suffix=" to the end of Shoals",
 :           })
 MAP
 xxxxxxxxxxxxxx
@@ -698,7 +698,7 @@ KITEM:    2 = gossamer rune of zot
 : line_setup(_G)
 : general_item_setup(_G)
 : lua_marker('~', props_marker {
-:           door_description_suffix=" to Spider:4",
+:           door_description_suffix=" to the end of Spider",
 :           })
 MAP
 xxxxxxxxxxxxxx
@@ -718,7 +718,7 @@ COLOUR:   # = yellow
 : line_setup(_G)
 : general_item_setup(_G)
 : lua_marker('~', props_marker {
-:           door_description_suffix=" to Snake:4",
+:           door_description_suffix=" to the end of Snake",
 :           })
 MAP
 ##############

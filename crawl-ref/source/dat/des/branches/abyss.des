@@ -69,8 +69,8 @@ end
 
 NAME:   serial_abyss_entrance
 TAGS:   extra no_dump chance_enter_abyss uniq_abyss_entrance nolayout_encompass
-DEPTH:  D:13-15
-CHANCE: 33% (D:13), 50% (D:14), 100% (D:15)
+DEPTH:  D:13-14
+CHANCE: 33% (D:13), 100% (D:14)
 # start TAG_MAJOR_VERSION == 34
 CHANCE: 33% (D:21-24, D:26), 100% (D:25)
 # end TAG_MAJOR_VERSION
