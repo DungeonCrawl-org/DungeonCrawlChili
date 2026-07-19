@@ -3382,7 +3382,7 @@ static const struct spell_desc spelldata[] =
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     3,
     50,
-    LOS_RADIUS, LOS_RADIUS,
+    4, 4,
     0,
     TILEG_THROW_GARBAGE,
 },

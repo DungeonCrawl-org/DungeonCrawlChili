@@ -2594,7 +2594,6 @@ static const mon_spellbook mspell_list[] =
 
     {  MST_OSKAR,
       {
-       { SPELL_SPIT_ACID, 33, MON_SPELL_NATURAL | MON_SPELL_BREATH },
        { SPELL_THROW_GARBAGE, 67, MON_SPELL_NATURAL },
       }
     },

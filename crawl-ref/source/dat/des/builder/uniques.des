@@ -380,6 +380,7 @@ DEPTH:  Depths
 : place_unique(_G, "Octavia")
 
 NAME:   uniq_oskar
+WEIGHT: 5000
 DEPTH:  D:4
 : place_unique(_G, "Oskar")
 
