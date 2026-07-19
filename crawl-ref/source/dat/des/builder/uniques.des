@@ -71,7 +71,7 @@ end
 NAME:   uniq_dummy
 TAGS:   place_unique dummy
 DEPTH:  1-50, !Lair, !Slime
-WEIGHT: 40 (D:1-8), 50
+WEIGHT: 10 (D:1-8), 25
 MAP
 .
 ENDMAP
@@ -79,7 +79,7 @@ ENDMAP
 NAME:   uniq_dummy_lair
 TAGS:   place_unique dummy
 DEPTH:  Lair
-WEIGHT: 80
+WEIGHT: 40
 MAP
 .
 ENDMAP
@@ -87,7 +87,7 @@ ENDMAP
 NAME:   uniq_dummy_slime
 TAGS:   place_unique dummy
 DEPTH:  Slime
-WEIGHT: 200
+WEIGHT: 100
 MAP
 .
 ENDMAP
