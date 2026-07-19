@@ -1,11 +1,12 @@
 name: "Medusa"
-glyph: {char: "@", colour: lightgray}
-flags: [speaks, warm_blood, unique, female]
+glyph: {char: "N", colour: lightgray}
+flags: [see_invis, speaks, warm_blood, unique, female]
+resists: {poison: 1}
 exp: 37
-species: human
+species: naga
 will: 10
 attacks:
- - {type: hit, damage: 5}
+ - {type: hit, damage: 6}
 hd: 4
 hp_10x: 95
 ac: 0
@@ -14,6 +15,7 @@ spells: medusa
 has_corpse: true
 shout: shout
 intelligence: human
+energy: {move: 14}
 uses: weapons_armour
-size: medium
-shape: humanoid
+size: large
+shape: naga

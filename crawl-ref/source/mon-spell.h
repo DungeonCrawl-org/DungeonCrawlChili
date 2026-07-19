@@ -2309,6 +2309,13 @@ static const mon_spellbook mspell_list[] =
     },
 
     // ('N') Naga.
+    {  MST_MEDUSA,
+      {
+       { SPELL_PETRIFY, 80, MON_SPELL_WIZARD },
+       { SPELL_SPIT_POISON, 55, MON_SPELL_NATURAL | MON_SPELL_BREATH },
+      }
+    },
+
     {  MST_VASHNIA,
       {
        { SPELL_SPIT_POISON, 55, MON_SPELL_NATURAL | MON_SPELL_BREATH },
@@ -2462,12 +2469,6 @@ static const mon_spellbook mspell_list[] =
       {
        { SPELL_INVISIBILITY, 14, MON_SPELL_WIZARD },
        { SPELL_BLINK, 14, MON_SPELL_WIZARD },
-      }
-    },
-
-    {  MST_MEDUSA,
-      {
-       { SPELL_PETRIFY, 80, MON_SPELL_WIZARD },
       }
     },
 
