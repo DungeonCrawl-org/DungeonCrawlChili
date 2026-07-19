@@ -1200,7 +1200,7 @@ TAGS:   no_monster_gen
 DEPTH:  D:13-, Depths
 ORIENT: southeast
 : if you.in_branch("D") then
-MONS:   zombie place:D:15 / draugr place:D:10 / simulacrum / spectral thing
+MONS:   zombie place:D:$ / draugr place:D:10 / simulacrum / spectral thing
 MONS:   necromancer w:20 / soul eater
 MONS:   freezing wraith / shadow wraith / flayed ghost
 MONS:   tormentor / reaper, deep elf death mage

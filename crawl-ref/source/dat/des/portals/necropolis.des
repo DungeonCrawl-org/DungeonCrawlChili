@@ -195,7 +195,7 @@ function necropolis_generic_spawns(e, _0, _9, _8)
                       vampire / marrowcuda w:15 / wraith")
     e.kmons(_8 .. " = kobold demonologist w:5 / two-headed ogre / \
                       tengu conjurer / gargoyle w:15 / rakshasa / catoblepas / \
-                      spectre place:D:15 w:5 / shadowghast / freezing wraith")
+                      spectre place:D:$ w:5 / shadowghast / freezing wraith")
   elseif dgn.persist.necropolis_difficulty == "post_lair_d" then
     e.kmons(_0 .. " = place:D:12 w:40 / \
                       simulacrum place:D:12 / spectre place:D:12 / \

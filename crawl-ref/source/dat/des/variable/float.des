@@ -6026,7 +6026,7 @@ NSUBST: 1 = 1 / 2 / 1- / 1---- / -
 :   elseif you.depth() <= 9 then
 :      cloud_types = {"flame", "freezing vapour", "poison gas", "acidic fog"}
 MONS:   fire bat, fire elemental / hell hound
-MONS:   ice beast, simulacrum place:D:15
+MONS:   ice beast, simulacrum place:D:$
 MONS:   water moccasin
 KMONS:  6 = ogre zombie ; giant club ego:venom | giant spiked club ego:venom \
            / orc warrior zombie ; hand axe ego:venom | war axe ego:venom \
