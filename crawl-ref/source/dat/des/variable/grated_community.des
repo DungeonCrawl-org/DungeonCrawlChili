@@ -417,9 +417,8 @@ ENDMAP
 
 # This was originally kept seperate of the other subvaults to push in and hide
 # the escape items from those who teleported in, but that's not really needed.
-#NAME:  grated_community_mu_sprite_home
-#TAGS:  grated_community_mu_home_escape
-NAME:  grated_community_mu_home_escape
+NAME:  grated_community_mu_sprite_home
+TAGS:  grated_community_mu_home_escape
 : if you.in_branch("D") and you.depth() == 3 then
 MONS:  kobold / goblin / hobgoblin, kobold brigand / gnoll bouda w:4
 ITEM:  wand of digging pre_id, scroll of teleportation pre_id
