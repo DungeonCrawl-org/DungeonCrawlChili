@@ -2593,6 +2593,12 @@ static const mon_spellbook mspell_list[] =
       }
     },
 
+    {  MST_OSKAR,
+      {
+       { SPELL_THROW_GARBAGE, 67, MON_SPELL_NATURAL },
+      }
+    },
+
     {  MST_FREDERICK,
       {
        { SPELL_PLASMA_BEAM, 24, MON_SPELL_WIZARD },

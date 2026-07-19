@@ -381,6 +381,11 @@ NAME:   uniq_octavia
 DEPTH:  Depths
 : place_unique(_G, "Octavia")
 
+NAME:   uniq_oskar
+WEIGHT: 5000
+DEPTH:  D:4
+: place_unique(_G, "Oskar")
+
 NAME:   uniq_parghit
 DEPTH:  Depths:3-, Zot:1-4
 : place_unique(_G, "Parghit")

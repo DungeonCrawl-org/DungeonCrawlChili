@@ -307,6 +307,8 @@ drain_life1
 ghostfire0 BOLT_GHOSTLY_FIREBALL
 ghostfire1
 
+garbage BOLT_GARBAGE
+
 pie0 BOLT_PIE
 pie1
 pie2

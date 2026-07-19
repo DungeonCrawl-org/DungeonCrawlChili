@@ -991,6 +991,7 @@ asterion MONS_ASTERION
 ## Jellies ('J')
 %sdir mon/unique
 dissolution MONS_DISSOLUTION
+oskar MONS_OSKAR
 %sdir mon/amorphous
 endoplasm MONS_ENDOPLASM
 %rim 0

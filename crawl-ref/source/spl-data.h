@@ -3376,6 +3376,16 @@ static const struct spell_desc spelldata[] =
     TILEG_THROW_BOLAS,
 },
 
+{
+    SPELL_THROW_GARBAGE, "Throw Garbage",
+    spschool::conjuration,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
+    3,
+    50,
+    4, 4,
+    0,
+    TILEG_THROW_GARBAGE,
+},
 
 {
     SPELL_THROW_PIE, "Throw Klown Pie",
