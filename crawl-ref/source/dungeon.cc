@@ -1853,7 +1853,7 @@ static int _mon_die_size()
         case 1:
             return 12;
         case 2:
-            return 10;
+            return 7;
         case 3:
         case 4:
             return 9;
