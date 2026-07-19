@@ -1062,7 +1062,7 @@ KMONS:  1 = goblin / hobgoblin / kobold
 KMONS:  2 = adder / gnoll / jackal
 KMONS:  3 = goblin / hobgoblin / kobold
 KMONS:  4 = orc / jackal / kobold / goblin / hobgoblin / gnoll
-KMONS:  5 = goblin / hobgoblin / kobold3
+KMONS:  5 = goblin / hobgoblin / kobold
 KMONS:  6 = adder / gnoll / jackal
 KFEAT:  B = cache_of_baked_goods
 KFEAT:  S = granite_statue
@@ -1123,7 +1123,7 @@ xxx''''xxxxxxx*'*xxxxx''''xxxwwwwwwxxxxxxxxxxxxxxxx""xx"xxxxxxxxxxxxx""""xxxxxxx
 xxx!'xxxxxxxxxxxxxxxxxxx'!xxxxwwwwwxxxxxxxxxxxxx!x""xxx"""xxxxxxxxxxxxxx""xxxxxx
 xtt!!xxxxxxttttttxxxxxxt!!ttttwwwwwxxxxxxttttttt!""xxxxxx!!!xxxxxxxx*xx"""xxxxxx
 xtt!!tttttttttttttttttt!!tttttwwwwww!!ptttttttttp!!xxxxtttt!!xxxxxxxx""""xxxxxxx
-xtt!!t9ttttttttttttttttt!tttttt!wwwwww!ppttttttttpp!tttttttt!ptttxxxxxxxx"""xxxxx
+xtt!!t9ttttttttttttttttt!tttttt!wwwwww!ppttttttttpp!tttttttt!ptttxxxxxxxx"""xxxx
 xttt!!tttttpppptttttttt!tppppt!wwwwwww!pttpptttttp!tttttttt!ttttxxxxxxxxxx"""xxx
 xttt!!tptpppppppptttttp!pp!!!!!wwwwwwwwppppppppttp!ttttttttt!ttttxxxxxxxxxxx*xxx
 xtttt!!ppppwwwppppppppp!!!!!!!!!wwwwwwww!!!!!!ppp!pttttttttt!ptttttttxxxxxxx}xxx
