@@ -27,7 +27,7 @@ function grated_community_house_setup(e)
 end
 }}
 
-default-depth: D:12-, !D:$, Vaults, !Vaults:$
+default-depth: D:3
 
 NAME:   index_mu_grated_community
 TAGS:   no_rotate no_monster_gen no_item_gen no_descent
@@ -179,7 +179,6 @@ KMONS: 1 : generate_awake hobgoblin zombie / generate_awake adder zombie
 KMONS: 2 : generate_awake orc zombie / generate_awake hound zombie
 KMONS: 3 = wight / phantom / shadow imp w:2
 KMONS: 4 = wight / phantom
-KMONS: ? = bat skeleton / goblin skeleton / nothing
 KITEM: 34 = any / nothing
 : else
 KMONS: 1 : generate_awake warg draugr / generate_awake komodo dragon draugr
@@ -202,7 +201,7 @@ SUBST: 1 = 2, 3 = 4
 : grated_community_house_setup(_G)
 MAP
 ccccccc
-c?c3c?c
+c4c3c4c
 cgc+cgc
 c.....c
 c.1.1.c
@@ -251,7 +250,7 @@ ENDMAP
 NAME:   grated_community_mu_spellcaster_home
 : if you.in_branch("D") and you.depth() == 3 then
 MONS:   orc wizard, orc priest / kobold brigand, gnoll bouda / iguana w:5
-MONS:   Jessica / Terence / Natasha w:4, sleepcap / shadow imp
+MONS:   Sigmund / Terence / Natasha w:4, sleepcap / shadow imp
 MONS:   adder / hound w:5
 ITEM:   book of minor magic / book of party tricks / nothing
 ITEM:   scroll of vulnerability / scroll of immolation / nothing

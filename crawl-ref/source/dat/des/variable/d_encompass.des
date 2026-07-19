@@ -1048,7 +1048,8 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
 
 ##############################################################
-NAME:   rogga_village (formely known as: kennysheep_town)
+NAME:   rogga_village
+#       (formely known as: kennysheep_town)
 TAGS:   uniq_d_encompass allow_dup unrand no_rotate no_pool_fixup
 ORIENT: encompass
 DEPTH:  D:2
@@ -1056,7 +1057,6 @@ PLACE:  D:2
 WEIGHT: 5000
 KMONS:  op = plant
 KMONS:  P = bush
-KMONS:  Y = Jessica
 KMONS:  7 = Medusa
 KMONS:  1 = goblin / hobgoblin / kobold
 KMONS:  2 = adder / gnoll / hound
@@ -1085,15 +1085,15 @@ end
 set_feature_name("fountain_sparkling", "snake filled fountained")
 }}
 MARKER: 7 = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
-MARKER: S = lua:portal_desc { slaved_to="goblin" }
+MARKER: S = lua:portal_desc { slaved_to="adder" }
 MARKER: Z = lua:portal_desc { slaved_to="water moccasin" }
 MARKER: G = lua:props_marker { veto_destroy="veto" }
 MARKER: S = lua:monster_on_death { \
             target="medusa_marker", \
-            new_monster="generate_awake goblin", \
-            message_seen="The goblins awaken!", \
+            new_monster="generate_awake adder", \
+            message_seen="The adders awaken!", \
             message_unseen="You hear a commotion.", \
-            master_name="goblin", \
+            master_name="adder", \
             veto_destroy="veto", \
          }
 MARKER: Z = lua:monster_on_death { \
@@ -1117,7 +1117,7 @@ FTILE:  5oR = floor_dirt
 SUBST:  ! = .
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xxxxxxxxxx'''''''''''xxxxxxwwwwwwwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxx'''''']''''xxxxxxwwwwwwwxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxx''''''''''''''''''xxxxwwwwwwwxxxxxxxxxxxxxxxxxxxxx""""""""xxxxxxxxxxxxxxxx
 xxxx'''''''xx'}''xxx'''''xxxxwwwwwwxxxxxxxxxxxxxxxxx"""""xxxxxx""""""""xxxxxxxxx
 xxx''''xxxxxxx*'*xxxxx''''xxxwwwwwwxxxxxxxxxxxxxxxx""xx"xxxxxxxxxxxxx""""xxxxxxx
@@ -1135,15 +1135,15 @@ xtttp!!!wmH3HHcRRRRRRRRRRcHH3Hmww!!!!wwwwwwwwwwwwwwww.!ppppptpp!!ppppppptp!!xxxx
 xtttp!!!wmHHHHcRRRRRRRRRRcHHHHmww!!!!!!wwwwwwwwwwwwwwww!!!!!!!!!!!!!!!!!!!!!xxxx
 xtttp!!!wcHHHHccccccccccccHHHHcw!!!!!!.!!!!!!!!wwwwwwww.FFFFFFFFFFFFFFFFFFF!!xxx
 xtttp!!!wcccHHHHHHHHHHHHHHHHcccw!!!!!...!!!!!!!!!wwwwwww!!!!!!!!!!!!!!!!!!!!!xxx
-xttpp!!!wRRcHcccccc++ccccccHcRRww!!!..G..!!!!!!!!wwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
-xttp!!!!wRRcHc|**c2HHHHHH2cHcRRww!!cc...cc!!!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
-xttp!!!!wRRcHc***+HHHHHHYHcHcRRw!!.cc.S.cc.!!!!!wwwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
-xttp!!!wRRRcHc|**c2HHHHHH2cHcRRw!...........!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
-xttpp!!wwRRcHccccccccccccccHcRR!..G.S.Z.S.G..!!wwwwwwwwwwFFFFFFFFFFFFFFFFFF!!!!x
-xtttpp!!wcccHHHHHH2HH2HHHHHHcccw!.....7.....!!!wwwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
+xttpp!!!wRRcHcccccc++ccccccHcRRww!!!..S..!!!!!!!!wwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
+xttp!!!!wRRcHc|H*c6HHHHHH6cHcRRww!!cc...cc!!!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
+xttp!!!!wRRcHcH*H+H6HHHH6HcHcRRw!!.cc.S.cc.!!!!!wwwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
+xttp!!!wRRRcHc|H*c6HHHHHH6cHcRRw!...........!!!!wwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
+xttpp!!wwRRcHccccccccccccccHcRR!..S.S7Z.S.S..!!wwwwwwwwwwFFFFFFFFFFFFFFFFFF!!!!x
+xtttpp!!wcccHHHHHH2HH2HHHHHHcccw!...........!!!wwwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
 xttttp!!wcHHHHccccHHHHccccHHHHcw!!.cc.S.cc.!!!!wwwwwwwwwFFFFFFFFFFFFFFFFFFF!!!!x
 xttttp!!wmHHHHcRRcHHHHcRRcHHHHmw!!!cc...cc!!!!wwwwwwwwww!!!!!!!!!!!!!!!!!!!!!!!x
-xttttp!!wmH3HHcRRcc++ccRRcHH3Hmw!!!!..G..!!!!wwwwwwwwwwwFFFFFFFFFFFFccccccc!!!!x
+xttttp!!wmH3HHcRRcc++ccRRcHH3Hmw!!!!..S..!!!!wwwwwwwwwwwFFFFFFFFFFFFccccccc!!!!x
 xtttpp!!wcHHHHcRRRR..RRRRcHHHBcww!!!!...!!!!wwwwwwwwwwww!!!!!!!!!!!!cHHH}Hc!!!!x
 xtttppp!wccmmccRRRw..RwRRccmmccw!!!!!...!!!wwwwwwwwwwwwwFFFFFFFFFFFFcHHHHHc!!!!x
 xtttttppwwwwwwwwwww..wwwwwwwwwww!!!!!.S.!!wwwwwwww!!wwww.!!!!!!!!!!!c++cccc!!!!x
@@ -1152,12 +1152,12 @@ xtttttttppppp!!!!!!..!cccc!!!!!!!!!!!...wwwwccHcc!!!!wwww!!!!!!!!!!!!..!!!!!!!tx
 xttttttttttttp!!!!!..!cH}c!!!!!!!!!!!.S.wwwccHHHcc!!wwwww!F!F!F!F!F!F..cccc!!!tx
 xttttttttttpp!!!!!!..!cHHc!!!!!!!!!!!...wwwcHH}HHc!!wwwwwwF!F!F!F!F!F..+HHc!tttx
 xttttttttppp!!!!!!!..!c+cc!!!!!!cccc!...wwwccHHHcc!!wwwwwwF!F!F!F!F!F..cH}c!tttx
-xtttttttp!!!!!!!!!!S....!!!!!!!!c}Hc!.S.wwwwccHc+.!!wwwww!F!F!F!F!F!F..cccc!tttx
+xtttttttp!!!!!!!!!!.....!!!!!!!!c}Hc!.S.wwwwccHc+.!!wwwww!F!F!F!F!F!F..cccc!tttx
 xttttttp!!!cccccc.......!!!!!!!!cHHc!...wwww!ccc..!!wwwww!F!F!F!F!F!F..!!!!!tttx
 xttttttp!!!cHHHH+....!!!!!cccc!!cc+c!...wwww!!!!..!!wwwww!F!F!F!F!F!F..!!!tttttx
 xttttttp!!!cH}HHc!!..!!!!!cH}c!!!..!!.S.wwww!!!!..!!wwwww!F!F!F!F!F!F..!!ttttttx
 cccctt...!!cHHHHc!!..!!!!!cHHc!!!..!!...wwww!!!!..!!wwwww!F!F!F!F!F!F..t!ttttttx
-cHHct.....!cHHHHc!!.3!!!!!c+cc!!!..!!...wwww!!!!..!wwwww!!F!F!F!F!F!F..t!!tttttx
+cHHct.....!cHHHHc!!..!!!!!c+cc!!!..!!...wwww!!!!..!wwwww!!F!F!F!F!F!F..t!!tttttx
 c}H+..ttp..cccccc!!.T.................S................................tt!!ttttx
 cccctttpp!..................................................S..........tt!!!tttx
  xtttttp!!!..........!!!!!!..!!!!..!!!!!wwww!!!!!!wwwwww!!!...!!!!!!!tttt!t!!ttx
@@ -1173,14 +1173,14 @@ xxxxx`xxxx!!!!!!!!!!!!!!!!!!!!!!MM!MwwwwwwwwwwwwwwMM!MMM!cc...cc!!ttttttt!!!tttx
 xxxxx``xxx!!x!!!!!!!M!M!!!!!!!MMMwMMwwwwwwwwwwwwwMM!MwwMM!ccccc!!ttttttt!!t!ttxx
 xxxxxx`xxx``xxxMMMMMMwM!!!!!!!MwwwMMMwwwwwwwwwwwMM..MwwwM!!!!!!!!ttttttt!tt!txxx
 xxxxxx`xx```xxxxwwwwwwMMMMMM!!MwwM.!MwwwwwwwwwMMM....MMMM!!!!!!!!tttttt!!tt!txxx
-xxxxxx``````.xxxwwwwMMMMwwwwM!MMMM.MwwwwwwwwMMM..MMMM...!!!!!!!!!tt!!!!!ttt!txxx
+xxxxxx```(``.xxxwwwwMMMMwwwwM!MMMM.MwwwwwwwwMMM..MMMM...!!!!!!!!!tt!!!!!ttt!txxx
 xxxxxxx```xx.`xxxxxMM!.!MMwMw!!....MwwwwwwwMM..MMwwwM..MMM!MM!!!!!!!!!ttttt!txxx
-xxxxxxx``xxxx``xxxx..MMM!....!wwMM.MwcccccwM.wwwwwwwM.wwww!wMM!!!!!tttttttt!!xxx
+xxxxxxx``xxxx``xxxx..MMM!.(..!wwMM.MwcccccwM.wwwwwwwM.wwww!wMM!!!!!tttttttt!!xxx
 xxxxxx``xxxxxx`xxxxx.MwwMMwM!wwwwwM.ccwwwccM.MwwwwMMM.wwwM!MwMM!tttttttttxx!!xxx
 xxxxxx`xxxxxxxx`xxxxx.MwwwM.....ww.ccwwwwwcc.MMMMMM..MM....MwwMMttttttttxxx!!-xx
-xxxxx``xxxxxxx```xxxxx.Mww.MMMMM..Mcww*1..wcM......MMwwwwM..!wwMttttttttxxx!--xx
+xxxxx``xxxxxxx```xxxxx.Mww.MMMMM..Mcww*...wcM..[...MMwwwwM..!wwMttttttttxxx!--xx
 xxxxx`xxx`````xx`xxxxx..MM!MwwwwMM.+W.*}*.W+.M.MMwwwwwwwwMM!!!MMttttttttxxx---xx
-xx```````xxxxxxx`xxxxxxxwwM.Mwwwww.cw.1*1wwcwM.MwwwwwwxxwwM!!xxxxxxxxxxxxx----xx
+xx```````xxxxxxx`xxxxxxxwwM.Mwwwww.cw..*.wwcwM.MwwwwwwxxwwM!!xxxxxxxxxxxxx----xx
 x````xxxxxxxxxxx``xxxxxxwwM...MwwMMccwwwwwccwMMMwxxxxxxxwwMxxxxxxxxxxxxxxx-----x
 x```xxxxxxxxxxxx`````xxxxxxxxxxxxxxxccwwwccwwwxxxxxxxxxxxxxxxxxxxxxxxxxxxx---}-x
 x`}`xxxxxxxxxxxxx```}`xxxxxxxxxxxxxxxcccccwwwwxxxxxxxxxxxxxxxxxxxxxxxxxxxxx----x
