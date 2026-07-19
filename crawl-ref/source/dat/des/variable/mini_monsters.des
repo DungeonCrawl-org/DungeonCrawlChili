@@ -9668,7 +9668,7 @@ DEPTH:  D:9-
 WEIGHT: 3
 ITEM:   cigotuvi's_embrace no_pickup
 : if you.depth() < 13 then
-MONS:   zombie place:D:15, hellwing
+MONS:   zombie place:D:14, hellwing
 SUBST:  1 = 1.
 : else
 MONS:   zombie place:Depths:1 / draugr place:D:$, soul eater
