@@ -1,10 +1,10 @@
 ############################################################################################
-# Grated Community (by Mu, cleaned up by regret-index.) modified by rogga for D:3 placement.
+# Grated Community (by Mu, cleaned up by regret-index & modified by rogga for D:3 placement).
 #
 # A few creatures have built their own little community deep underground,
 # complete with quaint little homes and a handful of local shops.
 #
-# Digging or teleportation is required to enter the vault.  A wand of digging
+# Digging or teleportation is NO LONGER required to enter the vault.  A wand of digging
 # and scroll of teleportation is guaranteed to ensure random teleporters can
 # escape. If all else fails, there is an escape hatch in the mall's washroom.
 
@@ -161,8 +161,8 @@ zx""QQQQQQQQ.RRRRRRRR""xxxxxxxxxxxx."cc6C..c.7.cc+ccz
 zx""QQQQQQQ.".RRRRRRR""xccccccccccx".cc....c...c...cz
 zx""QQQQQQQ.t.RRRRRRR""xc1......3cx."cc.U..c.9.c5.5cz
 zx""QQQQQQQ.".RRRRRRR""xc.c+cc+c.cx".cc....c...+.B.cz
-zx""QQQQQQQ.t.RRRRRRR""xc.c1..1c.gg."cc....+...c..5$z
-zx""QQQQQQQ.".RRRRRRR""xc.cnccnc.gg".cccccccccccccccz
+zx""QQQQQQQ.t.RRRRRRR""xc.c1..1c.g.."cc....+...c..5$z
+zx""QQQQQQQ.".RRRRRRR""xc.cnccnc..g".cccccccccccccccz
 zx""QQQQQQQ...RRRRRRR""xc........gg."cccccccccccccccz
 zx00"""""""""""""""""00xc..2..2..cx"""""""""""""000xz
 zx00"""""""""""""""""00xc........cx"""""""""""""000xz
