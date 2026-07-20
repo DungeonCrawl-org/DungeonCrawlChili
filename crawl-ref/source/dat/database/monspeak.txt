@@ -5318,6 +5318,8 @@ VISUAL:@The_monster@ looks very angry.
 
 @The_monster@ shouts @at_foe@, "You're disturbing me! I'll have to kill you!"
 
+@The_monster@ simply states, "I once went down a level and there were way too many snakes to my liking!"
+
 VISUAL:@The_monster@ gestures wildly.
 
 @The_monster@ mumbles something strange.
