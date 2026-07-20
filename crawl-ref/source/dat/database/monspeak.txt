@@ -5975,12 +5975,16 @@ w:5
 Medusa
 @_Medusa_common_@
 
+
 w:2
 @_Medusa_rare_@
 %%%%
 _Medusa_common_
 
 VISUAL:@The_monster_possessive@ hair slithers.
+
+@The_monster@ says, "Think you can run away from me?"
+
 %%%%
 _Medusa_rare_
 
