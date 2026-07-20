@@ -6327,6 +6327,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     pr.AddCell("Class", uppercase_first(holi).c_str());
     pr.AddCell("Size", size_desc.c_str());
     pr.AddCell("Int", intelligence_description(mi.intel()));
+    if (mi.exp)
+        pr.AddCell("XP Value", make_stringf("%d", mi.exp));
     if (mi.is(MB_SICK) || mi.is(MB_NO_REGEN))
         pr.AddCell("Regen", "None");
     else if (mons_class_fast_regen(mi.type) || mi.is(MB_REGENERATION))

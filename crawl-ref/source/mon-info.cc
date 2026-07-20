@@ -357,6 +357,8 @@ void monster_info::_populate_as_generic()
 
     backlit = false;
     umbraed = false;
+    
+    exp = 0;
 
     mitemuse = mons_class_itemuse(type);
 
@@ -647,6 +649,7 @@ monster_info::monster_info(const monster* m, int milev)
     sleepwalking = m->sleepwalking();
     backlit = m->backlit(false);
     umbraed = m->umbra();
+    exp = exp_value(*m);
 
     // Not an MB_ because it's rare.
     if (m->cloud_immune())

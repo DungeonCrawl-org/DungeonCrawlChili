@@ -326,6 +326,7 @@ struct monster_info_base
     bool umbraed;
     int last_seen_at_turn;
     int threat_range;
+    int exp;
 
     mid_t client_id;
     mid_t summoner_id;
