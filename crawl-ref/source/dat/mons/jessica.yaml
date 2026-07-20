@@ -6,7 +6,7 @@ species: human
 will: 10
 attacks:
  - {type: hit, damage: 5}
-hd: 2
+hd: 1
 hp_10x: 95
 ac: 0
 ev: 10
