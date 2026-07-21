@@ -1692,7 +1692,8 @@ static string _category_string(const item_def &item, bool monster)
         {
             description += make_stringf(
                 "It is%s good for stabbing helpless or unaware enemies. ",
-                (item.sub_type == WPN_DAGGER) ? " extremely" : "");
+                (item.sub_type == WPN_DAGGER || item.sub_type == WPN_ATHAME)
+                ? " extremely" : "");
 
         }
         break;

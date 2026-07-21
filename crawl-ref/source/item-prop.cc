@@ -606,7 +606,7 @@ static const weapon_def Weapon_prop[] =
             { SPWPN_DISTORTION,      1 },
             { SPWPN_ANTIMAGIC,       1 },
         }},
-    { WPN_QUICK_BLADE,       "quick blade",         4,  6, 15,
+    { WPN_QUICK_BLADE,       "quick blade",         4,  6, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
         DAMV_PIERCING, 0, 25, 250, {
             { SPWPN_NORMAL,         43 },
@@ -625,10 +625,10 @@ static const weapon_def Weapon_prop[] =
     { WPN_SHORT_SWORD,       "short sword",         5,  4, 10,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
         DAMV_PIERCING, 8, 0, 30, SBL_BRANDS },
-    { WPN_RAPIER,           "rapier",               7,  4, 12,
+    { WPN_RAPIER,           "rapier",               9,  4, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
         DAMV_PIERCING, 8, 20, 55, SBL_BRANDS },
-    { WPN_ATHAME,       "athame",         7, 5, 13,
+    { WPN_ATHAME,       "athame",         7, 5, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
         DAMV_PIERCING, 2, 15, 100, {
             { SPWPN_NORMAL,          28 },
