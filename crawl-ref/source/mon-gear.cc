@@ -1320,12 +1320,18 @@ int make_mons_weapon(monster_type type, int level, bool melee_only)
 
     case MONS_NIKOLA:
         if (one_chance_in(100) && !get_unique_item_status(UNRAND_ARC_BLADE))
+        {
             make_item_unrandart(item, UNRAND_ARC_BLADE);
+            force_item = true;
+        }
         break;
 
     case MONS_AMAEMON:
         if (one_chance_in(100) && !get_unique_item_status(UNRAND_SNAKEBITE))
+        {
             make_item_unrandart(item, UNRAND_SNAKEBITE);
+            force_item = true;
+        }
         break;
 
     case MONS_XAKKRIXIS:
@@ -1429,7 +1435,10 @@ int make_mons_weapon(monster_type type, int level, bool melee_only)
         break;
     case MONS_GRUNN:
         if (one_chance_in(100) && !get_unique_item_status(UNRAND_CURSES))
+        {
             make_item_unrandart(item, UNRAND_CURSES);
+            force_item = true;
+        }
         break;
 
     case MONS_SIGMUND:
@@ -1786,7 +1795,8 @@ static item_def* make_item_for_monster(
     if (bp == NON_ITEM)
         return 0;
 
-    const int thing_created = items(allow_uniques, base, subtype, level);
+    const int thing_created = items(allow_uniques, base, subtype, level, 0,
+                                    NO_AGENT, false, "", nullptr, true);
     if (thing_created == NON_ITEM)
         return 0;
 
