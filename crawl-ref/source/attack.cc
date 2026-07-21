@@ -1489,7 +1489,8 @@ int attack::player_stab_weapon_bonus(int damage)
     if (player_good_stab())
     {
         // We might be unarmed if we're using the hood of the Assassin.
-        const bool extra_good = using_weapon() && weapon->sub_type == WPN_DAGGER;
+        const bool extra_good = using_weapon() && 
+            ( weapon->sub_type == WPN_DAGGER || weapon->sub_type == WPN_ATHAME );
         int bonus = you.dex() * (stab_skill + 100) / (extra_good ? 500 : 1000);
 
         bonus   = stepdown_value(bonus, 10, 10, 30, 30);
