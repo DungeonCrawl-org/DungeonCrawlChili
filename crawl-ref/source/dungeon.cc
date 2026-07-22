@@ -1898,8 +1898,9 @@ static int _num_mons_wanted()
 
 static bool _sewer_check(coord_def coord)
 {
-    return (env.grid(coord) == DNGN_STONE_WALL || env.grid(coord) == DNGN_METAL_WALL
-        || env.grid(coord) == DNGN_PERMAROCK_WALL || env.grid(coord) == DNGN_ENDLESS_SLUDGE);
+    return (map_bounds(coord)
+        && (env.grid(coord) == DNGN_STONE_WALL || env.grid(coord) == DNGN_METAL_WALL
+        || env.grid(coord) == DNGN_PERMAROCK_WALL || env.grid(coord) == DNGN_ENDLESS_SLUDGE));
 }
 
 static void _sewer_water()
