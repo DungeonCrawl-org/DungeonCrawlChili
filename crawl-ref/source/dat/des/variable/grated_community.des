@@ -30,7 +30,7 @@ TAGS:   vaults_hard vaults_orient_s no_wall_fixup
 ORIENT: float
 DEPTH:  D:2
 PLACE:  D:2
-WEIGHT: 200
+WEIGHT: 2000
 
 KMONS:  m = Medusa
 MONS:   patrolling goblin, patrolling hobgoblin, patrolling kobold

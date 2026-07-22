@@ -56,19 +56,22 @@ default-depth: D:12-, !D:$, Depths, !Depths:$
 # be careful to adapt these numbers for new vaults (using DEPTH)
 
 ###############################################################################
-# Castle of kobolds and goblins
-NAME:    minmay_goblin_kobold_castle-modified_by_rogga
+# Castle of kobolds and goblins and Medusa
+NAME:    rogga_goblin_kobold_castle_Medusa
 TAGS:    no_rotate
 ORIENT:  north
 DEPTH:   D:2
 PLACE:   D:2
-WEIGHT:  200
+WEIGHT:  2000
 MONS:    goblin ; sling / hobgoblin w:2 ; sling
 MONS:    goblin ; club / hobgoblin ; club / gnoll w:3 ; club | spear
 MONS:    kobold ; stone
 MONS:    kobold ; club w:18 / kobold brigand w:1 / gnoll w:3 ; club | spear
 MONS:    goblin rider, kobold brigand
 KMONS:   S = stack of scrap
+KMONS:   M = Medusa
+KFEAT:   G = granite_statue
+KFEAT:   Z = fountain_sparkling
 ITEM:    stone q:1 no_pickup
 KITEM:   D = gold
 KMONS:   D = hobgoblin / kobold / gnoll
@@ -88,15 +91,15 @@ xxxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxxxxx
 xxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxx
 xxxxwwwwcccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwcccccwwwwxxxxxx
 xxxwwwwwcAAAccccccccccccccccccccccccccccccccccccccccccccccccccccccDDDcwwwwwxxxxx
-xxxwwwwwcAAAc1..S..ccccc..S..c??????'c1..1c'??????c..S.....S.S..1cDDDcwwwwwwxxxx
+xxxwwwwwcAAAc1..G..ccccc..S..c??????'c1..1c'??????c..S.....S.S..1cDDDcwwwwwwxxxx
 xxxwwwwwcAAAc......Sccc.2....+??????'c....c'??????+...........2..cDDDcwwwwwwxxxx
-xxwwwwwwcc+cc........c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwxxx
+xxwwwwwwcc+cc...G....c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwxxx
 xxwwwwwwwc1..........c..2...........c.2..2.c..........cccccccc.....1cwwwwwwwwxxx
-xxwwwwwwwc...........+..............+......+..........cccccccc.2....cwwwwwwwwwxx
+xxwwwwwwwcM.G.G.Z....+..............+......+..........cccccccc.2....cwwwwwwwwwxx
 xxwwwwwwwc1..........c..2...........c.2..2.c..........cccccccc.....1cwwwwwwwwwxx
-xwwwwwwwcc+cc........c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwwxx
+xwwwwwwwcc+cc...G....c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwwxx
 xwwwwwwwcBBBc......Sccc.2....+??????'c....c'??????+...........2..cCCCcwwwwwwwwwx
-xwwwwwwwcBBBc1..S..ccccc..S..c??????'c....c'??????c..S.....S.S..1cCCCcwwwwwwwwwx
+xwwwwwwwcBBBc1..G..ccccc..S..c??????'c....c'??????c..S.....S.S..1cCCCcwwwwwwwwwx
 xwwwwwwwcBBBccccccccccccccccccccccccccc++cccccccccccccccccccccccccCCCcwwwwwwwwwx
 xwwwwwwwcccccwwwwwwwwwwwwwwwwwwwwwwwyY1..1Yywwwwwwwwwwwwwwwwwwwwwcccccwwwwwwwwwx
 xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwyY....Yywwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
@@ -1557,7 +1560,7 @@ TAGS:   no_monster_gen no_pool_fixup
 ORIENT: northwest
 DEPTH:  D:2
 PLACE:  D:2
-WEIGHT: 200
+WEIGHT: 2000
 ## this gives a chance for Ijyb and Robin to appear as the boss if they
 ## haven't been placed, selecting from who is available.
 {{
