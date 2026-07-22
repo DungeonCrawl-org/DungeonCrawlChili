@@ -60,9 +60,9 @@ default-depth: D:12-, !D:$, Depths, !Depths:$
 NAME:    minmay_goblin_kobold_castle-modified_by_rogga
 TAGS:    no_rotate
 ORIENT:  north
-DEPTH:   D:3
-PLACE:   D:3
-WEIGHT:  10
+DEPTH:   D:2
+PLACE:   D:2
+WEIGHT:  200
 MONS:    goblin ; sling / hobgoblin w:2 ; sling
 MONS:    goblin ; club / hobgoblin ; club / gnoll w:3 ; club | spear
 MONS:    kobold ; stone
@@ -1555,9 +1555,9 @@ ENDMAP
 NAME:   kennysheep_goblin_castle-modified_by_rogga
 TAGS:   no_monster_gen no_pool_fixup
 ORIENT: northwest
-DEPTH:  D:3
-PLACE:  D:3
-WEIGHT: 10
+DEPTH:  D:2
+PLACE:  D:2
+WEIGHT: 200
 ## this gives a chance for Ijyb and Robin to appear as the boss if they
 ## haven't been placed, selecting from who is available.
 {{
