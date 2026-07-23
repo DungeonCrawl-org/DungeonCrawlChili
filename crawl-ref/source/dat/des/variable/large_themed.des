@@ -56,19 +56,56 @@ default-depth: D:12-, !D:$, Depths, !Depths:$
 # be careful to adapt these numbers for new vaults (using DEPTH)
 
 ###############################################################################
-# Castle of kobolds and goblins
-NAME:    minmay_goblin_kobold_castle-modified_by_rogga
+# Castle of kobolds and goblins and Medusa
+NAME:    rogga_goblin_kobold_castle_Medusa
 TAGS:    no_rotate
 ORIENT:  north
-DEPTH:   D:3
-PLACE:   D:3
-WEIGHT:  10
+DEPTH:   D:2
+PLACE:   D:2
+WEIGHT:  2000
 MONS:    goblin ; sling / hobgoblin w:2 ; sling
 MONS:    goblin ; club / hobgoblin ; club / gnoll w:3 ; club | spear
 MONS:    kobold ; stone
 MONS:    kobold ; club w:18 / kobold brigand w:1 / gnoll w:3 ; club | spear
 MONS:    goblin rider, kobold brigand
 KMONS:   S = stack of scrap
+KMONS:   M = Medusa
+KFEAT:   G = granite_statue
+KFEAT:   Z = fountain_sparkling
+{{
+function goblin_statue()
+    return
+end
+
+set_feature_name("granite_statue", "goblin-shaped statue")
+}}
+{{
+function snake_fountain()
+    return
+end
+
+set_feature_name("fountain_sparkling", "snake filled fountain")
+}}
+MARKER: M = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
+MARKER: G = lua:portal_desc { slaved_to="adder" }
+MARKER: Z = lua:portal_desc { slaved_to="water moccasin" }
+MARKER: G = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake adder", \
+            message_seen="The adders awaken!", \
+            message_unseen="You hear a commotion.", \
+            master_name="adder", \
+            veto_destroy="veto", \
+         }
+MARKER: Z = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake water moccasin", \
+            message_seen="The water moccasin awaken!", \
+            message_unseen="You hear a hiss.", \
+            master_name="water moccasin", \
+            veto_destroy="veto", \
+         }
+
 ITEM:    stone q:1 no_pickup
 KITEM:   D = gold
 KMONS:   D = hobgoblin / kobold / gnoll
@@ -88,15 +125,15 @@ xxxxxxxxxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxxxxxxxxx
 xxxxxxxwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwxxxxxxxxx
 xxxxwwwwcccccwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwcccccwwwwxxxxxx
 xxxwwwwwcAAAccccccccccccccccccccccccccccccccccccccccccccccccccccccDDDcwwwwwxxxxx
-xxxwwwwwcAAAc1..S..ccccc..S..c??????'c1..1c'??????c..S.....S.S..1cDDDcwwwwwwxxxx
+xxxwwwwwcAAAc1..G..ccccc..S..c??????'c1..1c'??????c..S.....S.S..1cDDDcwwwwwwxxxx
 xxxwwwwwcAAAc......Sccc.2....+??????'c....c'??????+...........2..cDDDcwwwwwwxxxx
-xxwwwwwwcc+cc........c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwxxx
+xxwwwwwwcc+cc...G....c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwxxx
 xxwwwwwwwc1..........c..2...........c.2..2.c..........cccccccc.....1cwwwwwwwwxxx
-xxwwwwwwwc...........+..............+......+..........cccccccc.2....cwwwwwwwwwxx
+xxwwwwwwwcM.G.G.Z....+..............+......+..........cccccccc.2....cwwwwwwwwwxx
 xxwwwwwwwc1..........c..2...........c.2..2.c..........cccccccc.....1cwwwwwwwwwxx
-xwwwwwwwcc+cc........c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwwxx
+xwwwwwwwcc+cc...G....c1...2..ccccccccc....ccccccccc..............cc+ccwwwwwwwwxx
 xwwwwwwwcBBBc......Sccc.2....+??????'c....c'??????+...........2..cCCCcwwwwwwwwwx
-xwwwwwwwcBBBc1..S..ccccc..S..c??????'c....c'??????c..S.....S.S..1cCCCcwwwwwwwwwx
+xwwwwwwwcBBBc1..G..ccccc..S..c??????'c....c'??????c..S.....S.S..1cCCCcwwwwwwwwwx
 xwwwwwwwcBBBccccccccccccccccccccccccccc++cccccccccccccccccccccccccCCCcwwwwwwwwwx
 xwwwwwwwcccccwwwwwwwwwwwwwwwwwwwwwwwyY1..1Yywwwwwwwwwwwwwwwwwwwwwcccccwwwwwwwwwx
 xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwyY....Yywwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
@@ -1555,9 +1592,9 @@ ENDMAP
 NAME:   kennysheep_goblin_castle-modified_by_rogga
 TAGS:   no_monster_gen no_pool_fixup
 ORIENT: northwest
-DEPTH:  D:3
-PLACE:  D:3
-WEIGHT: 10
+DEPTH:  D:2
+PLACE:  D:2
+WEIGHT: 2000
 ## this gives a chance for Ijyb and Robin to appear as the boss if they
 ## haven't been placed, selecting from who is available.
 {{
@@ -1596,6 +1633,46 @@ KMONS:  S = stack of scrap
 KFEAT:  F = cache_of_fruit / cache_of_meat
 SUBST:  F : F.
 NSUBST: . = 1:0 / 3:3 / *:.
+
+KMONS:  7 = Medusa
+KFEAT:  s = granite_statue
+KFEAT:  Z = fountain_sparkling
+
+{{
+function goblin_statue()
+    return
+end
+
+set_feature_name("granite_statue", "goblin-shaped statue")
+}}
+{{
+function snake_fountain()
+    return
+end
+
+set_feature_name("fountain_sparkling", "snake filled fountain")
+}}
+MARKER: 7 = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
+MARKER: s = lua:portal_desc { slaved_to="adder" }
+MARKER: Z = lua:portal_desc { slaved_to="water moccasin" }
+MARKER: G = lua:props_marker { veto_destroy="veto" }
+MARKER: s = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake adder", \
+            message_seen="The adders awaken!", \
+            message_unseen="You hear a commotion.", \
+            master_name="adder", \
+            veto_destroy="veto", \
+         }
+MARKER: Z = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake water moccasin", \
+            message_seen="The water moccasin awaken!", \
+            message_unseen="You hear a hiss.", \
+            master_name="water moccasin", \
+            veto_destroy="veto", \
+         }
+
 MAP
 xxxxxxxxxxxxxxxxxxx
 xS..+....B.Fx%%*xww
@@ -1603,13 +1680,13 @@ x...+......O+%%%xww
 x...x....B.Fxxxxxww
 x...xxxxxxxxxx...ww
 x...........Sx...ww
-x.....1.1....x.2.ww
+x......7.....x.2.ww
 xx+xx.....xx+xx..ww
-x...x.....x...x..ww
+x...xs...sx...x..ww
 x.S.x.....x.S.x..ww
-x...x.....x...x..ww
+x...x..Z..x...x..ww
 xx+xx.....xx+xx..ww
-x.2.x.....x.2....ww
+x.2.xs...sx.2....ww
 x...x.....x.....www
 xwwwx.....xwwwwwww
 xwwwxx+++xxwwwwww

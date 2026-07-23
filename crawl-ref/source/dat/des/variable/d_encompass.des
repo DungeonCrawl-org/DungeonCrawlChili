@@ -1054,7 +1054,7 @@ TAGS:   uniq_d_encompass allow_dup unrand no_rotate no_pool_fixup
 ORIENT: encompass
 DEPTH:  D:2
 PLACE:  D:2
-WEIGHT: 5000
+WEIGHT: 2000
 KMONS:  op = plant
 KMONS:  P = bush
 KMONS:  7 = Medusa
@@ -1081,7 +1081,7 @@ function snake_fountain()
     return
 end
 
-set_feature_name("fountain_sparkling", "snake filled fountained")
+set_feature_name("fountain_sparkling", "snake filled fountain")
 }}
 MARKER: 7 = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
 MARKER: S = lua:portal_desc { slaved_to="adder" }
