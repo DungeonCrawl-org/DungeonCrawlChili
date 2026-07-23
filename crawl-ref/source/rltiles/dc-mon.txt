@@ -863,6 +863,7 @@ wyrmhole2
 ## Dragons ('D')
 %sdir mon/unique
 xtahua MONS_XTAHUA
+verity MONS_VERITY
 %sdir mon/dragons
 fire_dragon MONS_FIRE_DRAGON
 hydra1 MONS_HYDRA
