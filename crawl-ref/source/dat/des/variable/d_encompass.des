@@ -1081,7 +1081,7 @@ function snake_fountain()
     return
 end
 
-set_feature_name("fountain_sparkling", "snake filled fountained")
+set_feature_name("fountain_sparkling", "snake filled fountain")
 }}
 MARKER: 7 = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
 MARKER: S = lua:portal_desc { slaved_to="adder" }

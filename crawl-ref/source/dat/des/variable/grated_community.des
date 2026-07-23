@@ -40,6 +40,41 @@ MONS:   gnoll / orc priest / kobold brigand / sleepcap w:2
 KMONS:  8 =  orc priest / kobold brigand w:2
 KFEAT:  9 = iron_grate
 KFEAT:  0 = granite_statue
+KFEAT:  f = fountain_sparkling
+
+{{
+function goblin_statue()
+    return
+end
+
+set_feature_name("granite_statue", "goblin-shaped statue")
+}}
+{{
+function snake_fountain()
+    return
+end
+
+set_feature_name("fountain_sparkling", "snake filled fountain")
+}}
+MARKER: m = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
+MARKER: 0 = lua:portal_desc { slaved_to="adder" }
+MARKER: f = lua:portal_desc { slaved_to="water moccasin" }
+MARKER: 0 = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake adder", \
+            message_seen="The adders awaken!", \
+            message_unseen="You hear a commotion.", \
+            master_name="adder", \
+            veto_destroy="veto", \
+         }
+MARKER: f = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake water moccasin", \
+            message_seen="The water moccasin awaken!", \
+            message_unseen="You hear a hiss.", \
+            master_name="water moccasin", \
+            veto_destroy="veto", \
+         }
 
 SUBST:  z = c
 
@@ -48,7 +83,6 @@ KMONS:  ! = goblin / hobgoblin / kobold / nothing
 ITEM:   human skeleton / elf skeleton / kobold skeleton
 : kitem("$ = q:" .. crawl.random_range(7, 45) .. " gold")
 KFEAT:  g = iron_grate
-KFEAT:  f = fountain_sparkling
 KFEAT:  A = general shop
 KFEAT:  B = scroll shop type:Wondrous suffix:Manuscripts count:10 \
             greed:35 ; scroll of torment | scroll of vulnerability | \
