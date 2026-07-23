@@ -72,6 +72,40 @@ KMONS:   S = stack of scrap
 KMONS:   M = Medusa
 KFEAT:   G = granite_statue
 KFEAT:   Z = fountain_sparkling
+{{
+function goblin_statue()
+    return
+end
+
+set_feature_name("granite_statue", "goblin-shaped statue")
+}}
+{{
+function snake_fountain()
+    return
+end
+
+set_feature_name("fountain_sparkling", "snake filled fountain")
+}}
+MARKER: M = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
+MARKER: G = lua:portal_desc { slaved_to="adder" }
+MARKER: Z = lua:portal_desc { slaved_to="water moccasin" }
+MARKER: G = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake adder", \
+            message_seen="The adders awaken!", \
+            message_unseen="You hear a commotion.", \
+            master_name="adder", \
+            veto_destroy="veto", \
+         }
+MARKER: Z = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake water moccasin", \
+            message_seen="The water moccasin awaken!", \
+            message_unseen="You hear a hiss.", \
+            master_name="water moccasin", \
+            veto_destroy="veto", \
+         }
+
 ITEM:    stone q:1 no_pickup
 KITEM:   D = gold
 KMONS:   D = hobgoblin / kobold / gnoll
@@ -1599,6 +1633,46 @@ KMONS:  S = stack of scrap
 KFEAT:  F = cache_of_fruit / cache_of_meat
 SUBST:  F : F.
 NSUBST: . = 1:0 / 3:3 / *:.
+
+KMONS:  7 = Medusa
+KFEAT:  s = granite_statue
+KFEAT:  Z = fountain_sparkling
+
+{{
+function goblin_statue()
+    return
+end
+
+set_feature_name("granite_statue", "goblin-shaped statue")
+}}
+{{
+function snake_fountain()
+    return
+end
+
+set_feature_name("fountain_sparkling", "snake filled fountain")
+}}
+MARKER: 7 = lua:MonPropsMarker:new { medusa_marker="medusa_marker" }
+MARKER: s = lua:portal_desc { slaved_to="adder" }
+MARKER: Z = lua:portal_desc { slaved_to="water moccasin" }
+MARKER: G = lua:props_marker { veto_destroy="veto" }
+MARKER: s = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake adder", \
+            message_seen="The adders awaken!", \
+            message_unseen="You hear a commotion.", \
+            master_name="adder", \
+            veto_destroy="veto", \
+         }
+MARKER: Z = lua:monster_on_death { \
+            target="medusa_marker", \
+            new_monster="generate_awake water moccasin", \
+            message_seen="The water moccasin awaken!", \
+            message_unseen="You hear a hiss.", \
+            master_name="water moccasin", \
+            veto_destroy="veto", \
+         }
+
 MAP
 xxxxxxxxxxxxxxxxxxx
 xS..+....B.Fx%%*xww
@@ -1606,13 +1680,13 @@ x...+......O+%%%xww
 x...x....B.Fxxxxxww
 x...xxxxxxxxxx...ww
 x...........Sx...ww
-x.....1.1....x.2.ww
+x......7.....x.2.ww
 xx+xx.....xx+xx..ww
-x...x.....x...x..ww
+x...xs...sx...x..ww
 x.S.x.....x.S.x..ww
-x...x.....x...x..ww
+x...x..Z..x...x..ww
 xx+xx.....xx+xx..ww
-x.2.x.....x.2....ww
+x.2.xs...sx.2....ww
 x...x.....x.....www
 xwwwx.....xwwwwwww
 xwwwxx+++xxwwwwww
