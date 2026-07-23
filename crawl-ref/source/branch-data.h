@@ -374,7 +374,7 @@ const Branch branches[NUM_BRANCHES] =
 #endif
 #if TAG_MAJOR_VERSION == 34
 
-    { BRANCH_DEPTHS, BRANCH_DUNGEON, 15, 15, 4, 22,
+    { BRANCH_DEPTHS, BRANCH_DUNGEON, 14, 14, 3, 22,
       brflag::none,
       DNGN_ENTER_DEPTHS, DNGN_EXIT_DEPTHS, NUM_FEATURES,
       "Depths", "the Depths", "Depths",
