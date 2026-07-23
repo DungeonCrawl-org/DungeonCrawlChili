@@ -1242,7 +1242,7 @@ MONS:   necromancer w:20 / soul eater
 MONS:   freezing wraith / shadow wraith / flayed ghost
 MONS:   tormentor / reaper, deep elf death mage
 : else
-MONS:   zombie place:Depths:4 / simulacrum / spectral thing
+MONS:   zombie place:Depths:$ / simulacrum / spectral thing
 MONS:   necromancer w:8 / deep elf death mage / vampire mage / alderking w:2
 MONS:   flayed ghost / tormentor
 MONS:   reaper / executioner, tzitzimitl
