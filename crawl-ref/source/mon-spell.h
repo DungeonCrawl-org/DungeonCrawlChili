@@ -1053,6 +1053,13 @@ static const mon_spellbook mspell_list[] =
       }
     },
 
+    { MST_VERITY,
+      {
+        { SPELL_STONE_ARROW, 68, MON_SPELL_NATURAL | MON_SPELL_BREATH
+                                   | MON_SPELL_NOISY },
+      }
+    },
+
     // ('E') Elementals.
     {  MST_AIR_ELEMENTAL,
       {

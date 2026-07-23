@@ -445,6 +445,11 @@ DEPTH:  Snake:2-
 WEIGHT: 50
 : place_unique(_G, "Vashnia band")
 
+NAME:   uniq_verity
+DEPTH:  Lair
+WEIGHT: 50
+: place_unique(_G, "Verity")
+
 NAME:   uniq_polyphemus
 DEPTH:  Shoals:2-
 WEIGHT: 50

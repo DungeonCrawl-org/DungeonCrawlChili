@@ -7506,6 +7506,24 @@ Vashnia triumphant
 @The_monster@ says, "All clear. Let's check for more."
 ## END Vashnia ##
 %%%%
+######## Verity ####### A stone dragon
+Verity
+
+@_Verity_common_@
+
+w:5
+@_Verity_rare_@
+
+%%%%
+_Verity_common_
+
+@The_monster@ says, "Behold the power of my skill!"
+%%%%
+_Verity_rare_
+
+@The_monster@ says, "You too can put yourself into the stone."
+## END Verity ##
+%%%%
 ######## Wiglaf ####### A dwarf with a big cannon and deep attachment to his hat
 Wiglaf
 
