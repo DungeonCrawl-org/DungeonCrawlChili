@@ -1207,14 +1207,16 @@ level_id branch_exit_destination(dungeon_feature_type feat,
     }
 
     level_id lev = brentry[from.branch];
-    if (!lev.is_valid())
+    if (!lev.is_valid()
+        || lev.depth > brdepth[lev.branch])
     {
-        // Wizmode, the branch wasn't generated this game.
-        // Pick the middle of the range instead.
+        // Wizmode, the branch wasn't generated this game, or its recorded
+        // entrance is no longer a real level (e.g. after shortening its parent
+        // branch). Pick the middle of the configured range instead.
         lev = level_id(branches[from.branch].parent_branch,
                        (branches[from.branch].mindepth
                         + branches[from.branch].maxdepth) / 2);
-        ASSERT(lev.is_valid());
+        ASSERT(lev.is_valid() && lev.depth <= brdepth[lev.branch]);
     }
 
     return lev;

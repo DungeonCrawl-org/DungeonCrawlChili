@@ -71,7 +71,7 @@ end
 NAME:   uniq_dummy
 TAGS:   place_unique dummy
 DEPTH:  1-50, !Lair, !Slime
-WEIGHT: 10 (D:1-8), 25
+WEIGHT: 10 (D:1-8), 20
 MAP
 .
 ENDMAP
@@ -79,7 +79,7 @@ ENDMAP
 NAME:   uniq_dummy_lair
 TAGS:   place_unique dummy
 DEPTH:  Lair
-WEIGHT: 40
+WEIGHT: 25
 MAP
 .
 ENDMAP
@@ -87,7 +87,7 @@ ENDMAP
 NAME:   uniq_dummy_slime
 TAGS:   place_unique dummy
 DEPTH:  Slime
-WEIGHT: 100
+WEIGHT: 50
 MAP
 .
 ENDMAP
@@ -207,7 +207,7 @@ NAME:   uniq_maurice
 DEPTH:  D:7-12, Orc
 : place_unique(_G, "Maurice")
 
-# Medusa is manually placed in D:2 vaults
+# Medusa is manually placed in four D:2 vaults
 # NAME:   uniq_medusa
 # DEPTH:  D:2
 # PLACE:  D:2
