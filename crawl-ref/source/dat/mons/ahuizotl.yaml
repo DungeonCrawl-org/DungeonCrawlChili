@@ -1,16 +1,16 @@
 name: "Ahuizotl"
 glyph: {char: "h", colour: cyan}
 flags: [speaks, warm_blood, unique, gender_neutral]
-exp: 1350
+exp: 950
 species: hound
-will: 80
+will: 70
 attacks:
- - {type: constrict, flavour: crush, damage: 6}
- - {type: bite, damage: 26}
-hd: 15
-hp_10x: 1050
-ac: 5
-ev: 20
+ - {type: constrict, flavour: crush, damage: 5}
+ - {type: bite, damage: 23}
+hd: 13
+hp_10x: 920
+ac: 4
+ev: 17
 spells: ahuizotl
 has_corpse: true
 shout: growl
