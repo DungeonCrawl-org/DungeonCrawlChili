@@ -244,6 +244,22 @@ DEPTH:  Lair:2-4
 WEIGHT: 15
 : place_unique(_G, "Rusk band")
 
+NAME:   uniq_ahuizotl
+TAGS:   place_unique transparent
+DEPTH:  Lair:2-4
+WEIGHT: 15
+MONS:   Ahuizotl
+KFEAT:  1w = shallow_water
+MAP
+..ww.....
+.wwwww...
+.www.ww..
+wwww1www.
+..wwwww..
+...www...
+.....ww..
+ENDMAP
+
 NAME:   uniq_prince_ribbit2
 TAGS:   uniq_ribbit
 DEPTH:  Lair:1-3

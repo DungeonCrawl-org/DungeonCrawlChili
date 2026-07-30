@@ -130,6 +130,7 @@ sewage_sovereign MONS_SEWAGE_SOVEREIGN
 cat4 MONS_FELID
 %rim 0
 %sdir mon/unique
+ahuizotl MONS_AHUIZOTL
 natasha MONS_NATASHA
 %rim 1
 %sdir mon/animals

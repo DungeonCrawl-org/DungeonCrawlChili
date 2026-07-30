@@ -1,0 +1,23 @@
+name: "Ahuizotl"
+glyph: {char: "h", colour: cyan}
+flags: [speaks, warm_blood, unique, gender_neutral]
+exp: 720
+species: hound
+will: 60
+attacks:
+ - {type: constrict, flavour: crush, damage: 5}
+ - {type: bite, damage: 22}
+hd: 11
+hp_10x: 820
+ac: 4
+ev: 15
+spells: ahuizotl
+has_corpse: true
+shout: growl
+intelligence: animal
+habitat: amphibious
+speed: 11
+energy: {swim: 6}
+size: medium
+shape: quadruped
+corpse_tile: hound

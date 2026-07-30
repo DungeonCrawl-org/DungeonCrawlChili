@@ -103,6 +103,13 @@ harness. Cracked bronze bells hang from his horns, sounding commands that the
 beasts of the Lair obey with unsettling precision. He can drive his herd into a
 battle-frenzy before stampeding in a straight line towards his prey.
 %%%%
+Ahuizotl
+
+A sleek black beast resembling a dog or otter, its wet fur rising in thorny
+ridges along its back. Its long tail ends not in a tuft, but in a pale and
+dexterous human hand. It uses this hand to drag prey into reach, where it can
+bind them in a drowning grip and tear them apart.
+%%%%
 Cerebov
 
 A violent and wrathful demon, Cerebov appears as a giant humanoid covered in

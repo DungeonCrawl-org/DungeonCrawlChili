@@ -7637,7 +7637,8 @@ bool bolt::can_pull(const actor &act, int dam) const
     if (act.is_stationary() || adjacent(source, act.pos()))
         return false;
 
-    return origin_spell == SPELL_HARPOON_SHOT && dam;
+    return (origin_spell == SPELL_HARPOON_SHOT
+            || origin_spell == SPELL_TAIL_HAND) && dam;
 }
 
 ai_action::goodness targeting_tracer::good_to_fire(int foe_ratio) const

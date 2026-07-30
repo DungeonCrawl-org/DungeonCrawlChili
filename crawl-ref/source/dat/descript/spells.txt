@@ -961,6 +961,11 @@ Harpoon Shot spell
 Fires a long and flexible barbed mass. The ensnared victim will either be
 pulled adjacent to the caster or collide with anything blocking the way.
 %%%%
+Tail-Hand spell
+
+The caster lashes out with a long, grasping tail. A struck victim is dragged
+adjacent to the caster, or collides with anything blocking the way.
+%%%%
 Haste spell
 
 Speeds the actions of the caster.

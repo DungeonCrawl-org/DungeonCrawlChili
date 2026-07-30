@@ -3355,6 +3355,17 @@ static const struct spell_desc spelldata[] =
 },
 
 {
+    SPELL_TAIL_HAND, "Tail-Hand",
+    spschool::none,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
+    4,
+    200,
+    2, 2,
+    0,
+    TILEG_HARPOON_SHOT,
+},
+
+{
     SPELL_GRASPING_ROOTS, "Grasping Roots",
     spschool::earth,
     spflag::target | spflag::monster,

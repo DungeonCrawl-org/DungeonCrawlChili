@@ -1044,6 +1044,7 @@ enum monster_type                      // env.mons[].type
     MONS_SPROZZ,
     MONS_CASSANDRA,
     MONS_RUSK,
+    MONS_AHUIZOTL,
     MONS_GOJI,
     MONS_GOJI_UNMOUNTED,    // 'Fake' monster to handle mount death properly
 #endif
@@ -1448,6 +1449,7 @@ enum monster_type                      // env.mons[].type
     MONS_HERALD_OF_THE_ABYSS,
     MONS_ABYSSAL_ACOLYTE,
     MONS_RUSK,
+    MONS_AHUIZOTL,
 #endif
     MONS_GIRAFFE,
     MONS_CINDER_NEWT,

@@ -2817,4 +2817,20 @@ _mon_hex_zap(ZAP_ILL_OMEN, BEAM_ILL_OMEN),
     false,
 },
 
+{
+    ZAP_TAIL_HAND,
+    "grasping tail-hand",
+    nullptr,
+    nullptr,
+    new dicedef_calculator<2, 5, 1, 25>,
+    new tohit_calculator<18, 1, 25>,
+    LIGHTCYAN,
+    false,
+    BEAM_MMISSILE,
+    DCHAR_FIRED_MISSILE,
+    false,
+    false,
+    TILE_BOLT_HARPOON_SHOT,
+},
+
 };

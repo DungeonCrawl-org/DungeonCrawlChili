@@ -2257,6 +2257,26 @@ Rusk triumphant
 @The_monster@'s bells sound a slow, victorious peal.
 %%%%%
 
+############ AHUIZOTL ############ The hand beneath the water
+Ahuizotl
+
+A pale hand rises silently from the water.
+
+Ripples spread around @the_monster@'s thorny black fur.
+
+@The_monster@'s tail-hand flexes hungrily.
+
+@The_monster@ watches you from the water's edge.
+%%%%
+Ahuizotl shout
+
+@The_monster@ makes a low, wet growl.
+%%%%
+Ahuizotl triumphant
+
+@The_monster@ drags @foe@ beneath the water.
+%%%%%
+
 ############ CHUCK ### An avid rock collector.
 Chuck
 

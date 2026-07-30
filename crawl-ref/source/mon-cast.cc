@@ -2458,6 +2458,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_SANDBLAST:
     case SPELL_THROW_BOLAS:
     case SPELL_HARPOON_SHOT:
+    case SPELL_TAIL_HAND:
     case SPELL_SOJOURNING_BOLT:
     case SPELL_THROW_GARBAGE:
     case SPELL_THROW_PIE:
@@ -9915,6 +9916,7 @@ ai_action::goodness monster_spell_goodness(monster* mon, spell_type spell)
 
     case SPELL_THROW_BARBS:
     case SPELL_HARPOON_SHOT:
+    case SPELL_TAIL_HAND:
         // Don't fire if we can hit.
         ASSERT(foe);
         return ai_action::good_or_bad(grid_distance(mon->pos(), foe->pos())
