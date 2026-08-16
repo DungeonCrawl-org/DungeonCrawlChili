@@ -800,50 +800,6 @@ void dgn_reset_player_data()
     you.seen_talisman.reset();
 }
 
-static void _dgn_load_colour_grid()
-{
-    dgn_colour_grid.reset(new dungeon_colour_grid);
-    dungeon_colour_grid &dcgrid(*dgn_colour_grid);
-    for (int y = Y_BOUND_1; y <= Y_BOUND_2; ++y)
-        for (int x = X_BOUND_1; x <= X_BOUND_2; ++x)
-            if (env.grid_colours[x][y] != BLACK)
-            {
-                dcgrid[x][y]
-                    = coloured_feature(env.grid[x][y], env.grid_colours[x][y]);
-            }
-}
-
-static void _dgn_map_colour_fixup()
-{
-    if (!dgn_colour_grid)
-        return;
-
-    // If the original coloured feature has been changed, reset the colour.
-    const dungeon_colour_grid &dcgrid(*dgn_colour_grid);
-    for (int y = Y_BOUND_1; y <= Y_BOUND_2; ++y)
-        for (int x = X_BOUND_1; x <= X_BOUND_2; ++x)
-            if (dcgrid[x][y].colour != BLACK
-                && env.grid[x][y] != dcgrid[x][y].feature
-                && dcgrid[x][y].feature != DNGN_FLOOR)
-            {
-                env.grid_colours[x][y] = BLACK;
-            }
-
-    dgn_colour_grid.reset(nullptr);
-}
-
-void dgn_set_grid_colour_at(const coord_def &c, int colour)
-{
-    if (colour != BLACK)
-    {
-        env.grid_colours(c) = colour;
-        if (!dgn_colour_grid)
-            dgn_colour_grid.reset(new dungeon_colour_grid);
-
-        (*dgn_colour_grid)(c) = coloured_feature(env.grid(c), colour);
-    }
-}
-
 static void _dgn_register_vault(const string &name, const unordered_set<string> &tags)
 {
     if (!tags.count("allow_dup"))
