@@ -2130,10 +2130,10 @@ bool god_hates_blessing(const special_armour_type brand)
 {
     if (is_good_god(you.religion) && brand == SPARM_DEATH)
         return true;
-    /*
-    if (you_worship(GOD_ZIN) && is_chaotic_blessing(brand))
+    
+    if (you_worship(GOD_ZIN) && brand == SPARM_MAYHEM)
         return true;
-
+    /*
     if (you_worship(GOD_CHEIBRIADOS) && is_hasty_blessing(brand))
         return true;
     */
