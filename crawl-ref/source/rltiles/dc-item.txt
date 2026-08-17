@@ -945,6 +945,7 @@ i-acquirement SCR_ACQUIREMENT
 i-enchant-weapon SCR_ENCHANT_WEAPON_II
 # end TAG_MAJOR_VERSION
 i-brand-weapon SCR_BRAND_WEAPON
+i-brand-weapon SCR_BLESS_ITEM
 # start TAG_MAJOR_VERSION == 34
 i-recharging SCR_RECHARGING
 i-enchant-weapon SCR_ENCHANT_WEAPON_III

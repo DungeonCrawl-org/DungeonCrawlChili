@@ -79,6 +79,9 @@ static bool _resume_uncancel(bool run_success_effect)
     case UNC_BRAND_WEAPON:
         succeeded = uncancel_brand_weapon();
         break;
+    case UNC_BLESS_ITEM:
+        succeeded = uncancel_bless_item();
+        break;
     case UNC_AMNESIA:
         succeeded = uncancel_amnesia();
         break;

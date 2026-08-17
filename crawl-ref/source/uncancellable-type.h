@@ -10,6 +10,7 @@ enum uncancellable_type
     UNC_ENCHANT_WEAPON,
     UNC_ENCHANT_ARMOUR,
     UNC_BRAND_WEAPON,
+    UNC_BLESS_ITEM,
     UNC_AMNESIA,
     UNC_BLINKING,
     UNC_IDENTIFY,

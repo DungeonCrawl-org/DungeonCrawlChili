@@ -1964,6 +1964,17 @@ bool is_brandable_weapon(const item_def &wpn, bool allow_ranged, bool divine)
     return true;
 }
 
+bool is_blessable_item(const item_def &item)
+{
+    if (is_artefact(item))
+        return false;
+
+    if (item.base_type == OBJ_ARMOUR
+        || item.base_type == OBJ_WEAPONS)
+        return true;
+
+    return false;
+}
 /**
  * Which skill should the lochaber axe use?
  *
@@ -2494,6 +2505,7 @@ static map<scroll_type, item_rarity_type> _scroll_rarity = {
     { SCR_SUMMONING,      RARITY_RARE },
     { SCR_SILENCE,        RARITY_RARE },
     { SCR_BRAND_WEAPON,   RARITY_RARE },
+    { SCR_BLESS_ITEM,     RARITY_RARE },
     { SCR_TORMENT,        RARITY_RARE },
     { SCR_ACQUIREMENT,    RARITY_VERY_RARE },
 };
