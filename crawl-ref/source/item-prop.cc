@@ -1970,7 +1970,8 @@ bool is_blessable_item(const item_def &item)
         return false;
 
     if (item.base_type == OBJ_ARMOUR
-        || item.base_type == OBJ_WEAPONS)
+        || item.base_type == OBJ_WEAPONS
+        || item.base_type == OBJ_STAVES)
         return true;
 
     return false;
