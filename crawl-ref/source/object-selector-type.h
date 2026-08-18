@@ -16,6 +16,7 @@ enum object_selector
     OSEL_CURSABLE                = -12, // Items that are worn and cursable
     OSEL_UNCURSED_WORN_RINGS     = -13,
     OSEL_QUIVER_ACTION           = -14,
+    OSEL_BLESSABLE_ITEM          = -15, // Items that can be blessed (not artefacts or jewellery)
     OSEL_EQUIPABLE               = -16, // armour, jewellery, weapons
     OSEL_WORN_JEWELLERY_OR_TALISMAN = -17,
     OSEL_WORN_EQUIPABLE          = -18,

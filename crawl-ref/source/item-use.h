@@ -72,6 +72,7 @@ string cannot_put_on_talisman_reason(const item_def& talisman, bool temp = true,
 bool use_talisman(item_def& talisman);
 
 bool uncancel_brand_weapon();
+bool uncancel_bless_item();
 bool uncancel_enchant_weapon();
 bool uncancel_identify();
 bool uncancel_enchant_armour();

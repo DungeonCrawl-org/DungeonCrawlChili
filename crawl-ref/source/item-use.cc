@@ -2126,6 +2126,20 @@ bool god_hates_brand(const brand_type brand)
     return false;
 }
 
+bool god_hates_blessing(const special_armour_type brand)
+{
+    if (is_good_god(you.religion) && brand == SPARM_DEATH)
+        return true;
+    
+    if (you_worship(GOD_ZIN) && brand == SPARM_MAYHEM)
+        return true;
+    /*
+    if (you_worship(GOD_CHEIBRIADOS) && is_hasty_blessing(brand))
+        return true;
+    */
+    return false;
+}
+
 static void _rebrand_weapon(item_def& wpn)
 {
     const brand_type old_brand = get_weapon_brand(wpn);
@@ -2174,6 +2188,225 @@ static void _rebrand_weapon(item_def& wpn)
 static string _item_name(item_def &item)
 {
     return item.name(in_inventory(item) ? DESC_YOUR : DESC_THE);
+}
+
+static bool god_hates_brand(stave_type brand)
+{
+    if (is_good_god(you.religion) && brand == STAFF_NECROMANCY)
+        return true;
+    return false;
+}
+
+static void _rebrand_stave(item_def &item)
+{
+    const stave_type old_brand = stave_type(item.sub_type);
+    stave_type new_brand = old_brand;
+    while (old_brand == new_brand || god_hates_brand(new_brand))
+    {
+        new_brand = random_choose_weighted(1, STAFF_SUMMONING,
+                                           1, STAFF_FIRE,
+                                           1, STAFF_COLD,
+                                           1, STAFF_ALCHEMY,
+                                           1, STAFF_AIR,
+                                           1, STAFF_EARTH,
+                                           1, STAFF_CONJURATION,
+                                           1, STAFF_NECROMANCY);
+    }
+    item.sub_type = new_brand;
+}
+
+static void _rebrand_item(item_def &item)
+{
+    const special_armour_type old_brand = get_armour_ego_type(item);
+    special_armour_type new_brand = old_brand;
+    while (old_brand == new_brand || god_hates_blessing(new_brand))
+    {
+        if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_ORB)
+        {
+            new_brand = random_choose_weighted(1, SPARM_GLASS,
+                                               1, SPARM_MAYHEM,
+                                               1, SPARM_GUILE,
+                                               1, SPARM_ENERGY,
+                                               1, SPARM_PYROMANIA,
+                                               1, SPARM_STARDUST,
+                                               1, SPARM_MESMERISM,
+                                               1, SPARM_ATTUNEMENT);
+        }
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_CLOAK)
+        {
+            new_brand = random_choose_weighted(2, SPARM_POISON_RESISTANCE,
+                                               2, SPARM_WILLPOWER,
+                                               2, SPARM_STEALTH,
+                                               2, SPARM_CORROSION_RESISTANCE,
+                                               1, SPARM_AIR);
+        }
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_ROBE)
+        {
+            new_brand = random_choose_weighted(1, SPARM_RESISTANCE,
+                                               2, SPARM_COLD_RESISTANCE,
+                                               2, SPARM_FIRE_RESISTANCE,
+                                               2, SPARM_POSITIVE_ENERGY,
+                                               4, SPARM_WILLPOWER
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR 
+            && ( item.sub_type == ARM_LEATHER_ARMOUR || item.sub_type == ARM_RING_MAIL))
+        {
+            new_brand = random_choose_weighted(7, SPARM_FIRE_RESISTANCE,
+                                               7, SPARM_COLD_RESISTANCE,
+                                               5, SPARM_POISON_RESISTANCE,
+                                               4, SPARM_WILLPOWER,
+                                               2, SPARM_POSITIVE_ENERGY
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_SCALE_MAIL)
+        {
+            new_brand = random_choose_weighted(20, SPARM_FIRE_RESISTANCE,
+                                               20, SPARM_COLD_RESISTANCE,
+                                               10, SPARM_POISON_RESISTANCE,
+                                               15, SPARM_WILLPOWER,
+                                               7, SPARM_POSITIVE_ENERGY,
+                                               7, SPARM_ARCHERY,
+                                               7, SPARM_COMMAND,
+                                               7, SPARM_DEATH,
+                                               7, SPARM_RESONANCE
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR 
+            && ( item.sub_type == ARM_CHAIN_MAIL 
+                || item.sub_type == ARM_PLATE_ARMOUR
+                || item.sub_type == ARM_CRYSTAL_PLATE_ARMOUR))
+        {
+            new_brand = random_choose_weighted(21, SPARM_FIRE_RESISTANCE,
+                                               21, SPARM_COLD_RESISTANCE,
+                                               16, SPARM_POISON_RESISTANCE,
+                                               15, SPARM_WILLPOWER,
+                                               7, SPARM_POSITIVE_ENERGY,
+                                               5, SPARM_ARCHERY,
+                                               5, SPARM_COMMAND,
+                                               5, SPARM_DEATH,
+                                               5, SPARM_RESONANCE
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_SCARF)
+        {
+            new_brand = random_choose_weighted(1, SPARM_RESISTANCE,
+                                               1, SPARM_REPULSION,
+                                               1, SPARM_INVISIBILITY,
+                                               1, SPARM_HARM,
+                                               1, SPARM_SHADOWS
+            );
+        }
+        else if ( item.base_type == OBJ_ARMOUR && item.sub_type == ARM_GLOVES)
+        {
+            new_brand = random_choose_weighted(1, SPARM_DEXTERITY,
+                                               1, SPARM_STRENGTH,
+                                               1, SPARM_PARRYING,
+                                               1, SPARM_HURLING,
+                                               1, SPARM_STEALTH,
+                                               1, SPARM_INFUSION,
+                                               1, SPARM_FIRE
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_HELMET)
+        {
+            new_brand = random_choose_weighted(2, SPARM_INTELLIGENCE,
+                                               2, SPARM_LIGHT,
+                                               2, SPARM_SNIPING,
+                                               1, SPARM_ICE
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_HAT)
+        {
+            new_brand = random_choose_weighted(3, SPARM_WILLPOWER,
+                                               2, SPARM_INTELLIGENCE,
+                                               2, SPARM_STEALTH,
+                                               2, SPARM_SEE_INVISIBLE,
+                                               2, SPARM_ICE,
+                                               1, SPARM_SNIPING
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_BOOTS)
+        {
+            new_brand = random_choose_weighted(2, SPARM_STEALTH,
+                                               2, SPARM_FLYING,
+                                               2, SPARM_RAMPAGING,
+                                               1, SPARM_EARTH
+            );
+        }
+
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_BARDING)
+        {
+            new_brand = random_choose_weighted(2, SPARM_FLYING,
+                                               2, SPARM_COLD_RESISTANCE,
+                                               2, SPARM_FIRE_RESISTANCE,
+                                               2, SPARM_STEALTH,
+                                               1, SPARM_EARTH
+            );
+        }
+
+        else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_BUCKLER)
+        {
+            new_brand = random_choose_weighted(14, SPARM_PROTECTION,
+                                               9, SPARM_REFLECTION,
+                                               5, SPARM_FIRE_RESISTANCE,
+                                               5, SPARM_COLD_RESISTANCE,
+                                               5, SPARM_POISON_RESISTANCE,
+                                               5, SPARM_POSITIVE_ENERGY,
+                                               2, SPARM_RESISTANCE
+            );
+        }
+        else if (item.base_type == OBJ_ARMOUR 
+            && ( item.sub_type == ARM_KITE_SHIELD || item.sub_type == ARM_TOWER_SHIELD))
+        {
+            new_brand = random_choose_weighted(10, SPARM_PROTECTION,
+                                               13, SPARM_REFLECTION,
+                                               4, SPARM_FIRE_RESISTANCE,
+                                               4, SPARM_COLD_RESISTANCE,
+                                               4, SPARM_POISON_RESISTANCE,
+                                               4, SPARM_POSITIVE_ENERGY,
+                                               4, SPARM_CORROSION_RESISTANCE
+            );
+        }
+        else if (item.base_type == OBJ_STAVES)
+        {
+            _rebrand_stave(item);
+            return;
+        }
+
+        else if (item.base_type == OBJ_WEAPONS)
+        {
+            _rebrand_weapon(item);
+            return;
+        }
+
+        else
+        {
+            mprf(MSGCH_ERROR, "Cannot rebrand item %s of type ",
+                 item.name(DESC_PLAIN).c_str()
+                 );
+            return;
+        }
+    }
+    set_item_ego_type(item, OBJ_ARMOUR, new_brand);
+}
+
+static void _bless_item(item_def &item)
+{
+    you.wield_change = true;
+
+    const string itname = _item_name(item);
+
+    //set_item_ego_type(item, OBJ_ANY, SPARM_BLESSED);
+    _rebrand_item(item);
+
+    mprf("%s glows with a holy aura!", itname.c_str());
+
+    item_set_appearance(item);
+    mprf_nocap("%s", item.name(DESC_INVENTORY_EQUIP).c_str());
+    // Might be removing antimagic.
+    calc_mp();
+    flash_view_delay(UA_PLAYER, WHITE, 300);
 }
 
 static void _brand_weapon(item_def &wpn)
@@ -2333,6 +2566,22 @@ static spret _scroll_choose_weapon(bool alreadyknown, const string &pre_msg,
     return result;
 }
 
+static spret _handle_bless_item(bool alreadyknown, const string &pre_msg)
+{
+    item_def* itemp = nullptr;
+    spret result = _choose_target_item_for_scroll(alreadyknown, OSEL_BLESSABLE_ITEM,
+                                                  "Bless which item?", itemp);
+
+    if (result != spret::success)
+        return result;
+
+    if (alreadyknown)
+        mpr(pre_msg);
+
+    _bless_item(*itemp);
+    return result;
+}
+
 static spret _handle_brand_weapon(bool alreadyknown, const string &pre_msg)
 {
     item_def* weapon = nullptr;
@@ -2366,6 +2615,12 @@ static spret _handle_brand_weapon(bool alreadyknown, const string &pre_msg)
 bool uncancel_brand_weapon()
 {
     spret result = _handle_brand_weapon(false, "");
+    return result != spret::seen_hups;
+}
+
+bool uncancel_bless_item()
+{
+    spret result = _handle_bless_item(false, "");
     return result != spret::seen_hups;
 }
 
@@ -3201,7 +3456,19 @@ bool read(item_def* scroll, dist *target)
             result = _handle_brand_weapon(alreadyknown, pre_succ_msg);
 
         break;
+    case SCR_BLESS_ITEM:
+        if (!alreadyknown)
+        {
+            mpr(pre_succ_msg);
+            mpr("It is a scroll of bless item.");
+            // included in default force_more_message (to show it before menu)
 
+            result = _run_read_scroll_uncancel(UNC_BLESS_ITEM, *scroll);
+        }
+        else
+            result = _handle_bless_item(alreadyknown, pre_succ_msg);
+
+        break;
     case SCR_IDENTIFY:
         if (!alreadyknown)
         {

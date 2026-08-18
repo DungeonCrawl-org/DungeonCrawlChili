@@ -549,6 +549,7 @@ unsigned int item_value(item_def item, bool ident)
             case SCR_TORMENT:
             case SCR_SILENCE:
             case SCR_BRAND_WEAPON:
+            case SCR_BLESS_ITEM:
             case SCR_BLINKING:
             case SCR_BUTTERFLIES:
                 valued += 95;
@@ -2461,21 +2462,15 @@ void ShoppingList::fill_out_menu(Menu& shopmenu)
         const int cost = thing_cost(thing);
         const bool unknown = thing_is_item(thing)
                              && shop_item_unknown(get_thing_item(thing));
-        const int owned = thing_is_item(thing)
-                          ? shop_owned_consumable_count(get_thing_item(thing))
-                          : 0;
-        const string ownedstr =
-            owned > 0 ? make_stringf(" (owned: %d)", owned) : "";
 
         const string etitle =
             make_stringf(
-                "%*s%5d gold  %s%s%s",
+                "%*s%5d gold  %s%s",
                 longest,
                 describe_thing_pos(thing).c_str(),
                 cost,
                 name_thing(thing, DESC_A).c_str(),
-                unknown ? " (unknown)" : "",
-                ownedstr.c_str());
+                unknown ? " (unknown)" : "");
 
         MenuEntry *me = new MenuEntry(etitle, MEL_ITEM, 1, hotkey);
         me->data = &thing;
