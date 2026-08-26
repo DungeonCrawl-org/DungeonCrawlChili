@@ -2409,6 +2409,10 @@ w:2
 w:2
 # The Lathe of Heaven
 @The_monster@ says, "What sane person could live in this world and not be crazy?"
+
+w:2
+# Harry Chapin, "Corey's Coming"
+@The_monster@ says, "Reality is only just a word."
 %%%%
 _crazy_yiuf_speech_verbs_
 
@@ -2710,6 +2714,10 @@ feline
 
 bovine
 
+ovine
+
+vulpine
+
 disdain
 
 pontify
@@ -2733,6 +2741,8 @@ fast
 aubergine
 
 sanguine
+
+flibbertigibbet
 
 twenty-three
 
@@ -7581,9 +7591,9 @@ _Wiglaf_rare_
 
 @The_monster@ mutters, "Wee kobolds think thay ken whit a cannon is."
 
-@The_monster@ growls, "I'll break a bone for every stich ye rip."
+@The_monster@ growls, "I'll break a bone for every stitch ye rip."
 
-@The_monster@ mumbles, "If ye must ken, mah gran stiched it fur me."
+@The_monster@ mumbles, "If ye must ken, mah gran stitched it fur me."
 
 @The_monster@ sings a few bars of a dwarven mine shanty. Very poorly.
 

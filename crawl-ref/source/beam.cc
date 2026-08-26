@@ -1272,7 +1272,8 @@ void bolt::do_fire()
             && flavour != BEAM_DIGGING)
         {
             // If wall monster then don't bounce or explode, it's handled later
-            if (mon_at && !wall_monster_hit)
+            // Rush breath only places clouds, and so cannot affect monsters in walls.
+            if (mon_at && !wall_monster_hit && origin_spell != SPELL_RUST_BREATH)
                 wall_monster_hit = true;
             else if (is_bouncy(feat))
             {
@@ -2555,10 +2556,15 @@ void bolt::affect_endpoint()
     // Not using big_cloud so that the area affected is more predictable to the player.
     if (origin_spell == SPELL_RUST_BREATH)
     {
+        explosion_map exp_map;
+        exp_map.init(INT_MAX);
+        determine_affected_cells(exp_map, coord_def(), 0, 2, true, true);
+        const coord_def centre(9,9);
+
         int to_place = ench_power;
         for (distance_iterator di(pos(), true, false, 2); di && to_place > 0; ++di)
         {
-            if (cell_see_cell(*di, agent()->pos(), LOS_NO_TRANS))
+            if (exp_map(*di - pos() + centre) < INT_MAX)
             {
                 place_cloud(CLOUD_RUST, *di, 5 + ench_power * 2 / 3 + random2(2), agent());
                 to_place--;
@@ -3180,6 +3186,9 @@ static int _test_beam_hit(int attack, int defence, defer_rand &r)
 
 bool bolt::is_harmless(const monster* mon) const
 {
+    if (protected_from_spell(origin_spell, *mon, agent()))
+        return true;
+
     // For enchantments, this is already handled in nasty_to().
     if (is_enchantment())
         return !nasty_to(mon);
@@ -4518,18 +4527,34 @@ bool bolt::ignores_player() const
     return false;
 }
 
+ac_type bolt::effective_ac_rule() const
+{
+    if (ac_rule != ac_type::normal)
+        return ac_rule;
+
+    if (flavour == BEAM_DAMNATION)
+        return ac_type::none;
+    if (get_beam_resist_type(flavour) == BEAM_ELECTRICITY)
+        return ac_type::half;
+    if (flavour == BEAM_FRAG)
+        return ac_type::triple;
+
+    return ac_type::normal;
+}
+
+bool bolt::can_be_dodged() const
+{
+    return !is_explosion && !is_big_cloud() && hit != AUTOMATIC_HIT;
+}
+
+bool bolt::can_be_blocked() const
+{
+    return !is_big_cloud() && is_blockable();
+}
+
 int bolt::apply_AC(const actor *victim, int hurted)
 {
-    // Apply automatic AC rules if ac_rule was not manually specified.
-    if (ac_rule == ac_type::normal)
-    {
-        if (flavour == BEAM_DAMNATION)
-            ac_rule = ac_type::none;
-        else if (get_beam_resist_type(flavour) == BEAM_ELECTRICITY)
-            ac_rule = ac_type::half;
-        else if (flavour == BEAM_FRAG)
-            ac_rule = ac_type::triple;
-    }
+    ac_rule = effective_ac_rule();
 
     // beams don't obey GDR -> max_damage is 0
     return victim->apply_ac(hurted, 0, ac_rule, !is_tracer());
@@ -4761,7 +4786,7 @@ void bolt::tracer_nonenchantment_affect_monster(monster* mon)
 
     // Check only if actual damage and the monster is worth caring about.
     // Living spells do count as threats, but are fine being collateral damage.
-    if ((final > 0 || side_effect)
+    if (((final > 0 && !is_harmless(mon)) || side_effect)
         && (mons_is_threatening(*mon) || mons_class_is_test(mon->type))
         && mon->type != MONS_LIVING_SPELL)
     {
@@ -5575,7 +5600,7 @@ void bolt::affect_monster(monster* mon)
         beam_hit = apply_to_hit_modifiers(beam_hit, *mon);
 
     // The monster may block the beam.
-    if (!engulfs && is_blockable() && attempt_block(mon))
+    if (can_be_blocked() && attempt_block(mon))
         return;
 
     defer_rand r;
@@ -5597,7 +5622,7 @@ void bolt::affect_monster(monster* mon)
     // FIXME: We're randomising mon->evasion, which is further
     // randomised inside test_beam_hit. This is so we stay close to the
     // 4.0 to-hit system (which had very little love for monsters).
-    if (!engulfs && hit_margin < 0)
+    if (can_be_dodged() && hit_margin < 0)
     {
         // If the PLAYER cannot see the monster, don't tell them anything!
         if (mon->observable())
@@ -6376,19 +6401,20 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
     }
 
     case BEAM_CHARM:
+    {
+        const bool ours         = !agent() || agent()->wont_attack();
+        const enchant_type good = ours ? ENCH_CHARM : ENCH_HEXED;
+        const enchant_type bad  = ours ? ENCH_HEXED : ENCH_CHARM;
+
+        if (mon->has_ench(bad))
+        {
+            obvious_effect = mon->del_ench(bad);
+            return MON_AFFECTED;
+        }
+
         if (agent() && agent()->is_monster())
         {
-            enchant_type good = (agent()->wont_attack()) ? ENCH_CHARM
-                                                         : ENCH_HEXED;
-            enchant_type bad  = (agent()->wont_attack()) ? ENCH_HEXED
-                                                         : ENCH_CHARM;
-
             const bool could_see = you.can_see(*mon);
-            if (mon->has_ench(bad))
-            {
-                obvious_effect = mon->del_ench(bad);
-                return MON_AFFECTED;
-            }
             if (simple_monster_message(*mon, " is charmed!"))
                 obvious_effect = true;
             mon->add_ench(mon_enchant(good, agent()));
@@ -6413,6 +6439,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         if (you.can_see(*mon))
             obvious_effect = true;
         return MON_AFFECTED;
+    }
 
     case BEAM_PORKALATOR:
     {
@@ -7121,7 +7148,7 @@ void bolt::determine_affected_cells(explosion_map& m, const coord_def& delta,
             // Also affect *other* wall monsters around the area, as long
             // as caster still has LOS to them (i.e. they're not on the *other*
             // side of the wall) which the later recursion loop will check
-            && !monster_at(loc))
+            && !(monster_at(loc) && origin_spell != SPELL_RUST_BREATH))
         {
             return;
         }

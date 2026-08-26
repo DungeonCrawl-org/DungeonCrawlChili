@@ -4898,7 +4898,7 @@ bool mon_shape_is_humanoid(mon_body_shape shape)
            && shape <= MON_SHAPE_LAST_HUMANOID;
 }
 
-int get_dist_to_nearest_monster()
+int get_dist_to_nearest_monster(bool skip_damage_immune)
 {
     int minRange = LOS_RADIUS + 1;
     for (radius_iterator ri(you.pos(), LOS_NO_TRANS, true); ri; ++ri)
@@ -4908,6 +4908,9 @@ int get_dist_to_nearest_monster()
             continue;
 
         if (!you.aware_of(*mon))
+            continue;
+
+        if (skip_damage_immune && mon->damage_immune(&you))
             continue;
 
         // Plants/fungi don't count.

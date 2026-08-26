@@ -51,7 +51,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MAGIC_DART, "Magic Dart",
     spschool::conjuration,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     1,
     25,
     LOS_RADIUS, LOS_RADIUS,
@@ -62,7 +62,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_FIREBALL, "Fireball",
     spschool::conjuration | spschool::fire,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     5,
     200,
     5, 5,
@@ -139,7 +139,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_ARCJOLT, "Arcjolt",
     spschool::conjuration | spschool::air,
-    spflag::none,
+    spflag::direct_damage_only,
     5,
     200,
     2, 2,
@@ -150,7 +150,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_PLASMA_BEAM, "Plasma Beam",
     spschool::fire | spschool::air,
-    spflag::noisy | spflag::destructive,
+    spflag::noisy | spflag::destructive | spflag::direct_damage_only | spflag::needs_target,
     6,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -161,7 +161,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_PERMAFROST_ERUPTION, "Permafrost Eruption",
     spschool::ice | spschool::earth,
-    spflag::destructive,
+    spflag::destructive | spflag::needs_target,
     6,
     200,
     6, 6, // reduce cases of hitting something outside LOS
@@ -453,7 +453,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_LEHUDIBS_CRYSTAL_SPEAR, "Lehudib's Crystal Spear",
     spschool::conjuration | spschool::earth,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     8,
     200,
     3, 3,
@@ -689,7 +689,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_FREEZE, "Freeze",
     spschool::ice,
-    spflag::dir_or_target | spflag::not_self | spflag::destructive,
+    spflag::dir_or_target | spflag::not_self | spflag::destructive | spflag::direct_damage_only,
     1,
     25,
     1, 1,
@@ -903,7 +903,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_STONE_ARROW, "Stone Arrow",
     spschool::conjuration | spschool::earth,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     3,
     50,
     4, 4,
@@ -914,7 +914,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_SHOCK, "Shock",
     spschool::conjuration | spschool::air,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     1,
     25,
     LOS_RADIUS, LOS_RADIUS,
@@ -972,7 +972,7 @@ static const struct spell_desc spelldata[] =
     SPELL_MINDBURST, "Mindburst",
     spschool::conjuration,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
-        | spflag::WL_check,
+        | spflag::WL_check | spflag::direct_damage_only,
     6,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -1028,7 +1028,8 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_AIRSTRIKE, "Airstrike",
     spschool::air,
-    spflag::target | spflag::not_self | spflag::destructive,
+    spflag::target | spflag::not_self | spflag::destructive
+        | spflag::direct_damage_only,
     4,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -1039,7 +1040,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MOMENTUM_STRIKE, "Momentum Strike",
     spschool::conjuration | spschool::translocation,
-    spflag::target | spflag::not_self,
+    spflag::target | spflag::not_self | spflag::direct_damage_only,
     2,
     50,
     4, 4,
@@ -1172,7 +1173,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_DISCHARGE, "Static Discharge",
     spschool::conjuration | spschool::air,
-    spflag::none,
+    spflag::direct_damage_only,
     2,
     50,
     1, 1,
@@ -1206,7 +1207,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_LRD, "Lee's Rapid Deconstruction",
     spschool::earth,
-    spflag::target | spflag::destructive,
+    spflag::target | spflag::destructive | spflag::direct_damage_only,
     5,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -1218,7 +1219,7 @@ static const struct spell_desc spelldata[] =
     SPELL_SANDBLAST, "Sandblast",
     spschool::earth,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
-        | spflag::destructive,
+        | spflag::destructive | spflag::direct_damage_only,
     1,
     50,
     4, 4,
@@ -1252,7 +1253,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_CHAIN_LIGHTNING, "Chain Lightning",
     spschool::air | spschool::conjuration,
-    spflag::none,
+    spflag::direct_damage_only,
     9,
     200,
     -1, -1,
@@ -1353,7 +1354,7 @@ static const struct spell_desc spelldata[] =
     SPELL_HURL_DAMNATION, "Hurl Damnation",
     spschool::conjuration,
     spflag::dir_or_target | spflag::unholy
-        | spflag::needs_tracer,
+        | spflag::needs_tracer | spflag::direct_damage_only,
     // plus DS ability, staff of Dispater & Sceptre of Asmodeus
     9,
     200,
@@ -2353,7 +2354,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_SEARING_RAY, "Searing Ray",
     spschool::conjuration,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     2,
     50,
     4, 4,
@@ -3136,7 +3137,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_ICEBLAST, "Iceblast",
     spschool::conjuration | spschool::ice,
-    spflag::dir_or_target | spflag::needs_tracer,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::direct_damage_only,
     5,
     200,
     5, 5,
@@ -3291,7 +3292,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_IGNITION, "Ignition",
     spschool::fire,
-    spflag::destructive,
+    spflag::destructive | spflag::direct_damage_only,
     8,
     200,
     -1, -1,
@@ -3423,7 +3424,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_STARBURST, "Starburst",
     spschool::conjuration | spschool::fire,
-    spflag::none,
+    spflag::direct_damage_only,
     6,
     200,
     5, 5,
@@ -3456,7 +3457,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_HAILSTORM, "Hailstorm",
     spschool::conjuration | spschool::ice,
-    spflag::none,
+    spflag::direct_damage_only,
     3,
     100,
     3, 3, // Range special-cased in describe-spells
@@ -3512,7 +3513,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MAXWELLS_COUPLING, "Maxwell's Capacitive Coupling",
     spschool::air,
-    spflag::no_ghost | spflag::destructive,
+    spflag::no_ghost | spflag::destructive | spflag::needs_target,
     8,
     200,
     LOS_RADIUS, LOS_RADIUS,
@@ -3589,7 +3590,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_MANIFOLD_ASSAULT, "Manifold Assault",
     spschool::translocation,
-    spflag::none,
+    spflag::needs_target,
     7,
     200,
     -1, -1,
@@ -3700,7 +3701,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_SCORCH, "Scorch",
     spschool::fire,
-    spflag::destructive,
+    spflag::destructive | spflag::needs_target,
     2,
     50,
     3, 3,
@@ -4427,7 +4428,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_FORTRESS_BLAST, "Fortress Blast",
     spschool::forgecraft,
-    spflag::destructive,
+    spflag::destructive | spflag::direct_damage_only,
     6,
     75,
     3, 3,
