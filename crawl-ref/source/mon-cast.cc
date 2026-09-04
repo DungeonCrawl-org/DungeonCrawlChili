@@ -2502,6 +2502,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_FLAMING_CLOUD:
     case SPELL_CHAOS_BREATH:
     case SPELL_FREEZING_GUST:
+    case SPELL_CORROSIVE_BLOB:
         zappy(spell_to_zap(real_spell), power, true, beam);
         break;
 

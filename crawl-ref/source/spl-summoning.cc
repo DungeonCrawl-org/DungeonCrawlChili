@@ -1559,6 +1559,7 @@ static spell_type servitor_spells[] =
     // primary spells
     SPELL_LEHUDIBS_CRYSTAL_SPEAR,
     SPELL_IOOD,
+    SPELL_CORROSIVE_BLOB,
     SPELL_BOMBARD,
     SPELL_PLASMA_BEAM, // maybe should be higher?
     SPELL_PERMAFROST_ERUPTION,
