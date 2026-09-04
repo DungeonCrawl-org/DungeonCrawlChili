@@ -1,18 +1,18 @@
 name: "octavia"
 glyph: {char: "x", colour: lightcyan}
 flags: [speaks, no_skeleton, no_poly_to, no_gen_derived, unique, female]
-resists: {elec: 1, fire: 1, cold: 1, petrify: 1}
+resists: {elec: 1, fire: 1, cold: 1, petrify: 1, poison: 1}
 exp: 3146
 species: octopode
-will: 140
+will: 160
 attacks:
- - {type: tentacle_slap, damage: 24}
- - {type: tentacle_slap, damage: 24}
- - {type: tentacle_slap, damage: 24}
- - {type: constrict, flavour: constrict, damage: 5}
+ - {type: tentacle_slap, damage: 28}
+ - {type: tentacle_slap, damage: 28}
+ - {type: tentacle_slap, damage: 28}
+ - {type: constrict, flavour: constrict, damage: 6}
 hd: 25
 hp_10x: 1800
-ac: 1
+ac: 5
 ev: 24
 has_corpse: true
 shout: shout
