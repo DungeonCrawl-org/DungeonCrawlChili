@@ -1331,6 +1331,8 @@ static int _potion_weight(item_rarity_type rarity)
         return 67;
     case RARITY_RARE:
         return 35;
+    case RARITY_RARER:
+        return 18;
     case RARITY_VERY_RARE:
         return 2;
     default:
@@ -1386,6 +1388,8 @@ static int _scroll_weight(item_rarity_type rarity)
         return 36;
     case RARITY_RARE:
         return 15;
+    case RARITY_RARER:
+        return 12;
     case RARITY_VERY_RARE:
         return 9;
     default:

@@ -53,6 +53,7 @@ enum item_rarity_type
 {
     RARITY_NONE,
     RARITY_VERY_RARE,
+    RARITY_RARER,
     RARITY_RARE,
     RARITY_UNCOMMON,
     RARITY_COMMON,
