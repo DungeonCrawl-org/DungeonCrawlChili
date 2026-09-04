@@ -1314,7 +1314,8 @@ int weapon_min_delay_skill(const item_def &weapon)
 int weapon_min_delay(const item_def &weapon, bool check_speed)
 {
     // Short circuit for lightweights
-    if (weapon_has_flag(weapon.sub_type, WPNF_LIGHTWEIGHT))
+    if (weapon_has_flag(weapon.sub_type, WPNF_LIGHTWEIGHT)
+        && !(weapon.sub_type == WPN_QUICK_BLADE))
         return 3;
 
     const int base = property(weapon, PWPN_SPEED);
