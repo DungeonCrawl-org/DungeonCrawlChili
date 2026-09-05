@@ -2533,6 +2533,8 @@ string describe_item_rarity(const item_def &item)
     {
     case RARITY_VERY_RARE:
         return "very rare";
+    case RARITY_RARER:
+        return "rarer";
     case RARITY_RARE:
         return "rare";
     case RARITY_UNCOMMON:
