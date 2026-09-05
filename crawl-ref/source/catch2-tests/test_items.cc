@@ -5,11 +5,14 @@
 #include "artefact.h"
 #include "art-enum.h"
 #include "items.h"
+#include "item-name.h"
+#include "item-use.h"
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "invent.h"
 #include "player-equip.h"
 #include "potion-type.h"
+#include "species.h"
 
 #include "test_player_fixture.h"
 
@@ -53,6 +56,46 @@ static item_def simple_create_item(object_class_type base_type,
     item.brand = ego;
 
     return item;
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Felids can enchant boots with known scrolls", "[single-file]")
+{
+    you.species = SP_FELID;
+    give_basic_mutations(SP_FELID);
+    REQUIRE(you.has_mutation(MUT_NO_GRASPING));
+
+    item_def scroll = simple_create_item(OBJ_SCROLLS, SCR_ENCHANT_ARMOUR);
+    you.inv[0] = simple_create_item(OBJ_ARMOUR, ARM_BOOTS);
+    item_def &boots = you.inv[0];
+    boots.flags |= ISFLAG_IDENT_MASK;
+    REQUIRE(can_equip_item(boots));
+
+    SECTION("Unknown and known scrolls both allow enchanting")
+    {
+        const bool known = GENERATE(false, true);
+        you.type_ids[OBJ_SCROLLS][SCR_ENCHANT_ARMOUR] = known;
+        REQUIRE(cannot_read_item_reason(&scroll).empty());
+        REQUIRE(any_items_of_type(OSEL_ENCHANTABLE_ARMOUR));
+        REQUIRE(enchant_armour(boots, true));
+        REQUIRE(boots.plus == 1);
+    }
+
+    SECTION("Known scrolls still require an enchantable target")
+    {
+        you.type_ids[OBJ_SCROLLS][SCR_ENCHANT_ARMOUR] = true;
+        boots.plus = armour_max_enchant(boots);
+        REQUIRE_FALSE(any_items_of_type(OSEL_ENCHANTABLE_ARMOUR));
+        REQUIRE_FALSE(cannot_read_item_reason(&scroll).empty());
+        REQUIRE_FALSE(enchant_armour(boots, true));
+    }
+
+    SECTION("Weapon enhancement remains blocked")
+    {
+        scroll.sub_type = GENERATE(SCR_ENCHANT_WEAPON, SCR_BRAND_WEAPON);
+        REQUIRE(cannot_read_item_reason(&scroll, false, true)
+                == "There's no point in enhancing weapons you can't use!");
+    }
 }
 
 static int find_inv_index_with_exact_item(object_class_type base_type, int sub_type){
