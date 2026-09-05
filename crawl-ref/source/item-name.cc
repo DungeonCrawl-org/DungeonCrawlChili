@@ -3127,7 +3127,8 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident,
                 return "There's no point in enhancing weapons you can't use!";
             break;
         case SCR_ENCHANT_ARMOUR:
-            if (you.has_mutation(MUT_NO_GRASPING))
+            // Felids cannot grasp weapons, but can wear boots.
+            if (you.has_mutation(MUT_NO_GRASPING) && you.species != SP_FELID)
                 return "There's no point in enchanting armour you can't use!";
             break;
 
