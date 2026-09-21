@@ -17,7 +17,7 @@ explorer.generation_order = {
                 "Snake:1", "Snake:2", "Snake:3",
                 "Shoals:1", "Shoals:2", "Shoals:3",
                 "Swamp:1", "Swamp:2", "Swamp:3",
-                "Vaults:1", "Vaults:2", "Vaults:3", "Vaults:4", "Vaults:5",
+                "Vaults:1", "Vaults:2", "Vaults:3", "Vaults:4",
                 "Crypt:1", "Crypt:2", "Crypt:3",
                 "Depths:1", "Depths:2", "Depths:3",
                 "Hell",

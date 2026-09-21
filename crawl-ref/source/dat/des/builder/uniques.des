@@ -316,7 +316,7 @@ DEPTH:  D:14-, Elf, !Elf:$, Snake, Spider
 ################################################################################
 
 NAME:   uniq_arachne
-DEPTH:  Vaults:1-4, Elf, Depths:1
+DEPTH:  Vaults:1-3, Elf, Depths:1
 veto {{
   if crawl.game_started() and dgn.br_exists("Spider") then
     return true
@@ -503,7 +503,7 @@ DEPTH:  Zot
 : place_unique(_G, "Tiamat band")
 
 NAME:   uniq_zenata
-DEPTH:  Vaults:1-4, Elf, Crypt
+DEPTH:  Vaults:1-3, Elf, Crypt
 : place_unique(_G, "Zenata")
 
 NAME:   uniq_cerebov

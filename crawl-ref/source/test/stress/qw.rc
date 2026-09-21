@@ -6193,7 +6193,7 @@ function plan_new_travel()
   if where == "Shoals:4" and you.have_rune("barnacled") then
     travel_destination = "D"
   end
-  if where == "Vaults:5" and you.have_rune("silver") then
+  if where == "Vaults:4" and you.have_rune("silver") then
     if game_status == "tomb" then
       travel_destination = "C"
     else
@@ -8194,7 +8194,7 @@ function update_stuff()
       say("Entered " .. where .. ".")
     end
     c_persist.portals_found = { }
-    if where == "Vaults:5" and not v5_entry_turn then
+    if where == "Vaults:4" and not v5_entry_turn then
       v5_entry_turn = you.turns()
     end
   end
