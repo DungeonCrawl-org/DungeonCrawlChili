@@ -232,11 +232,13 @@ static void _apply_ood(level_id &place)
 #endif
 
     const int fuzzspan = _ood_fuzzspan(place);
-    if (fuzzspan && x_chance_in_y(14, 100))
+    // Halve random depth boosts in the Dungeon to soften difficulty spikes.
+    const int fuzz_chance = place.branch == BRANCH_DUNGEON ? 7 : 14;
+    if (fuzzspan && x_chance_in_y(fuzz_chance, 100))
     {
         // We want a left-weighted distribution; slight fuzzing should be much
-        // more common than the full depth fuzz. This does mean that OODs are closer
-        // to a 6% chance than the 14% implied above, which is a bit silly.
+        // more common than the full depth fuzz. Only positive results boost
+        // depth, giving roughly a 3% OOD chance in Dungeon and 6% elsewhere.
         const int fuzz = random_range(-fuzzspan, fuzzspan, 2);
         if (fuzz > 0)
         {
