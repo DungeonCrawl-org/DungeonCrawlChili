@@ -1409,6 +1409,10 @@ static void _generate_scroll_item(item_def& item, int force_type, int agent)
         {
             const scroll_type scr = (scroll_type) i;
 
+            // Potions and scrolls are already identified in Chili.
+            if (scr == SCR_IDENTIFY)
+                continue;
+
             // Only generate the scroll types chosen for this game.
             if (item_excluded_from_set(OBJ_SCROLLS, scr))
                 continue;

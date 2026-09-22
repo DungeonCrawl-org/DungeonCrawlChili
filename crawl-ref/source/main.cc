@@ -434,6 +434,12 @@ NORETURN static void _launch_game()
 
     _set_removed_types_as_identified();
 
+    // Consumables are known from the start, including in existing saves.
+    for (int subtype = 0; subtype < NUM_POTIONS; ++subtype)
+        identify_item_type(OBJ_POTIONS, subtype);
+    for (int subtype = 0; subtype < NUM_SCROLLS; ++subtype)
+        identify_item_type(OBJ_SCROLLS, subtype);
+
     Version::record(you.prev_save_version);
 
     if (!crawl_state.game_is_tutorial())
