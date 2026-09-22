@@ -117,7 +117,7 @@ const Branch branches[NUM_BRANCHES] =
       'M', { RUNE_SLIME }, branch_noise::quiet, 7,
       {BRANCH_LAIR, BRANCH_VAULTS } },
 
-    { BRANCH_VAULTS, BRANCH_DUNGEON, 12, 13, 5, 19,
+    { BRANCH_VAULTS, BRANCH_DUNGEON, 12, 13, 4, 19,
       brflag::dangerous_end,
       DNGN_ENTER_VAULTS, DNGN_EXIT_VAULTS, NUM_FEATURES,
       "Vaults", "the Vaults", "Vaults",
