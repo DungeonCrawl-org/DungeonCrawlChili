@@ -1257,8 +1257,10 @@ static bool _is_slow_equip(const item_def& item, bool removing = false)
 {
     if (item.base_type == OBJ_JEWELLERY)
         return jewellery_is_amulet(item.sub_type);
-    else if (item.base_type == OBJ_ARMOUR)
+    else if (item.base_type == OBJ_ARMOUR && item.sub_type == ARM_ORB)
         return removing; 
+    else if (item.base_type == OBJ_ARMOUR)
+        return true;
     else if (is_weapon(item))
         return you.has_mutation(MUT_SLOW_WIELD);
 
