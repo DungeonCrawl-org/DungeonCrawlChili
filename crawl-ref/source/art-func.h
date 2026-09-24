@@ -33,6 +33,7 @@
 #include "exercise.h"      // For practise_evoking
 #include "fight.h"
 #include "fineff.h"        // For the Storm Queen's Shield
+#include "god-abil.h"      // For Forgewarden's cuirass (ru_reject_sacrifices)
 #include "mgen-data.h"     // For Sceptre of Asmodeus
 #include "melee-attack.h"  // For Fungal Fisticloak
 #include "message.h"
@@ -1824,32 +1825,6 @@ static void _ICE_DRAGON_ARCANIST_SCALES_unequip(item_def */*item*/, bool *show_m
 }
 
 /////////////////////////////////////////////////////
-static void _PLASMA_BLADE_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
-{
-    _equip_mpr(show_msgs, "The plasma blade comes to life!");
-}
-
-static void _PLASMA_BLADE_unequip(item_def */*item*/, bool *show_msgs)
-{
-    _equip_mpr(show_msgs, "The plasma blade fades away.");
-}
-
-static void _PLASMA_BLADE_melee_effects(item_def* /*weapon*/, actor* /*attacker*/,
-                                     actor* defender, int /*dam*/, melee_attack* atk)
-{
-    if (coinflip())
-    {
-        mpr("The plasma blade releases a burst of energy!");
-        atk->inflict_damage(random_range(1, 8), BEAM_HOLY);
-
-        if (x_chance_in_y(1, 20))
-        {
-            mpr("The plasma blade releases a blinding burst of energy!");
-            defender->as_monster()->add_ench(mon_enchant(ENCH_BLIND));
-        }
-    }
-}
-
 static void _FIVE_VIRTUES_world_reacts(item_def */*item*/)
 {
     you.redraw_armour_class = true;
@@ -1899,3 +1874,34 @@ static void _HANAS_SCIMITAR_unequip(item_def */*item*/, bool *show_msgs)
     you.diminish(&you, 10);
 }
 
+static void _FORGEWARDEN_equip(item_def */*item*/, bool *show_msgs, bool unmeld)
+{
+    // This is mostly verbatim from _remove_amulet_of_faith but has a different
+    // condition and needs different messaging
+    if (!unmeld)
+    {
+        if (!faith_has_penalty())
+        {
+            if (you.religion == GOD_NO_GOD && !you.has_mutation(MUT_FORLORN))
+                _equip_mpr(show_msgs, "You feel a strange surge of divine displeasure.");
+            return;
+        }
+        if (you_worship(GOD_RU))
+        {
+            // next sacrifice is going to be delaaaayed.
+            ASSERT(you.raw_piety < piety_breakpoint(5));
+            ru_reject_sacrifices(true);
+            return;
+        }
+
+        if (show_msgs)
+            simple_god_message(" seems less inclined to favour you.");
+
+        // Identical penalty to removing an amulet of faith
+        const int piety_loss = div_rand_round(you.raw_piety, 3);
+        if (show_msgs)
+            mprf(MSGCH_GOD, "You feel less pious.");
+
+        lose_piety(piety_loss);
+    }
+}

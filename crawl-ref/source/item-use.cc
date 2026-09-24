@@ -2628,29 +2628,30 @@ bool uncancel_bless_item()
 
 bool enchant_weapon(item_def &wpn, bool quiet)
 {
-    bool success = false;
+    // Cannot be enchanted.
+    if (!is_enchantable_weapon(wpn))
+    {
+        if (!quiet)
+            canned_msg(MSG_NOTHING_HAPPENS);
+        return false;
+    }
 
     // Get item name now before changing enchantment.
     string iname = _item_name(wpn);
 
-    if (is_enchantable_weapon(wpn))
+    wpn.plus++;
+    // Make sure newly enchanted items appear as such.
+    item_set_appearance(wpn);
+
+    if (!quiet)
     {
-        wpn.plus++;
-        success = true;
-        if (!quiet)
-        {
-            const char* dur = wpn.plus < MAX_WPN_ENCHANT ? "moment" : "while";
-            mprf("%s glows red for a %s.", iname.c_str(), dur);
-        }
+        const char* dur = wpn.plus < MAX_WPN_ENCHANT ? "moment" : "while";
+        mprf("%s glows red for a %s.", iname.c_str(), dur);
     }
 
-    if (!success && !quiet)
-        canned_msg(MSG_NOTHING_HAPPENS);
+    you.wield_change = true;
 
-    if (success)
-        you.wield_change = true;
-
-    return success;
+    return true;
 }
 
 /**
@@ -2791,9 +2792,12 @@ bool enchant_armour(item_def &arm, bool quiet)
         return false;
     }
 
-    string name = _item_name(arm);
+    // Get item name now before changing enchantment.
+    string iname = _item_name(arm);
 
-    ++arm.plus;
+    arm.plus++;
+    // Make sure newly enchanted items appear as such.
+    item_set_appearance(arm);
 
     if (!quiet)
     {
@@ -2801,7 +2805,7 @@ bool enchant_armour(item_def &arm, bool quiet)
                             && arm.sub_type != ARM_TROLL_LEATHER_ARMOUR;
         string glow = conjugate_verb("glow", plural);
         const char* dur = is_enchantable_armour(arm) ? "moment" : "while";
-        mprf("%s %s green for a %s.", name.c_str(), glow.c_str(), dur);
+        mprf("%s %s green for a %s.", iname.c_str(), glow.c_str(), dur);
     }
 
     return true;
@@ -3130,7 +3134,7 @@ bool scroll_hostile_check(scroll_type which_scroll)
     {
         const monster* mon = monster_at(*ri);
         if (!mon
-            || !mon->visible_to(&you)
+            || !you.aware_of(*mon)
             // Plants/fungi don't count.
             || (!mons_is_threatening(*mon) || mon->wont_attack())
                 && !mons_class_is_test(mon->type))
