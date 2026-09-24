@@ -788,7 +788,7 @@ divine attributes mutation
 Your divine heritage dramatically boosts your attribute gain (Strength,
 Intelligence, and Dexterity) as you level up relative to other species, both
 in quantity and in how much you can control your development. Every three
-levels, you choose an attribute to increase by four points.
+levels, you choose an attribute to increase by two points.
 %%%%
 tentacles mutation
 
