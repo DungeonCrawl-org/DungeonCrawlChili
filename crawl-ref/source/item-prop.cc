@@ -1045,6 +1045,7 @@ void init_properties()
 
 const set<pair<object_class_type, int> > removed_items =
 {
+    { OBJ_SCROLLS, SCR_IDENTIFY },
 #if TAG_MAJOR_VERSION == 34
     { OBJ_JEWELLERY, AMU_CONTROLLED_FLIGHT },
     { OBJ_JEWELLERY, AMU_CONSERVATION },
@@ -1075,6 +1076,7 @@ const set<pair<object_class_type, int> > removed_items =
     { OBJ_POTIONS,   POT_POISON },
     { OBJ_POTIONS,   POT_RESTORE_ABILITIES },
     { OBJ_POTIONS,   POT_CURE_MUTATION },
+    { OBJ_POTIONS,   POT_DUMMY_AGILITY },
     { OBJ_BOOKS,     BOOK_WIZARDRY },
     { OBJ_BOOKS,     BOOK_CONTROL },
     { OBJ_BOOKS,     BOOK_BUGGY_DESTRUCTION },
@@ -2493,7 +2495,6 @@ static map<potion_type, item_rarity_type> _potion_rarity = {
 };
 
 static map<scroll_type, item_rarity_type> _scroll_rarity = {
-    { SCR_IDENTIFY,       RARITY_VERY_COMMON },
     { SCR_TELEPORTATION,  RARITY_COMMON },
     { SCR_AMNESIA,        RARITY_UNCOMMON },
     { SCR_NOISE,          RARITY_UNCOMMON },
