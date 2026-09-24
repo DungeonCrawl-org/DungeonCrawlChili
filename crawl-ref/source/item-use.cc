@@ -2128,7 +2128,7 @@ bool god_hates_brand(const brand_type brand)
     return false;
 }
 
-bool god_hates_blessing(const special_armour_type brand)
+static bool god_hates_blessing(const special_armour_type brand)
 {
     if (is_good_god(you.religion) && brand == SPARM_DEATH)
         return true;
