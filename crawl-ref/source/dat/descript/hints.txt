@@ -528,7 +528,7 @@ you attack more slowly with ranged weapons.
 %%%%
 HINT_CHOOSE_STAT
 
-Upon gaining levels 3, 9, 15, etc., you get to choose an attribute to raise:
+Upon gaining levels 3, 6, 9, etc., you get to choose an attribute to raise:
 strength, intelligence, or dexterity.
 
 <w>Strength</w> makes heavy armour less cumbersome and slightly increases most

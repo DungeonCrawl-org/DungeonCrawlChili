@@ -75,11 +75,11 @@ bool attribute_increase()
 {
     const bool need_caps = Options.easy_confirm != easy_confirm_type::all;
 
-    const int statgain = you.has_mutation(MUT_DIVINE_ATTRS) ? 4 : 2;
+    const int statgain = you.has_mutation(MUT_DIVINE_ATTRS) ? 2 : 1;
 
     const string stat_gain_message = make_stringf("Your experience leads to a%s "
                                                   "increase in your attributes!",
-                                                  (statgain > 2) ?
+                                                  (statgain > 1) ?
                                                   " dramatic" : "n");
     crawl_state.stat_gain_prompt = true;
     mprf(MSGCH_INTRINSIC_GAIN, "%s", stat_gain_message.c_str());
