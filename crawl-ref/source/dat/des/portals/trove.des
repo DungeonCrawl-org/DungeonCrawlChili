@@ -879,7 +879,7 @@ trove_offense(_G, trove_weap_brand(_G, "freezing", true),
                   trove_good_talisman(_G, "rC"), "ice magic")
 trove_defense(_G, armour, trove_ego_gen_armour(_G, "cold_resistance", "rC"),
                   trove_jewel_type(_G, "rC"),
-                  trove_cons(_G, {"identify w:1 q:4"},
+                  trove_cons(_G, {"fog w:1 q:4"},
                              {"resistance q:2 w:5", "ambrosia q:3 w:5",
                               "magic q:2 w:5"}, nil,
                               "wand of iceblast charges:8", "phial of floods"))
