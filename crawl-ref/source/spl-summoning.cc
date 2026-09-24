@@ -726,7 +726,7 @@ bool summon_holy_warrior(int pow, bool punish)
                  punish ? BEH_HOSTILE : BEH_FRIENDLY,
                  you.pos(), MHITYOU, MG_FORCE_BEH | MG_AUTOFOE, GOD_SHINING_ONE);
     mg.set_summoned(punish ? 0 : &you, SPELL_NO_SPELL,
-                    punish ? 0 : random_range(80, 110) + pow / 2);
+                    punish ? 0 : random_range(800, 1100) + pow * 5);
 
     if (punish)
     {
@@ -1210,7 +1210,7 @@ bool is_gateway_target(const actor& caster, coord_def location, bool only_known)
         if (!only_known)
             return false;
 
-        if (creature->visible_to(&caster))
+        if (caster.aware_of(*creature))
             return false;
     }
 
@@ -1922,7 +1922,6 @@ static bool _battlesphere_should_fire(actor* target,
 
 static void _fire_battlesphere(monster* battlesphere, bolt& beam)
 {
-    beam.thrower = battlesphere->summoner == MID_PLAYER ? KILL_YOU : KILL_MON;
     beam.set_is_tracer(false);
 
     battlesphere->foe = actor_at(beam.target)->mindex();
@@ -1987,8 +1986,8 @@ bool trigger_battlesphere(actor* agent)
     beam.flavour     = BEAM_MMISSILE;
     beam.pierce      = false;
     beam.target      = target->pos();
-    beam.source_id   = battlesphere->mid;
-    beam.attitude    = mons_attitude(*battlesphere);
+    beam.attitude    = agent->temp_attitude();
+    beam.set_agent(agent);
 
     coord_def fallback_pos;
     // First, just try to fire from our present position

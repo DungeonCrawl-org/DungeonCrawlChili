@@ -1711,29 +1711,49 @@ bool is_enchantable_armour(const item_def &arm, bool unknown)
     if (!armour_is_enchantable(arm))
         return false;
 
-    // If we don't know the plusses, assume enchanting is possible.
-    if (unknown && !is_artefact(arm) && !arm.is_identified())
-        return true;
-
-    // Artefacts or highly enchanted armour cannot be enchanted.
-    if ((is_artefact(arm)
-        && (!you.has_mutation(MUT_ARTEFACT_ENCHANTING) || is_unrandom_artefact(arm))
-        || arm.plus >= armour_max_enchant(arm)))
+    // Artefacts (unless they're random artefacts and you have the relevant
+    // mutation) cannot be enchanted.
+    if (is_artefact(arm)
+           && (is_unrandom_artefact(arm)
+               || !you.has_mutation(MUT_ARTEFACT_ENCHANTING)))
     {
         return false;
+    }
+
+    // Highly enchanted armour cannot be enchanted...
+    if (arm.plus >= armour_max_enchant(arm))
+    {
+        // ...but if we don't know the plusses, assume enchanting is possible.
+        return unknown && !arm.is_identified();
     }
 
     return true;
 }
 
-bool is_enchantable_weapon(const item_def &weapon, bool unknown)
+// Returns whether a weapon can be enchanted further.
+// If unknown is true, unidentified weapons will return true.
+bool is_enchantable_weapon(const item_def &wpn, bool unknown)
 {
-    return weapon.base_type == OBJ_WEAPONS
-       && (!is_artefact(weapon)
-           || (!is_unrandom_artefact(weapon)
-               && you.has_mutation(MUT_ARTEFACT_ENCHANTING)))
-       && (unknown && !weapon.is_identified()
-           || weapon.plus < MAX_WPN_ENCHANT);
+    if (wpn.base_type != OBJ_WEAPONS)
+        return false;
+
+    // Artefacts (unless they're random artefacts and you have the relevant
+    // mutation) cannot be enchanted.
+    if (is_artefact(wpn)
+           && (is_unrandom_artefact(wpn)
+               || !you.has_mutation(MUT_ARTEFACT_ENCHANTING)))
+    {
+        return false;
+    }
+
+    // Highly enchanted weapons cannot be enchanted...
+    if (wpn.plus >= MAX_WPN_ENCHANT)
+    {
+        // ...but if we don't know the plusses, assume enchanting is possible.
+        return unknown && !wpn.is_identified();
+    }
+
+    return true;
 }
 
 //
@@ -2838,6 +2858,11 @@ int property(const item_def &item, int prop_type)
             && is_unrandom_artefact(item, UNRAND_SLICK_SLIPPERS))
         {
             return 0;
+        }
+        else if (prop_type == PARM_EVASION && is_unrandom_artefact(item))
+        {
+            return armour_prop(item.sub_type, prop_type)
+                - artefact_property(item, ARTP_BASE_ENCUMBRANCE) * 10;
         }
         return armour_prop(item.sub_type, prop_type);
 
