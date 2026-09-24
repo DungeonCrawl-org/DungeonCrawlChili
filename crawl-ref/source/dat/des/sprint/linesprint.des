@@ -32,7 +32,7 @@ function general_item_setup(e)
           potion of berserk rage pre_id /\
           potion of mutation pre_id")
   e.kitem("? = scroll of blinking pre_id /\
-          scroll of identify pre_id / scroll of fog pre_id /\
+          scroll of revelation pre_id / scroll of fog pre_id /\
           scroll of fear pre_id / scroll of enchant weapon pre_id q:2 /\
           scroll of enchant armour pre_id q:2")
 end

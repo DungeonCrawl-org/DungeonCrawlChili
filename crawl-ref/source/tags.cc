@@ -6017,6 +6017,10 @@ void unmarshallItem(reader &th, item_def &item)
 
     item.props.clear();
     item.props.read(th);
+    // Preserve the usefulness of identify scrolls from older Chili saves.
+    if (item.is_type(OBJ_SCROLLS, SCR_IDENTIFY))
+        item.sub_type = SCR_REVELATION;
+
 #if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() < TAG_MINOR_CORPSE_COLOUR
         && item.base_type == OBJ_CORPSES

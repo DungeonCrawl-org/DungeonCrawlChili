@@ -1399,6 +1399,10 @@ static int _scroll_weight(item_rarity_type rarity)
 
 static void _generate_scroll_item(item_def& item, int force_type, int agent)
 {
+    // Handle old item specifications without recreating removed scrolls.
+    if (force_type == SCR_IDENTIFY)
+        force_type = SCR_REVELATION;
+
     // determine sub_type:
     if (force_type != OBJ_RANDOM)
         item.sub_type = force_type;

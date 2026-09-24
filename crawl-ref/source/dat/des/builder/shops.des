@@ -2300,7 +2300,7 @@ NAME:  nicolae_shop_information_kiosk
 TAGS:  transparent extra no_rotate no_vmirror no_pool_fixup
 DEPTH: D:1-7
 KFEAT: S = general shop type:Information suffix:Kiosk count:4 use_all ; \
-           scroll of identify q:1 | scroll of identify q:2 | \
+           scroll of revelation q:1 | scroll of revelation q:2 | \
            scroll of revelation q:1 | scroll of revelation q:2
 MAP
    ...

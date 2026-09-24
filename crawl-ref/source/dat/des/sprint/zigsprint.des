@@ -793,7 +793,7 @@ KITEM:    K = potion of curing q:9 pre_id, \
               potion of brilliance q:2 pre_id
 KITEM:    L = scroll of blinking q:3 pre_id, \
               scroll of fear q:2 pre_id, \
-              scroll of identify q:5 pre_id, \
+              scroll of revelation q:5 pre_id, \
               scroll of fog q:7 pre_id, \
               scroll of amnesia q:4 pre_id
 KITEM:    N = any beam wand pre_id charges:7, \
