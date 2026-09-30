@@ -1000,6 +1000,9 @@ static void _add_formatted_keyhelp(column_composer &cols)
             "<h>Non-Gameplay Commands / Info\n");
 
     _add_command(cols, 0, CMD_GAME_MENU, "game menu", 2);
+#ifdef USE_TILE_LOCAL
+    cols.add_formatted(0, "<w>F11</w> : Full screen borderless view", false);
+#endif
     _add_command(cols, 0, CMD_REPLAY_MESSAGES, "show Previous messages");
     _add_command(cols, 0, CMD_REDRAW_SCREEN, "Redraw screen");
     _add_command(cols, 0, CMD_CLEAR_MAP, "Clear main and level maps");
