@@ -451,6 +451,7 @@ static constexpr int STARTUP_PROJECT357_WEBTILES = -11;
 static constexpr int STARTUP_DCF_WEBTILES = -12;
 static constexpr int STARTUP_PLAY_WEBTILES = -13;
 static constexpr int STARTUP_VIEW_LAST_MORGUE = -14;
+static constexpr int STARTUP_GAME_OPTIONS = -15;
 
 static void _show_last_morgue()
 {
@@ -577,12 +578,8 @@ static const vector<game_modes_menu_item> entries =
     {STARTUP_OTHER_GAMEPLAY_OPTIONS, "Other gameplay options",
         "Choose another gameplay mode." },
     {GAME_TYPE_INSTRUCTIONS, "Instructions", "Help menu." },
-    {GAME_TYPE_HIGH_SCORES, "High Scores",
-        "View the high score list." },
-    {STARTUP_VIEW_LAST_MORGUE, "View last morgue file",
-        "Read the most recently updated morgue file." },
-    {STARTUP_EDIT_INIT, "Edit init.txt",
-        "Open the init.txt configuration file in a text editor." },
+    {STARTUP_GAME_OPTIONS, "Highscores, morgues and game options",
+        "View high scores and your last morgue, or edit game options." },
     {STARTUP_PLAY_WEBTILES, "Play online on a WebTiles server",
         "Choose a WebTiles server to play on." },
     {STARTUP_VIEW_WEBSITES, "View websites",
@@ -597,6 +594,16 @@ static const vector<game_modes_menu_item> other_gameplay_entries =
         "Hard, fixed single level game mode." },
     {GAME_TYPE_ARENA, "The Arena",
         "Pit computer controlled teams versus each other!" },
+};
+
+static const vector<game_modes_menu_item> game_options_entries =
+{
+    {GAME_TYPE_HIGH_SCORES, "High Scores",
+        "View the high score list." },
+    {STARTUP_VIEW_LAST_MORGUE, "View last morgue file",
+        "Read the most recently updated morgue file." },
+    {STARTUP_EDIT_INIT, "Edit init.txt",
+        "Open the init.txt configuration file in a text editor." },
 };
 
 static const vector<game_modes_menu_item> website_entries =
@@ -666,6 +673,8 @@ static void _add_game_modes_menu_entry(shared_ptr<OuterMenu>& container,
                     ? static_cast<tileidx_t>(TILEG_CMD_REPLAY_MESSAGES)
                 : entry.id == STARTUP_CRAWL_COSPLAY_DISCORD
                     ? static_cast<tileidx_t>(TILEG_CMD_REPLAY_MESSAGES)
+                : entry.id == STARTUP_GAME_OPTIONS
+                    ? static_cast<tileidx_t>(TILEG_CMD_EDIT_PLAYER_TILE)
                 : entry.id == STARTUP_EDIT_INIT
                     ? static_cast<tileidx_t>(TILEG_CMD_EDIT_PLAYER_TILE)
                 : entry.id == STARTUP_VIEW_LAST_MORGUE
@@ -935,6 +944,20 @@ public:
             });
         }
 
+        game_options_menu = make_shared<OuterMenu>(
+            true, 1, game_options_entries.size());
+        game_options_menu->set_margin_for_sdl(0, 0, 10, 10);
+        game_options_menu->set_margin_for_crt(0, 0, 1, 0);
+        game_options_menu->descriptions = descriptions;
+        for (size_t i = 0; i < game_options_entries.size(); ++i)
+            _add_game_modes_menu_entry(game_options_menu, game_options_entries[i], i);
+        for (auto &w : game_options_menu->get_buttons())
+        {
+            w->on_focusin_event([w, this](const FocusEvent&) {
+                return this->on_button_focusin(*w);
+            });
+        }
+
         webtiles_menu = make_shared<OuterMenu>(true, 1, webtiles_entries.size());
         webtiles_menu->set_margin_for_sdl(0, 0, 10, 10);
         webtiles_menu->set_margin_for_crt(0, 0, 1, 0);
@@ -976,6 +999,20 @@ public:
         websites_back_hint->set_margin_for_sdl(10, 0, 10, 0);
         websites_screen->add_child(std::move(websites_back_hint));
 
+        auto game_options_screen = make_shared<Box>(Box::VERT);
+        game_options_screen->set_cross_alignment(Widget::Align::STRETCH);
+        auto game_options_title = make_shared<Text>(formatted_string(
+            "Highscores, morgues and game options", YELLOW));
+        game_options_title->set_margin_for_crt(0, 1, 1, 0);
+        game_options_title->set_margin_for_sdl(0, 0, 10, 0);
+        game_options_screen->add_child(std::move(game_options_title));
+        game_options_screen->add_child(game_options_menu);
+        auto game_options_back_hint = make_shared<Text>(formatted_string(
+            "Esc - Back to main menu", BROWN));
+        game_options_back_hint->set_margin_for_crt(1, 0, 1, 0);
+        game_options_back_hint->set_margin_for_sdl(10, 0, 10, 0);
+        game_options_screen->add_child(std::move(game_options_back_hint));
+
         auto webtiles_screen = make_shared<Box>(Box::VERT);
         webtiles_screen->set_cross_alignment(Widget::Align::STRETCH);
         auto webtiles_title = make_shared<Text>(formatted_string(
@@ -995,6 +1032,7 @@ public:
         startup_screens->add_child(other_screen);
         startup_screens->add_child(websites_screen);
         startup_screens->add_child(webtiles_screen);
+        startup_screens->add_child(game_options_screen);
         startup_screens->current() = 0;
         m_root->add_child(startup_screens);
 
@@ -1074,6 +1112,7 @@ private:
         case GAME_TYPE_INSTRUCTIONS:
         case STARTUP_EDIT_INIT:
         case STARTUP_VIEW_WEBSITES:
+        case STARTUP_GAME_OPTIONS:
         case STARTUP_PLAY_WEBTILES:
         case STARTUP_DUNGEON_CRAWL_CHILI:
         case STARTUP_DUNGEON_CRAWL_CHANGES:
@@ -1108,6 +1147,7 @@ private:
     shared_ptr<OuterMenu> game_modes_menu;
     shared_ptr<OuterMenu> other_gameplay_menu;
     shared_ptr<OuterMenu> website_menu;
+    shared_ptr<OuterMenu> game_options_menu;
     shared_ptr<OuterMenu> webtiles_menu;
     shared_ptr<OuterMenu> save_games_menu;
     // not a `game_type` because it is used for save #s as well
@@ -1172,7 +1212,10 @@ void UIStartupMenu::on_show()
                 const int previous_screen = startup_screens->current();
                 startup_screens->current() = 0;
                 const int main_menu_id = previous_screen == 1
-                    ? STARTUP_OTHER_GAMEPLAY_OPTIONS : STARTUP_VIEW_WEBSITES;
+                    ? STARTUP_OTHER_GAMEPLAY_OPTIONS
+                    : previous_screen == 2 ? STARTUP_VIEW_WEBSITES
+                    : previous_screen == 3 ? STARTUP_PLAY_WEBTILES
+                    : STARTUP_GAME_OPTIONS;
                 if (auto button = game_modes_menu->get_button_by_id(main_menu_id))
                     game_modes_menu->scroll_button_into_view(button);
                 return true;
@@ -1292,6 +1335,13 @@ void UIStartupMenu::menu_item_activated(int id)
         descriptions->current() = -1;
         if (auto button = website_menu->get_button(0, 0))
             website_menu->scroll_button_into_view(button);
+        return;
+
+    case STARTUP_GAME_OPTIONS:
+        startup_screens->current() = 4;
+        descriptions->current() = -1;
+        if (auto button = game_options_menu->get_button(0, 0))
+            game_options_menu->scroll_button_into_view(button);
         return;
 
     case STARTUP_PLAY_WEBTILES:
