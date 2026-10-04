@@ -452,6 +452,7 @@ static constexpr int STARTUP_DCF_WEBTILES = -12;
 static constexpr int STARTUP_PLAY_WEBTILES = -13;
 static constexpr int STARTUP_VIEW_LAST_MORGUE = -14;
 static constexpr int STARTUP_GAME_OPTIONS = -15;
+static constexpr int STARTUP_OPEN_MORGUE_FOLDER = -16;
 
 static void _show_last_morgue()
 {
@@ -533,15 +534,9 @@ static string _shell_quote(const string &text)
     return quoted + "'";
 }
 
-static bool _edit_init_file()
+#if !defined(TARGET_OS_MACOSX) && !defined(TARGET_OS_LINUX)
+static bool _open_startup_file(const string &path)
 {
-    const string path = Options.filename.empty() ? find_crawlrc()
-                                                  : Options.filename;
-#if defined(TARGET_OS_MACOSX)
-    return std::system((string("/usr/bin/open -t ") + _shell_quote(path)).c_str()) == 0;
-#elif defined(TARGET_OS_LINUX)
-    return std::system((string("xdg-open ") + _shell_quote(path)).c_str()) == 0;
-#else
     string file_url = "file:///";
     for (unsigned char c : path)
     {
@@ -559,8 +554,48 @@ static bool _edit_init_file()
         }
     }
     return _open_startup_url(file_url.c_str());
+}
+
+#endif
+
+static bool _edit_init_file()
+{
+    const string path = Options.filename.empty() ? find_crawlrc()
+                                                  : Options.filename;
+#if defined(TARGET_OS_MACOSX)
+    return std::system((string("/usr/bin/open -t ") + _shell_quote(path)).c_str()) == 0;
+#elif defined(TARGET_OS_LINUX)
+    return std::system((string("xdg-open ") + _shell_quote(path)).c_str()) == 0;
+#else
+    return _open_startup_file(path);
 #endif
 }
+
+static bool _open_morgue_folder(string path)
+{
+#if defined(TARGET_OS_MACOSX) || defined(TARGET_OS_LINUX)
+    // Prefix relative paths so folder names cannot be interpreted as options.
+    if (!is_absolute_path(path))
+        path = catpath(".", path);
+#if defined(TARGET_OS_MACOSX)
+    const string command = "/usr/bin/open ";
+#else
+    const string command = "xdg-open ";
+#endif
+    return std::system((command + _shell_quote(path)).c_str()) == 0;
+#elif defined(TARGET_OS_WINDOWS)
+    char *absolute_path = _fullpath(nullptr, path.c_str(), 0);
+    if (!absolute_path)
+        return false;
+    const string resolved_path = absolute_path;
+    free(absolute_path);
+    return _open_startup_file(resolved_path);
+#else
+    UNUSED(path);
+    return false;
+#endif
+}
+
 #endif
 
 static const vector<game_modes_menu_item> entries =
@@ -602,6 +637,8 @@ static const vector<game_modes_menu_item> game_options_entries =
         "View the high score list." },
     {STARTUP_VIEW_LAST_MORGUE, "View last morgue file",
         "Read the most recently updated morgue file." },
+    {STARTUP_OPEN_MORGUE_FOLDER, "Open folder of the morgue files",
+        "Open the morgue directory in your file manager." },
     {STARTUP_EDIT_INIT, "Edit init.txt",
         "Open the init.txt configuration file in a text editor." },
 };
@@ -678,6 +715,7 @@ static void _add_game_modes_menu_entry(shared_ptr<OuterMenu>& container,
                 : entry.id == STARTUP_EDIT_INIT
                     ? static_cast<tileidx_t>(TILEG_CMD_EDIT_PLAYER_TILE)
                 : entry.id == STARTUP_VIEW_LAST_MORGUE
+                  || entry.id == STARTUP_OPEN_MORGUE_FOLDER
                     ? static_cast<tileidx_t>(TILEG_CMD_REPLAY_MESSAGES)
                 : entry.id == STARTUP_OTHER_GAMEPLAY_OPTIONS
                     ? static_cast<tileidx_t>(TILEG_STARTUP_SPRINT)
@@ -1109,6 +1147,7 @@ private:
         case GAME_TYPE_ARENA:
         case GAME_TYPE_HIGH_SCORES:
         case STARTUP_VIEW_LAST_MORGUE:
+        case STARTUP_OPEN_MORGUE_FOLDER:
         case GAME_TYPE_INSTRUCTIONS:
         case STARTUP_EDIT_INIT:
         case STARTUP_VIEW_WEBSITES:
@@ -1367,6 +1406,27 @@ void UIStartupMenu::menu_item_activated(int id)
     case STARTUP_VIEW_LAST_MORGUE:
         _show_last_morgue();
         return;
+
+    case STARTUP_OPEN_MORGUE_FOLDER:
+    {
+        const string path = morgue_directory().empty()
+            ? "." : morgue_directory();
+        if (!dir_exists(path))
+        {
+            mprf("The morgue folder does not exist yet: %s", path.c_str());
+            return;
+        }
+#ifdef USE_TILE_LOCAL
+        if (!_open_morgue_folder(path))
+        {
+            mprf(MSGCH_ERROR, "Couldn't open the morgue folder: %s",
+                 path.c_str());
+        }
+#else
+        mprf("Morgue files are stored in: %s", path.c_str());
+#endif
+        return;
+    }
 
     case STARTUP_EDIT_INIT:
 #ifdef USE_TILE_LOCAL
