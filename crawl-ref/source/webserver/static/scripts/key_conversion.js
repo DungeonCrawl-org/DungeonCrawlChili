@@ -179,6 +179,12 @@ define(function() {
 
         code_conversion = {
             "Delete": CK_DELETE,
+            // Use the physical navigation-key codes when available. Some
+            // browsers report unreliable legacy `which` values for arrows.
+            "ArrowUp": CK_UP,
+            "ArrowDown": CK_DOWN,
+            "ArrowLeft": CK_LEFT,
+            "ArrowRight": CK_RIGHT,
 
             // see cio.h for these codes
             "Numpad0": -1000,
