@@ -574,8 +574,6 @@ static const vector<game_modes_menu_item> entries =
     {GAME_TYPE_HINTS, "Hints Mode for Dungeon Crawl",
         "A mostly normal game that provides more advanced hints "
         "than the tutorial."},
-    {STARTUP_DUNGEON_CRAWL_CHANGES, "View webpage of DC Chili changes",
-        "Open the list of DC Chili changes in your web browser." },
     {STARTUP_OTHER_GAMEPLAY_OPTIONS, "Other gameplay options",
         "Choose another gameplay mode." },
     {GAME_TYPE_INSTRUCTIONS, "Instructions", "Help menu." },
@@ -605,6 +603,8 @@ static const vector<game_modes_menu_item> website_entries =
 {
     {STARTUP_DUNGEON_CRAWL_CHILI, "Visit DungeonCrawlChili.org website",
         "Open the Dungeon Crawl Chili website in your browser." },
+    {STARTUP_DUNGEON_CRAWL_CHANGES, "View webpage of DC Chili changes",
+        "Open the list of DC Chili changes in your web browser." },
     {STARTUP_CRAWL_COSPLAY_ACADEMY, "Visit Crawl Cosplay Academy website",
         "Open the Crawl Cosplay Academy website in your browser." },
     {STARTUP_DUNGEON_CRAWL_FORKS, "Visit DungeonCrawlForks.org website",
