@@ -2154,6 +2154,20 @@ void init_keybindings()
     ASSERT(i >= 130);
 }
 
+void reset_keybindings()
+{
+    for (auto &keymap : Keymaps)
+        keymap.clear();
+    Macros.clear();
+    _names_to_cmds.clear();
+    _cmds_to_names.clear();
+    for (auto &keymap : _keys_to_cmds)
+        keymap.clear();
+    for (auto &cmdmap : _cmds_to_keys)
+        cmdmap.clear();
+    init_keybindings();
+}
+
 command_type name_to_command(string name)
 {
     return static_cast<command_type>(lookup(_names_to_cmds, name, CMD_NO_CMD));

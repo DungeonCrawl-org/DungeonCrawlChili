@@ -277,10 +277,11 @@ static void _post_init(bool newc)
 #endif
 #endif
 
-    clua.load_persist();
-
-    // Load macros
-    macro_init();
+    if (!crawl_state.game_is_tutorial())
+    {
+        clua.load_persist();
+        macro_init();
+    }
 
     crawl_state.need_save = crawl_state.game_started = true;
     crawl_state.last_type = crawl_state.type;
@@ -1718,6 +1719,17 @@ bool startup_step()
 
     bool newchar = false;
     newgame_def ng;
+    if (crawl_state.game_is_tutorial())
+    {
+        // Discard rc options before generating the lesson, including when
+        // tutorial was selected from the normal startup menu.
+        read_init_file();
+        Options.game = choice;
+        Options.fixup_options();
+        init_char_table(Options.char_set);
+        init_show_table();
+        init_monster_symbols();
+    }
     if (choice.filename.empty() && !choice.name.empty())
         choice.filename = get_save_filename(choice.name);
 
