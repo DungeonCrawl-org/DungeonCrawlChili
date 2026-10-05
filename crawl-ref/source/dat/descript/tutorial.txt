@@ -191,6 +191,15 @@ Very good! You can heal by resting with <input>$cmd[CMD_REST]</input>
 minimap</localtiles>. This will make you rest until your health is full, but
 will be interrupted by important events.
 %%%%
+tutorial2 autofight
+
+Try <input>$cmd[CMD_AUTOFIGHT]</input> to autofight the rats ahead. Each press
+attacks a nearby enemy or moves towards one if it is out of reach.
+
+Press it one turn at a time and watch your health. Use manual movement to
+retreat or choose a better position, especially when several enemies are
+nearby. Rest with <input>$cmd[CMD_REST]</input> once you are somewhere safe.
+%%%%
 tutorial2 wait
 
 Rather than storm the room and get swarmed by monsters, you can also step back
@@ -284,6 +293,7 @@ tutorial2 exit
   <input>rightclick</input> read a more detailed description</localtiles><nomouse>
   <input>$cmd[CMD_LOOK_AROUND]</input>  examine a monster
   <input>$cmd[CMD_LOOK_AROUND]$cmd[CMD_TARGET_DESCRIBE]</input> read a more detailed description</nomouse>
+  <input>$cmd[CMD_AUTOFIGHT]</input> autofight: attack or move towards an enemy
   <input>$cmd[CMD_PRIMARY_ATTACK]</input> fire held weapon
   <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_SELECT]</input> fire quiver at pre-targeted monster
   <input>shift-tab</input>, <input>p</input> fire quiver at closest monster

@@ -1335,6 +1335,7 @@ static void _add_formatted_tutorial_keyhelp(column_composer &cols)
     _add_command(cols, 0, CMD_REPLAY_MESSAGES, "reread messages", 2);
 
     cols.add_formatted(0, "\n<h>2. Combat and resting\n", false);
+    _add_command(cols, 0, CMD_AUTOFIGHT, "autofight; may move towards an enemy", 2);
     _add_command(cols, 0, CMD_LOOK_AROUND, "examine surroundings", 2);
     _add_command(cols, 0, CMD_PRIMARY_ATTACK, "fire your held weapon", 2);
     _add_command(cols, 0, CMD_FIRE, "fire your quiver; choose target", 2);
