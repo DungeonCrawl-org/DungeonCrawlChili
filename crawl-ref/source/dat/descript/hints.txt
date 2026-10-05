@@ -69,8 +69,9 @@ will rest for 100 turns, or until fully healed.
 %%%%
 death random 3
 
-Remember to use those scrolls, potions or wands you've found. Learn to
-improvise: you will need to identify potions and scrolls by using them.
+Remember to use the scrolls, potions and wands you've found. Scrolls and
+potions are identified automatically in Dungeon Crawl Chili. Inspect their
+descriptions in your inventory, and use them when their effects will help.
 %%%%
 death random 4
 
@@ -228,9 +229,9 @@ You have picked up your first potion<console> ('<w>$item[potion]</w>')</console>
 <localtiles>Simply <w>left-click</w> on it, or press</localtiles>
 <nomouse>Press</nomouse> <w>$cmd[CMD_QUAFF]</w> to quaff it.
 
-Once you've identified a potion, either with a scroll of identification or by
-drinking it, you'll automatically recognise all other potions of the same type;
-this means it's sometimes useful to drink potions just to identify them.
+Potions are identified automatically in Dungeon Crawl Chili. Select a potion
+in your inventory (<w>$cmd[CMD_DISPLAY_INVENTORY]</w>) to read its effects before
+drinking it. Drinking uses up one potion, so save it until its effect is useful.
 %%%%
 HINT_SEEN_SCROLL
 
@@ -238,9 +239,9 @@ You have picked up your first scroll<console> ('<w>$item[scroll]</w>')</console>
 <localtiles>Simply <w>left-click</w> on it, or press</localtiles>
 <nomouse>Press</nomouse> <w>$cmd[CMD_READ]</w> to read it.
 
-Once you've identified a scroll, either with a scroll of identification or by
-reading it, you'll automatically recognise all other scrolls of the same type;
-this means it's sometimes useful to read scrolls just to identify them.
+Scrolls are identified automatically in Dungeon Crawl Chili. Select a scroll
+in your inventory (<w>$cmd[CMD_DISPLAY_INVENTORY]</w>) to read its effects before
+using it. Reading uses up one scroll, so save it until its effect is useful.
 %%%%
 HINT_SEEN_WAND
 
@@ -645,8 +646,9 @@ HINT_NEED_POISON_HEALING
 
 You are lethally poisoned, so now would be a good time to
 <w>$cmd[CMD_QUAFF]</w>uaff a potion of heal wounds or, better yet, a potion of
-curing. If you have seen neither of these so far, try unknown potions in your
-inventory. Good luck!
+curing. Your potions are already identified: select a potion of curing if you
+have one. A potion of heal wounds can help you survive the poison damage, but
+doesn't cure the poison.
 %%%%
 HINT_ON_FIRE
 

@@ -301,10 +301,11 @@ automatically as you step on them.
 %%%%
 tutorial3 scroll
 
-Many items are unidentified when you find them. One way to find out what they
-do is to use them. Try reading this scroll with <input>$cmd[CMD_READ]</input>
-<localtiles> or with <input>mouseclick</input> in the inventory
-panel</localtiles>.
+Scrolls are identified automatically in Dungeon Crawl Chili. Select this
+scroll of fog in your inventory (<input>$cmd[CMD_DISPLAY_INVENTORY]</input>)
+to read its effects. Try reading it with <input>$cmd[CMD_READ]</input>
+<localtiles> or by <input>clicking</input> it in the inventory panel</localtiles>
+to create clouds of fog. Reading uses up the scroll.
 %%%%
 tutorial3 scroll_noautopickup
 
@@ -362,10 +363,12 @@ have to trigger the trap and deal with the consequences.
 %%%%
 tutorial3 potion
 
-Potions may provide vital healing or useful enchantments, but some have less
-desirable effects. You can quaff this potion with
-<input>$cmd[CMD_QUAFF]</input><localtiles> or with
-<input>mouseclick</input></localtiles> to discover what it does.
+Potions are identified automatically in Dungeon Crawl Chili. This potion of
+curing restores some health and cures poison. Select it in your inventory
+(<input>$cmd[CMD_DISPLAY_INVENTORY]</input>) to read its effects. If you're
+hurt or poisoned, drink it with <input>$cmd[CMD_QUAFF]</input><localtiles> or
+by <input>clicking</input> it</localtiles>. Otherwise, save it for later:
+drinking uses up the potion.
 %%%%
 tutorial3 artefact_armour
 
