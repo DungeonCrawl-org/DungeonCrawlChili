@@ -112,9 +112,9 @@ KFEAT:   ^ = trap_pressure_plate
  tm:add_triggerer(DgnTriggerer:new{type="pressure_plate"})
  lua_marker('^', tm)
 }}
-KFEAT:   AB = .
-COLOUR:  ABdefghi = lightblue
-FTILE:   ABdefghi = tutorial_pad
+KFEAT:   ABC = .
+COLOUR:  ABCdefghi = lightblue
+FTILE:   ABCdefghi = tutorial_pad
 RTILE:   c = wall_vines
 ITEM:    potion of curing q:1
 ITEM:    cloak_of_starlight
@@ -127,6 +127,7 @@ MONS:    gnoll ; spear mundane
 MARKER:  A = lua:tutorial3.msg("trap")
 MARKER:  d = lua:tutorial3.msg("potion")
 MARKER:  e = lua:tutorial3.msg("artefact_armour")
+MARKER:  C = lua:tutorial3.msg("character_overview")
 MARKER:  f = lua:tutorial3.msg("wand_fire")
 MARKER:  g = lua:tutorial3.msg("wand_digging")
 MARKER:  h = lua:tutorial3.msg("amulet")
@@ -140,7 +141,7 @@ epilogue{{
 MAP
 cccccccccccccccccccccc
 cc.....c.....ccc.....c
-cc..[..c..e...+...f..c
+cc..[..c..e..C+...f..c
 cc.....c.....ccc.....c
 cccc.ccccc.ccccccc.ccc
 cc...ccccc+ccccccc+ccc
