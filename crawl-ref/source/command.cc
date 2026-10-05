@@ -1356,6 +1356,8 @@ static void _add_formatted_tutorial_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_DROP, "drop an item", 2);
     _add_command(cols, 1, CMD_EQUIP, "equip an item", 2);
     _add_command(cols, 1, CMD_UNEQUIP, "unequip an item", 2);
+    _add_command(cols, 1, CMD_RESISTS_SCREEN,
+                 "equipment, defences, resistances", 2);
     _add_command(cols, 1, CMD_QUAFF, "drink a potion", 2);
     _add_command(cols, 1, CMD_READ, "read a scroll", 2);
     _add_command(cols, 1, CMD_EVOKE, "evoke a wand", 2);

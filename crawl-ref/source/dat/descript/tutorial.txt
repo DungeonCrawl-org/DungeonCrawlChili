@@ -359,7 +359,7 @@ with a <input>click</input> on your character</localtiles>.
 tutorial3 command_help
 
 You can review the keys taught in these lessons with
-<input>$cmd[CMD_DISPLAY_COMMANDS]U</input>. The full command reference is
+<input>$cmd[CMD_DISPLAY_COMMANDS]></input>. The full command reference is
 available with <input>$cmd[CMD_DISPLAY_COMMANDS]?</input>. <localtiles>A number of
 commands are also available in the clickable <w>command panel</w> to the right
 of the screen. </localtiles>Rereading old messages with
@@ -391,6 +391,21 @@ Others are generated with a random selection of properties, and are
 unidentified until you step on top of them. Try equipping this cloak with
 <input>$cmd[CMD_EQUIP]</input><localtiles> or <input>mouseclick</input>
 in the inventory panel</localtiles>.
+%%%%
+tutorial3 character_overview
+
+Press <input>$cmd[CMD_RESISTS_SCREEN]</input> to view your character overview.
+This screen shows your equipment, defences, and resistances. If you haven't
+equipped the cloak yet, use <input>$cmd[CMD_EQUIP]</input> to put it on, then
+open the overview again. The cloak increases your evasion (<w>EV</w>), making
+you harder to hit.
+
+Look at <w>rFire</w> and <w>rCold</w>: a <w>+</w> marks a level of resistance,
+while a <w>.</w> marks an empty slot. Equipment with fire or cold resistance
+can reduce damage from those attacks. The cloak grants evasion rather than
+these resistances, so always check what your equipment actually provides.
+
+Press <input>Escape</input> to return to the lesson.
 %%%%
 tutorial3 wand_fire
 
@@ -482,7 +497,8 @@ tutorial3 exit
   And of course, <input>mouseclicks</input> also work.</localtiles>
 
 <yellow>Other</yellow>
-  <input>$cmd[CMD_DISPLAY_COMMANDS]U</input> review basic keys from the tutorial lessons
+  <input>$cmd[CMD_RESISTS_SCREEN]</input> inspect your equipment, defences, and resistances
+  <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review basic keys from the tutorial lessons
   <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> access the command help
   <input>$cmd[CMD_EXPLORE]</input>  explore automatically
   <input>$cmd[CMD_SEARCH_STASHES]</input> search for items/features previously seen<localtiles>
