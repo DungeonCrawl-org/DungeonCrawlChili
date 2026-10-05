@@ -44,17 +44,18 @@ KFEAT:   ABC = .
 COLOUR:  defgABC = lightblue
 FTILE:   defgABC = tutorial_pad
 # "useful" is for keeping the boots from turning into bardings
-ITEM:    pair of boots mundane useful
-ITEM:    scroll of fog q:1
-ITEM:    scroll of fear q:1
-ITEM:    flail ego:venom
+ITEM:    pair of boots mundane useful pre_id
+ITEM:    scroll of fog q:1 pre_id
+ITEM:    scroll of fear q:1 pre_id
+# D:1 strips weapon brands; teach enchantment here and venom on D:2.
+ITEM:    flail mundane plus:2 pre_id
 MONS:    goblin ; nothing
 MONS:    rat, jackal, hobgoblin ; nothing
 MARKER:  d = lua:tutorial3.msg("armour")
 MARKER:  A = lua:tutorial3.msg("autopickup")
 MARKER:  e = lua:tutorial3.msg("scroll")
 MARKER:  f = lua:tutorial3.msg("scroll_noautopickup")
-MARKER:  g = lua:tutorial3.msg("ego_weapon")
+MARKER:  g = lua:tutorial3.msg("enchanted_weapon")
 MARKER:  B = lua:tutorial3.msg("inventory")
 MARKER:  C = lua:tutorial3.msg("battle")
 MARKER:  } = lua:tutorial3.msg("downstairs")
@@ -116,13 +117,13 @@ KFEAT:   ABC = .
 COLOUR:  ABCdefghi = lightblue
 FTILE:   ABCdefghi = tutorial_pad
 RTILE:   c = wall_vines
-ITEM:    potion of curing q:1
-ITEM:    cloak_of_starlight
+ITEM:    potion of curing q:1 pre_id
+ITEM:    cloak_of_starlight pre_id
 ITEM:    wand of flame charges:9 pre_id
 ITEM:    wand of digging charges:15 pre_id
-ITEM:    amulet of faith
-MONS:    goblin ; sling ego:none . stone q:30 . dagger \
-         ego:none
+ITEM:    amulet of faith pre_id
+ITEM:    flail ego:venom plus:0 no_uniq pre_id
+MONS:    goblin ; sling mundane . dagger mundane
 MONS:    gnoll ; spear mundane
 MARKER:  A = lua:tutorial3.msg("trap")
 MARKER:  d = lua:tutorial3.msg("potion")
@@ -132,6 +133,7 @@ MARKER:  f = lua:tutorial3.msg("wand_fire")
 MARKER:  g = lua:tutorial3.msg("wand_digging")
 MARKER:  h = lua:tutorial3.msg("amulet")
 MARKER:  B = lua:tutorial3.msg("drop")
+MARKER:  i = lua:tutorial3.msg("branded_weapon")
 epilogue{{
   if crawl.game_started() then
     crawl.clear_messages(true)
@@ -148,7 +150,7 @@ cc...ccccc+ccccccc+ccc
 ccAccccccc1ccccccc.ccc
 cc^ccccccc.ccccccc.ccc
 cc...ccccc.ccccccc.ccc
-cccc.ccccc.ccccccc.ccc
+cccc.ccccciccccccc.ccc
 cccc.ccccc.ccccccc.ccc
 cc.....ccc.ccccc.....c
 cc..d......ccccc..2..c

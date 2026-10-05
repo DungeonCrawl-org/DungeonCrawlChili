@@ -314,24 +314,29 @@ automatically as you step on them.
 %%%%
 tutorial3 scroll
 
-Many items are unidentified when you find them. One way to find out what they
-do is to use them. Try reading this scroll with <input>$cmd[CMD_READ]</input>
-<localtiles> or with <input>mouseclick</input> in the inventory
-panel</localtiles>.
+Items are identified automatically in Dungeon Crawl Chili. Select this scroll
+in your inventory (<input>$cmd[CMD_DISPLAY_INVENTORY]</input>) to read what it
+does before using it.
+
+This scroll of fog creates clouds that can block enemies' view of you. Try
+reading it with <input>$cmd[CMD_READ]</input><localtiles> or by
+<input>clicking</input> it in the inventory panel</localtiles>. Reading a scroll
+uses it up, so save useful scrolls for when you need them in a real game.
 %%%%
 tutorial3 scroll_noautopickup
 
-Autopickup does not work if there's a monster around. You can either pick up
-this scroll now with <input>$cmd[CMD_PICKUP]</input><localtiles> or
+Autopickup stops when a hostile monster is nearby. You can either pick up
+this scroll of fear now with <input>$cmd[CMD_PICKUP]</input><localtiles> or
 <input>clicking</input> on your character,</localtiles> or you can fight the
 nearby enemy and pick it up afterwards.
 %%%%
-tutorial3 ego_weapon
+tutorial3 enchanted_weapon
 
-An item described as <lightblue>runed</lightblue> or
-<lightblue>glowing</lightblue> will always be enchanted, or have special
-properties, or both. Once you step on top of such an item, its properties will
-be revealed to you.
+This <w>+2 flail</w> is enchanted: its bonus improves accuracy and damage.
+Pick it up with <input>$cmd[CMD_PICKUP]</input> and equip it with
+<input>$cmd[CMD_EQUIP]</input>. On the first Dungeon level, weapons are
+unbranded, but they can still have enchantment bonuses. You'll try a branded
+weapon on the next level.
 %%%%
 tutorial3 inventory
 
@@ -346,9 +351,10 @@ description screens.
 %%%%
 tutorial3 battle
 
-Once you've successfully managed to poison a monster, it is sometimes best to
-retreat and let the poison do the work. Don't forget to retreat to heal too, if
-necessary.
+Several enemies are waiting beyond this door. Let them approach through the
+doorway so you can fight one at a time, rather than walking into the group.
+If you're hurt, retreat to safety and rest with
+<input>$cmd[CMD_REST]</input> before continuing.
 %%%%
 tutorial3 downstairs
 
@@ -367,7 +373,8 @@ of the screen. </localtiles>Rereading old messages with
 %%%%
 tutorial3 trap
 
-Traps can have a variety of unpleasant effects, such as alerting monsters or
+This practice pressure plate is harmless. Real traps can have a variety of
+unpleasant effects, such as alerting monsters or
 teleporting you into danger. Some traps are permanent and will always be
 revealed as part of the map, but other traps can be triggered by exploring new
 tiles, and won't exist after being triggered. If there's no way around, you'll
@@ -375,20 +382,19 @@ have to trigger the trap and deal with the consequences.
 %%%%
 tutorial3 potion
 
-Potions may provide vital healing or useful enchantments, but some have less
-desirable effects. You can quaff this potion with
-<input>$cmd[CMD_QUAFF]</input><localtiles> or with
-<input>mouseclick</input></localtiles> to discover what it does.
+This is a potion of curing. It restores some health and cures poison. Inspect
+it in your inventory (<input>$cmd[CMD_DISPLAY_INVENTORY]</input>) to read its
+effects. If you're hurt or poisoned, drink it with
+<input>$cmd[CMD_QUAFF]</input><localtiles> or by
+<input>clicking</input> it</localtiles>. Otherwise, save it for later: drinking
+a potion uses it up.
 %%%%
 tutorial3 artefact_armour
 
-# TODO: Replace unrandart with a real randart. Needs some safeguarding against
-#       things that would throw the tutorial off rails (fragile, Contam...)
 Items with <w>unusual names</w> are artefacts. Artefacts can have a number of
-special properties. Some unique artefacts (such as this cloak) are always
-identified and may have special properties that cannot be found anywhere else!
-Others are generated with a random selection of properties, and are
-unidentified until you step on top of them. Try equipping this cloak with
+special properties, which you can inspect in your inventory before equipping
+them. Some artefacts have fixed properties, like this cloak of Starlight;
+others have randomly chosen properties. Try equipping this cloak with
 <input>$cmd[CMD_EQUIP]</input><localtiles> or <input>mouseclick</input>
 in the inventory panel</localtiles>.
 %%%%
@@ -407,28 +413,46 @@ these resistances, so always check what your equipment actually provides.
 
 Press <input>Escape</input> to return to the lesson.
 %%%%
+tutorial3 branded_weapon
+
+This <w>flail of venom</w> has a brand: a special effect in addition to its
+normal damage. Pick it up with <input>$cmd[CMD_PICKUP]</input> and equip it
+with <input>$cmd[CMD_EQUIP]</input>. Inspect it in your inventory
+(<input>$cmd[CMD_DISPLAY_INVENTORY]</input>) to read about venom.
+
+When an enemy is poisoned, you can step back and let the poison deal damage
+while it follows you. Keep your retreat route clear, and rest somewhere safe
+between fights.
+%%%%
 tutorial3 wand_fire
 
-# TODO: The wand targeting screen could perhaps use a little context help.
 You can evoke a wand with <input>$cmd[CMD_EVOKE]</input><localtiles> or with
-<input>mouseclick</input> in the inventory panel</localtiles>.
+<input>mouseclick</input> in the inventory panel</localtiles>. Select the wand
+of flame, aim at an enemy, and confirm with <input>Enter</input>. Each use
+spends a charge; save some for the fights ahead.
 %%%%
 tutorial3 wand_digging
 
-A wand of digging can destroy rock walls. Use
-<input>$cmd[CMD_LOOK_AROUND]][$cmd[CMD_TARGET_DESCRIBE]</input> <localtiles>or
-<input>mouseover</input>/<input>right click</input> </localtiles>to check wall
-types.
+A wand of digging can destroy rock walls, but not crystal or metal walls. Press
+<input>$cmd[CMD_LOOK_AROUND]</input>, move the cursor onto a wall, and press
+<input>$cmd[CMD_TARGET_DESCRIBE]</input><localtiles> or
+<input>right click</input> the wall</localtiles> to check its type.
+
+The three passages ahead are blocked by different walls. Find the rock wall,
+then use <input>$cmd[CMD_EVOKE]</input> to select the wand of digging and aim
+through it. Confirm with <input>Enter</input> to open a path.
 %%%%
 tutorial3 amulet
 
-Jewellery is put on with <input>$cmd[CMD_EQUIP]</input><localtiles>
-or with <input>mouseclick</input> in the inventory panel</localtiles>.
+Inspect this amulet of faith in your inventory to read its effect. Jewellery
+is put on with <input>$cmd[CMD_EQUIP]</input><localtiles> or by
+<input>clicking</input> it in the inventory panel</localtiles>.
 %%%%
 tutorial3 drop
 
-This amulet would be very powerful if your character had a god to worship,
-but here and now, it's useless. You may want to drop it with
+An amulet of faith helps you gain favour with many gods, but you aren't
+worshipping a god in this lesson. If you put it on, try taking it off with
+<input>$cmd[CMD_UNEQUIP]</input>. Then practise dropping it with
 <input>$cmd[CMD_DROP]</input><localtiles> or by
 <input>Shift-leftclicking</input> it in the inventory panel</localtiles>.
 %%%%
@@ -442,12 +466,12 @@ Shops offer a variety of items, but they don't buy items from anyone.
 %%%%
 tutorial3 enter_shop
 
-# TODO: Everything else except how to enter the shop should be told in the
-#       shopping screen.
 To enter this shop, press <input>$cmd[CMD_GO_UPSTAIRS]</input><localtiles> or
 <input>click</input> on your character</localtiles>. To buy items,
 select them with their hotkey, hit <input>Enter</input> and confirm with
 <input>y</input>es. You can switch to description mode with <input>!</input>.
+Inspect items before buying them, and consider healing supplies for the
+optional fight ahead. Press <input>Escape</input> to leave the shop.
 %%%%
 tutorial3 autoexplore_reminder
 
@@ -461,8 +485,8 @@ tutorial3 go_shopping
 #       instructions into the search screen. Also, it would be good to highlight
 #       the search button in the command panel somehow when this message is
 #       viewed.
-You now have enough gold to do some serious shopping! The quickest way back to
-the shop is by searching for it. Type <input>$cmd[CMD_SEARCH_STASHES]</input>,
+You can return to the shop to spend your gold. Find it by searching:
+type <input>$cmd[CMD_SEARCH_STASHES]</input>,
 and then enter “<w>shop</w>”. Select the result to start travelling.<localtiles>
 You can also <input>click</input> on the search button in the command panel, or
 use the minimap to return to the shop.</localtiles>
