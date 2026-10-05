@@ -345,8 +345,9 @@ with a <input>click</input> on your character</localtiles>.
 %%%%
 tutorial3 command_help
 
-If the many commands are too confusing, you can also look them up in the
-command help <input>$cmd[CMD_DISPLAY_COMMANDS]</input>. <localtiles>A number of
+You can review the keys taught in these lessons with
+<input>$cmd[CMD_DISPLAY_COMMANDS]U</input>. The full command reference is
+available with <input>$cmd[CMD_DISPLAY_COMMANDS]?</input>. <localtiles>A number of
 commands are also available in the clickable <w>command panel</w> to the right
 of the screen. </localtiles>Rereading old messages with
 <input>$cmd[CMD_REPLAY_MESSAGES]</input> is available as usual.
@@ -468,6 +469,7 @@ tutorial3 exit
   And of course, <input>mouseclicks</input> also work.</localtiles>
 
 <yellow>Other</yellow>
+  <input>$cmd[CMD_DISPLAY_COMMANDS]U</input> review basic keys from the tutorial lessons
   <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> access the command help
   <input>$cmd[CMD_EXPLORE]</input>  explore automatically
   <input>$cmd[CMD_SEARCH_STASHES]</input> search for items/features previously seen<localtiles>
