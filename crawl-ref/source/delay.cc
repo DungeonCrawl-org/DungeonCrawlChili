@@ -1066,8 +1066,10 @@ bool interrupt_activity(activity_interrupt ai, const activity_interrupt_data &at
     {
         you.running.notified_hp_full = true;
         if (player_drained())
+        {
             mprf("HP restored. (HP=%dd/%d)", you.hp,
                  get_real_hp(true, false));
+        }
         else
             mprf("HP restored. (HP=%d)", you.hp);
     }
