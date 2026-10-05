@@ -1313,7 +1313,7 @@ static void _add_formatted_hints_help(column_composer &cols)
 static void _add_formatted_tutorial_keyhelp(column_composer &cols)
 {
     cols.add_formatted(0,
-        "Keys taught in the five tutorial lessons.\n"
+        "Keys taught in the six tutorial lessons.\n"
         "\n<h>1. Movement and exploration\n"
         "Move with arrows, numpad or vi keys.\n"
         "Walk into a monster to attack it.\n");
@@ -1376,6 +1376,16 @@ static void _add_formatted_tutorial_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_USE_ABILITY, "use an ability", 2);
     _add_command(cols, 1, CMD_DISPLAY_RELIGION, "check your god and piety", 2);
     _add_command(cols, 1, CMD_DISPLAY_OVERMAP, "dungeon overview", 2);
+
+    cols.add_formatted(1, "\n<h>6. Survival and escape\n", false);
+    _add_command(cols, 1, CMD_DISPLAY_CHARACTER_STATUS,
+                 "check status and temporary effects", 2);
+    _add_insert_commands(cols, 1, "<w>%</w>, then <w>%</w>: exclude a threat",
+                         { CMD_LOOK_AROUND, CMD_TARGET_EXCLUDE });
+    _add_command(cols, 1, CMD_DISPLAY_MAP, "plan a route to known stairs", 2);
+    cols.add_formatted(1,
+        "Use movement, doors, scrolls, potions,\n"
+        "wands and upstairs to escape danger.\n", false);
 
     cols.add_formatted(1, "\n<h>Help\n", false);
     _add_insert_commands(cols, 1, "<w>%?</w>: full command reference",
