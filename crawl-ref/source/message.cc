@@ -2312,7 +2312,9 @@ string get_last_messages(int mcount, bool full, bool show_turn_markers)
             // Match the underscore turn-end marker used by Ctrl-P.
             if (show_turn_markers && have_newer_message
                 && newer_message_turn > msg.turn)
+            {
                 wrapped = "_" + wrapped;
+            }
             text = wrapped + text;
             newer_message_turn = msg.turn;
             have_newer_message = true;
@@ -2351,7 +2353,9 @@ void record_hp_change(int change, const char *source)
 {
     if (!change || !source || !crawl_state.game_started
         || crawl_state.generating_level)
+    {
         return;
+    }
 
     buffer.add_history_only_hp_message(source, change);
 }
