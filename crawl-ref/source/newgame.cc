@@ -2070,14 +2070,15 @@ static tile_def tile_for_map_name(string name)
     if (starts_with(name, "Lesson "))
     {
         const int i = name[7]-'1';
-        ASSERT_RANGE(i, 0, 5);
-        constexpr tileidx_t tutorial_tiles[5] = {
+        constexpr tileidx_t tutorial_tiles[] = {
             TILEG_TUT_MOVEMENT,
             TILEG_TUT_COMBAT,
             TILEG_CMD_DISPLAY_INVENTORY,
             TILEG_CMD_CAST_SPELL,
             TILEG_CMD_USE_ABILITY,
+            TILEG_CMD_DISPLAY_CHARACTER_STATUS,
         };
+        ASSERT_RANGE(i, 0, static_cast<int>(ARRAYSZ(tutorial_tiles)));
         return tile_def(tutorial_tiles[i]);
     }
 

@@ -1,0 +1,145 @@
+##############################################
+# Tutorial map 6: Survival and Escape         #
+##############################################
+
+{{
+crawl_require("dlua/tutorial.lua")
+tutorial6 = {}
+function tutorial6.msg(text)
+    return tutorial_msg("tutorial6 " .. text)
+end
+function tutorial6.exit()
+    crawl.tutorial_msg("tutorial6 exit", true)
+end
+function tutorial6.win()
+    crawl.mark_game_won()
+    return tutorial6.exit()
+end
+}}
+
+NAME:    tutorial_lesson6
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial
+DESC:    Lesson 6: Survival and Escape
+ORDER:   6
+ORIENT:  encompass
+KFEAT:   ABEdefghij = .
+KFEAT:   , = .
+KFEAT:   c = stone_wall
+KFEAT:   n = iron_grate
+COLOUR:  ABEdefghij = lightblue
+FTILE:   ABEdefghij = tutorial_pad
+# Restrict the safe teleport drill to its own room (the comma floor tiles).
+KPROP:   .1ABEdefghij{}+ = no_tele_into
+KITEM:   e = quarterstaff mundane plus:2 pre_id
+KITEM:   d = potion of haste q:2 pre_id
+KITEM:   f = potion of curing q:2 pre_id
+KITEM:   g = potion of heal wounds q:2 pre_id
+KITEM:   h = scroll of fog q:3 pre_id
+KITEM:   i = scroll of teleportation q:2 pre_id
+KITEM:   j = wand of digging charges:12 pre_id
+# Keep normal XP here: threat colours use it to rate this safely caged ogre.
+MONS:    ogre ; giant club mundane
+MARKER:  e = lua:tutorial6.msg("weapon")
+MARKER:  d = lua:tutorial6.msg("haste")
+MARKER:  A = lua:tutorial6.msg("status")
+MARKER:  f = lua:tutorial6.msg("curing")
+MARKER:  g = lua:tutorial6.msg("healing")
+MARKER:  B = lua:tutorial6.msg("examine")
+MARKER:  h = lua:tutorial6.msg("fog")
+MARKER:  i = lua:tutorial6.msg("teleport")
+MARKER:  j = lua:tutorial6.msg("digging")
+MARKER:  E = lua:tutorial6.msg("dig_practice")
+MARKER:  } = lua:tutorial6.msg("downstairs")
+MARKER:  { = lua:one_way_stair { dst = "tutorial_lesson6", \
+                                 onclimb = "tutorial6.exit" }
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial6 start")
+    tutorial_intro()
+  end
+}}
+MAP
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc........cc........cccccccccccccccccccccccccccccccccccccc
+cc........cc........cccccccccccccccccccccccccccccccccccccc
+cc..{..e..+...d...A.cccccccccccccccccccccccccccccccccccccc
+cc........cc........cccccccccccccccccccccccccccccccccccccc
+cc........cc........cccccccccccccccccccccccccccccccccccccc
+ccccccccccccccccc.cccccccccccccccccccccccccccccccccccccccc
+ccccccccccccccccc.cccccccccccccccccccccccccccccccccccccccc
+ccccccccccccccccc+cccccccccccccccccccccccccccccccccccccccc
+cccccccccccc..........c.....cccccccccccccccccccccccccccccc
+cccccccccccc..........c.....cccccccccccccccccccccccccccccc
+cccccccccccc..f..g..B.n..1..cccccccccccccccccccccccccccccc
+cccccccccccc..........c.....cccccccccccccccccccccccccccccc
+cccccccccccc..........c.....cccccccccccccccccccccccccccccc
+ccccccccccccc.cccccccccccccccccccccccccccccccccccccccccccc
+ccccccccccccc.cccccccccccccccccccccccccccccccccccccccccccc
+ccccccccccccc.cccccccccccccccccccccccccccccccccccccccccccc
+cc,,,,,,,,,,,,,,cccccccccc.........c.........ccc........cc
+cc,,,,,,,,,,,,,,cccccccccc.........c.........ccc........cc
+cc,,,i,,,,,,,,,,............h......+..j...E..xxx....}...cc
+cc,,,,,,,,,,,,,,cccccccccc.........c.........ccc........cc
+cc,,,,,,,,,,,,,,cccccccccc.........c.........ccc........cc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+ENDMAP
+
+##########################################################
+# Level 2: Escape challenge
+##########################################################
+NAME:    tutorial_lesson6_level2
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson6
+PLACE:   D:2
+ORIENT:  encompass
+KFEAT:   ABCDEFG = .
+KFEAT:   c = stone_wall
+KFEAT:   n = iron_grate
+COLOUR:  ABCDEFG = lightblue
+FTILE:   ABCDEFG = tutorial_pad
+MONS:    rat hp:2 exp:1 generate_awake
+MONS:    training dummy hp:8 exp:1 generate_awake ; sling mundane
+# The rock barrier keeps this gnoll in the exit room until the digging exercise.
+MONS:    gnoll hp:8 exp:1 generate_awake ; spear mundane
+MARKER:  A = lua:tutorial6.msg("challenge")
+MARKER:  B = lua:tutorial6.msg("corridor")
+MARKER:  C = lua:tutorial6.msg("door")
+MARKER:  D = lua:tutorial6.msg("fog_challenge")
+MARKER:  E = lua:tutorial6.msg("dig_challenge")
+MARKER:  F = lua:tutorial6.msg("escape_plan")
+MARKER:  G = lua:tutorial6.msg("use_items_early")
+MARKER:  [ = lua:tutorial6.msg("stairs")
+MARKER:  { = lua:one_way_stair { dst = "tutorial_lesson6", \
+                                 desc = "leave the tutorial early", \
+                                 onclimb = "tutorial6.exit" }
+MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson6", \
+                                 desc = "escape from the tutorial", \
+                                 onclimb = "tutorial6.win" }
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial6 newlevel")
+  end
+}}
+MAP
+cccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccc
+cc........cc.........ccccccccccccccccccccccccccccc
+cc........cc.........ccccccccccccccccccccccccccccc
+cc..{.F.A.+B..1.1....ccccccccccccccccccccccccccccc
+cc........cc.........ccccccccccccccccccccccccccccc
+cc........cc.........ccccccccccccccccccccccccccccc
+cccccccccccccccccc.ccccccccccccccccccccccccccccccc
+cccccccccccccccccc.ccccc...ccccccccccccccccccccccc
+cccccccccccccccccc.ccccc.2.ccccccccccccccccccccccc
+cccccccccccccccccc.ccccccncccccccccccccccccccccccc
+cccccccccccccccccc.ccccccncccccccccccccc........cc
+cccccccccccccccccc+ccccccncccc.......ccc........cc
+ccccccccccccccccccC...D......G...E...xxx..3.[...cc
+cccccccccccccccccccccccccccccc.......ccc........cc
+cccccccccccccccccccccccccccccccccccccccc........cc
+cccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccccc
+ENDMAP

@@ -21,6 +21,7 @@ should preferably include practice as well as a summary.
 | 3: Items | Inventory and item descriptions; pickup/drop; equip/unequip; potions; scrolls; wand evocation; searching known items/features; command help. |
 | 4: Magic | Memorisation; spell list and failure rates; casting and `?` to list spells; quivering spells and firing them; ally orders; waiting/resting; unequipping. |
 | 5: Religion | Dungeon overview; praying at an altar; religion screen and `!` for details; divine abilities; waiting/resting; description lookup (in the summary). |
+| 6: Survival and Escape | Character status (`@`); haste; inspecting enemy damage, speed, and spells; exclusions (`x`, then `e`); map-based planning around known stairs (`X`); curing versus heal wounds; fog; delayed teleportation; digging through rock; drawing enemies into a doorway; closing doors; early escape-item choices; escaping upstairs. No resting-key exercise. |
 
 The basic page groups repeated commands under one lesson. It includes the
 main commands, movement diagram and targeting controls, rather than every
@@ -31,7 +32,7 @@ lessons but omitted from the compact page.
 ## Candidates for future lessons
 
 These commands are useful for beginners but have no explicit keyboard
-instruction in the current five lessons. They are deliberately excluded
+instruction in the current six lessons. They are deliberately excluded
 from the basic page until a lesson teaches them. The keys below are defaults;
 use `$cmd[...]` placeholders when writing lesson text.
 
@@ -39,7 +40,6 @@ use `$cmd[...]` placeholders when writing lesson text.
 | --- | --- | --- |
 | `S` / Ctrl-S | Save and exit | End lesson 1 with a save/resume explanation. |
 | `%` | Character overview and resistances | Explain resistances before introducing a dangerous elemental attack. |
-| `@` | Character status | Teach how to inspect temporary conditions during combat. |
 | `m` | Skill training | Add a small training exercise to the combat or magic lesson. |
 | `G` | Travel between levels | Extend lesson 1 after teaching the level map. |
 | `;` | Inspect items underfoot | Teach inspecting a pile before picking up items in lesson 3. |

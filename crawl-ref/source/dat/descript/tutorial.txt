@@ -91,7 +91,7 @@ stairs. To travel directly to the stairs, you can
 %%%%
 tutorial1 basic_keys
 
-You can review the basic keys taught in the five tutorial lessons at any time.
+You can review the basic keys taught in the six tutorial lessons at any time.
 Press <input>$cmd[CMD_DISPLAY_COMMANDS]</input> to open the help menu,
 then press <input>></input> for the basic keys page.
 
@@ -754,8 +754,8 @@ run out of steam in-between.
 %%%%
 tutorial5 tutorial_end
 
-Congratulations! You've finished the last tutorial lesson and are now ready for
-the real game. Good luck!
+Congratulations! You've finished the lesson on gods and divine abilities.
+Lesson 6 will help you practise surviving and escaping danger.
 
 To exit the tutorial, just go down these stairs.
 %%%%
@@ -778,4 +778,193 @@ tutorial5 exit
 <yellow>Other commands</yellow>
   <input>$cmd[CMD_DISPLAY_OVERMAP]</input> display an overview of the dungeon
   <input>$cmd[CMD_DISPLAY_COMMANDS]/</input>  search the description database
+%%%%
+##############################################
+# Tutorial map 6: Survival and Escape         #
+##############################################
+tutorial6 start
+
+Winning a fight is not always the best way to survive. This lesson teaches
+you to recognise danger and use your supplies to escape. First, practise in
+a safe area; then reach the upstairs exit in a short escape challenge.
+%%%%
+tutorial6 weapon
+
+Pick up this +2 quarterstaff with <input>$cmd[CMD_PICKUP]</input> and equip
+it with <input>$cmd[CMD_EQUIP]</input>. It has no brand, but its enchantment
+helps if you need to fight a weak enemy while retreating.
+%%%%
+tutorial6 haste
+
+Pick up these two known potions of haste. Drink one with
+<input>$cmd[CMD_QUAFF]</input> to practise: haste lets you move and act
+faster for a while. Keep the other for the escape challenge. Use escape
+items before you are surrounded or nearly out of health.
+%%%%
+tutorial6 status
+
+Press <input>$cmd[CMD_DISPLAY_CHARACTER_STATUS]</input> to inspect your
+character's status. If you drank the potion, look for haste. This screen
+helps explain temporary effects; return to the lesson with <input>Escape</input>.
+%%%%
+tutorial6 curing
+
+Pick up the potions of curing. They cure poison and restore a little health.
+Inspect one in your inventory with <input>$cmd[CMD_DISPLAY_INVENTORY]</input>.
+You are safe here, so save these potions for when you need them.
+%%%%
+tutorial6 healing
+
+Pick up the potions of heal wounds and inspect one in your inventory.
+They restore more health than curing, but do not cure poison. If you are
+badly hurt, drink one with <input>$cmd[CMD_QUAFF]</input> before your next
+step or attack becomes dangerous. Drinking also takes time.
+%%%%
+tutorial6 examine
+
+The ogre behind the grate is too dangerous to fight at this level. Its cage
+keeps this exercise safe. Press <input>$cmd[CMD_LOOK_AROUND]</input>, select
+the ogre, and press <input>$cmd[CMD_TARGET_DESCRIBE]</input> to read about it.
+Check its attack damage, movement speed, and whether it can cast spells.
+Decide whether you can handle a monster before stepping closer. Press
+<input>Escape</input> to leave the description.
+
+Next, use <input>$cmd[CMD_LOOK_AROUND]</input> to select the ogre again and
+press <input>$cmd[CMD_TARGET_EXCLUDE]</input> to mark an exclusion. Automatic
+exploration and travel avoid excluded areas; an exclusion does not stop a
+monster from moving or attacking. Press the same key again to shrink the
+exclusion to one square, and once more to remove it. Practise that cycle
+here, then press <input>Escape</input> to continue. In a regular game, keep
+an exclusion around a threat you intend to avoid until you are stronger.
+%%%%
+tutorial6 teleport
+
+Pick up the two scrolls of teleportation. Read one with
+<input>$cmd[CMD_READ]</input>, then check <input>$cmd[CMD_DISPLAY_CHARACTER_STATUS]</input>.
+Teleportation has a delay: move around this room until it happens.
+
+For this safe drill, the destination is restricted to this room. In a regular
+game, teleportation chooses a random valid destination elsewhere on the
+level; it does not guarantee safety. Keep the other scroll for emergencies
+and start the teleport before you are almost dead.
+%%%%
+tutorial6 fog
+
+Pick up these scrolls of fog. Read one with <input>$cmd[CMD_READ]</input>
+to see the clouds it creates. Fog blocks sight, helping you break contact
+with a ranged enemy while moving away. It does not stop an adjacent enemy
+from attacking you. Keep the remaining scrolls for the challenge.
+%%%%
+tutorial6 digging
+
+Pick up this wand of digging. Use <input>$cmd[CMD_LOOK_AROUND]</input> and
+<input>$cmd[CMD_TARGET_DESCRIBE]</input> to inspect walls. Digging opens rock
+walls, but cannot cut through the stone walls surrounding these exercises.
+%%%%
+tutorial6 dig_practice
+
+The route ahead is blocked by three rock walls. Press
+<input>$cmd[CMD_EVOKE]</input>, choose the wand of digging, aim along the
+blocked corridor to the right, and confirm with <input>Enter</input>.
+The new passage lets you continue. Digging can create an escape route when
+a doorway or corridor is blocked by an enemy.
+%%%%
+tutorial6 downstairs
+
+Your practice is complete. Check that you picked up your supplies, then use
+<input>$cmd[CMD_GO_DOWNSTAIRS]</input> to enter the escape challenge.
+Your goal there is to reach the far upstairs exit alive.
+%%%%
+tutorial6 newlevel
+
+Reach the upstairs exit at the far end of this floor. You do not need to
+defeat every enemy. Keep an eye on your health and use your supplies early.
+The starting stairs let you leave the lesson early if you wish.
+%%%%
+tutorial6 challenge
+
+Use manual movement through the challenge so you can choose your position.
+The rats are weak, but avoid letting enemies surround you. A potion of haste
+can help you move away; save your health for reaching the exit.
+%%%%
+tutorial6 escape_plan
+
+Before opening the door, press <input>$cmd[CMD_DISPLAY_MAP]</input> to view
+the area you know. Locate the starting upstairs and trace a route back to
+them. Unexplored areas, including the far escape stairs, are not revealed
+by this screen. Press <input>Escape</input> to return.
+
+Before each new encounter, keep a known escape route in mind. Use manual
+movement near danger so you can stop and choose your next action.
+%%%%
+tutorial6 corridor
+
+Two rats are in the open room ahead. Instead of advancing between them,
+step back through the doorway and let them approach. The narrow entrance
+limits how many enemies can stand beside you, letting you fight one at a
+time. Continue through the room when it is safe.
+
+Moving away still takes a turn, and an enemy may follow and attack. Retreat
+while you still have room to move; make space before using an item.
+%%%%
+tutorial6 door
+
+You have crossed the doorway. Close the door behind you with
+<input>$cmd[CMD_CLOSE_DOOR]</input>, choosing the direction of the door if
+asked. Rats cannot open it. Some other enemies can reopen doors, so a closed
+door may only buy you time.
+%%%%
+tutorial6 fog_challenge
+
+The training dummy ahead can shoot from behind its grate. Read a scroll of
+fog with <input>$cmd[CMD_READ]</input> and move along the corridor to the
+right. Use the clouds to break its view of you; you do not need to kill it.
+%%%%
+tutorial6 dig_challenge
+
+A gnoll waits in the exit room beyond the rock barrier. Prepare before
+opening that route: you may fight it, or use haste and your escape supplies
+to get past. Use <input>$cmd[CMD_EVOKE]</input> to dig through the rock barrier
+to the right. If you teleport, remember that it takes time
+and you may land somewhere else on this floor. Healing can buy another turn
+when you need it; do not wait until a single hit could kill you.
+%%%%
+tutorial6 use_items_early
+
+Pause before approaching the gnoll. Inspect your supplies with
+<input>$cmd[CMD_DISPLAY_INVENTORY]</input> and choose an escape option while
+you still have room and health to act. Viewing the inventory does not take
+a turn, but drinking, reading, and using a wand do.
+
+If you plan to run, drink haste with <input>$cmd[CMD_QUAFF]</input> before the
+enemy reaches you. If you need teleportation, read it with
+<input>$cmd[CMD_READ]</input> now and keep moving during its delay. Save fog
+for breaking a ranged enemy's view, and use <input>$cmd[CMD_EVOKE]</input>
+to open the rock barrier when it is in range. You do not need to use every
+item: choose one that helps your current situation.
+%%%%
+tutorial6 stairs
+
+You reached the escape stairs! Press <input>$cmd[CMD_GO_UPSTAIRS]</input>
+to finish the lesson. In a regular game, nearby enemies can follow you up
+stairs, so reaching stairs does not always end a dangerous encounter.
+%%%%
+tutorial6 exit
+
+:nowrap
+<white>Tutorial 6 summary: Survival and Escape</white>
+
+  <input>$cmd[CMD_DISPLAY_CHARACTER_STATUS]</input> inspect status and temporary effects
+  <input>$cmd[CMD_LOOK_AROUND]$cmd[CMD_TARGET_DESCRIBE]</input> examine a threat or wall
+  <input>$cmd[CMD_LOOK_AROUND]$cmd[CMD_TARGET_EXCLUDE]</input> mark an exclusion around a threat
+  <input>$cmd[CMD_DISPLAY_MAP]</input> locate known stairs and plan a retreat
+  Movement keys: choose your position and retreat
+  <input>$cmd[CMD_CLOSE_DOOR]</input> close a door to delay pursuit
+  <input>$cmd[CMD_QUAFF]</input> drink curing, healing, or an escape potion
+  <input>$cmd[CMD_READ]</input> use fog or start a delayed teleport
+  <input>$cmd[CMD_EVOKE]</input> dig an escape route through rock
+  <input>$cmd[CMD_GO_UPSTAIRS]</input> retreat upstairs; nearby enemies may follow
+  <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
+
+You do not have to win every fight. Recognise danger and use your supplies early.
 %%%%
