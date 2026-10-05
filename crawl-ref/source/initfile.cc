@@ -2308,6 +2308,12 @@ void base_game_options::merge(const base_game_options &other)
 void read_init_file(bool runscripts)
 {
     unwind_bool parsing_state(crawl_state.parsing_rc, true);
+    const bool tutorial = crawl_state.game_is_tutorial();
+
+    // The startup menu may already have read bindkey/macros from the player's
+    // rc. Lessons must use the same default controls as their instructions.
+    if (tutorial)
+        reset_keybindings();
 
     Options.reset_options();
     // XX why didn't this clear first
@@ -2372,17 +2378,19 @@ void read_init_file(bool runscripts)
     }
 #endif
 
-    FileLineInput f(init_file_name.c_str());
-
     Options.filename = init_file_name;
     Options.basefilename = base_file_name;
     Options.line_num = 0;
 
-    if (f.error())
-        return;
-    Options.read_options(f, runscripts);
+    if (!tutorial)
+    {
+        FileLineInput f(init_file_name.c_str());
+        if (f.error())
+            return;
+        Options.read_options(f, runscripts);
+    }
 
-    if (Options.read_persist_options)
+    if (!tutorial && Options.read_persist_options)
     {
         // Read options from a .persist file if one exists.
         clua.load_persist();
@@ -6200,7 +6208,9 @@ bool parse_args(int argc, char **argv, bool rc_only)
             break;
 
         case CLO_TUTORIAL:
-            if (!rc_only)
+            if (rc_only)
+                crawl_state.type = GAME_TYPE_TUTORIAL;
+            else
                 Options.game.type = GAME_TYPE_TUTORIAL;
             break;
 

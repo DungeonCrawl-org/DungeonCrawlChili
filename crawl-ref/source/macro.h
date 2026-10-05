@@ -107,6 +107,7 @@ int get_macro_buf_size();
 // Keybinding stuff
 
 void init_keybindings();
+void reset_keybindings();
 
 command_type name_to_command(string name);
 string  command_to_name(command_type cmd);
