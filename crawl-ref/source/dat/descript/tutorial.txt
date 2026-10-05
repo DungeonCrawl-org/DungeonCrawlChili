@@ -89,6 +89,16 @@ stairs. To travel directly to the stairs, you can
 <input><<</input> to move the cursor to the nearest up-stairs, and
 <input>Enter</input> to go there.
 %%%%
+tutorial1 basic_keys
+
+You can review the basic keys taught in the five tutorial lessons at any time.
+Press <input>$cmd[CMD_DISPLAY_COMMANDS]</input> to open the help menu,
+then press <input>></input> for the basic keys page.
+
+Try opening it now. Press <input>Escape</input> to return to the lesson, then
+head to the stairs to finish. You can also open the basic keys page directly
+with <input>$cmd[CMD_DISPLAY_COMMANDS]></input>.
+%%%%
 tutorial1 tutorial_end
 
 Congratulations! You've completed the first lesson!
@@ -150,6 +160,9 @@ tutorial1 exit
   mouseclick on the <w>minimap</w></localtiles><nomouse>
   <input>$cmd[CMD_DISPLAY_MAP]</input>  enter the level map, travel with <input>Enter</input></nomouse>
   <input>$cmd[CMD_EXPLORE]</input>  autoexplore
+
+<yellow>Help</yellow>
+  <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review basic keys from the tutorial lessons
 %%%%
 ##############################################
 # Tutorial map 2: Monsters and combat        #

@@ -34,11 +34,11 @@ DESC:    Lesson 1: Movement and Exploration
 ORDER:   1
 ORIENT:  encompass
 KFEAT:   ABC = .
-KFEAT:   DEF = '
-COLOUR:  ABCDEF = lightblue
+KFEAT:   DEFG = '
+COLOUR:  ABCDEFG = lightblue
 COLOUR:  ' = brown
 FTILE:   '[ = floor_swamp, t = floor_grass
-FTILE:   ABCDEF = tutorial_pad
+FTILE:   ABCDEFG = tutorial_pad
 MARKER:  A = lua:tutorial1.msg("go_on")
 MARKER:  B = lua:tutorial1.msg("diagonal")
 MARKER:  C = lua:tutorial1.msg("shiftmove")
@@ -47,6 +47,7 @@ MARKER:  } = lua:tutorial1.msg("levelmap")
 MARKER:  D = lua:tutorial1.msg("autoexplore")
 MARKER:  E = lua:tutorial1.msg("exclusion")
 MARKER:  F = lua:tutorial1.msg("autoexplore_announce")
+MARKER:  G = lua:tutorial1.msg("basic_keys")
 MARKER:  [ = lua:tutorial1.msg("tutorial_end")
 MARKER:  { = lua:one_way_stair { dst  = "tutorial_lesson1", \
                                  onclimb = "tutorial1.exit" }
@@ -69,7 +70,7 @@ xxxxxxxxxxxxxxxxxxxxxttttttttttttttttttttttxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxtttttttttt'''tttttttttttttxxxxxxxxx
 xxxxxxxxxxxxxxxxxttttttttttt'''''tttttttttttttttxxxxxx
 xxxxxxxxxxxxxxxxxtttttttttt'''''''tttttttttttttttxxxxx
-xxxxxxxxxxxxxxxxxxttttttttt'''[''''''ttttttttttttttxxx
+xxxxxxxxxxxxxxxxxxttttttttt'''[G'''''ttttttttttttttxxx
 xxxxxxxxxxxxxxxxxxttttttttt'''''''tttF'''ttttttttttttx
 xxxxxxxxxxxxxxxxxxtttttttttt'''''tttttttt'''tttttttttt
 xxxxxxxxxxxxxxxxxxxtttttttttt'''tttttttttttt''tttttttt

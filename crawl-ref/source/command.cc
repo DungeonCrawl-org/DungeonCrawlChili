@@ -806,6 +806,7 @@ static void _add_formatted_help_menu(column_composer &cols)
         "aspect of Dungeon Crawl.\n"
 
         "<w>?</w>: List of commands\n"
+        "<w>></w>: Basic keys (tutorial lessons)\n"
         "<w>^</w>: Quickstart Guide");
     if (!crawl_state.game_started)
     {
@@ -877,6 +878,8 @@ static void _add_formatted_keyhelp(column_composer &cols)
 {
     cols.add_formatted(
             0,
+            "<w>></w>: Basic keys from the tutorials\n"
+            "\n"
             "<h>Movement:\n"
             "To move in a direction or to attack, \n"
             "use the numpad (try Numlock off and \n"
@@ -1305,6 +1308,80 @@ static void _add_formatted_hints_help(column_composer &cols)
             false);
 }
 
+// Keep these commands aligned with dat/descript/tutorial.txt.
+static void _add_formatted_tutorial_keyhelp(column_composer &cols)
+{
+    cols.add_formatted(0,
+        "Keys taught in the five tutorial lessons.\n"
+        "\n<h>1. Movement and exploration\n"
+        "Move with arrows, numpad or vi keys.\n"
+        "Walk into a monster to attack it.\n");
+    _add_insert_commands(cols, 0, "  <w>7 8 9</w>       <w>% % %</w>",
+                         { CMD_MOVE_UP_LEFT, CMD_MOVE_UP, CMD_MOVE_UP_RIGHT });
+    _add_insert_commands(cols, 0, "  <w>4 . 6</w>       <w>% . %</w>",
+                         { CMD_MOVE_LEFT, CMD_MOVE_RIGHT });
+    _add_insert_commands(cols, 0, "  <w>1 2 3</w>       <w>% % %</w>",
+                         { CMD_MOVE_DOWN_LEFT, CMD_MOVE_DOWN,
+                           CMD_MOVE_DOWN_RIGHT });
+    cols.add_formatted(0,
+        "<w>Shift + direction</w>: run\n"
+        "Walk into a closed door to open it.\n", false);
+    _add_command(cols, 0, CMD_CLOSE_DOOR, "close a door", 2);
+    _add_insert_commands(cols, 0, "<w>%</w>/<w>%</w>: go upstairs/downstairs",
+                         { CMD_GO_UPSTAIRS, CMD_GO_DOWNSTAIRS });
+    _add_command(cols, 0, CMD_EXPLORE, "explore automatically", 2);
+    _add_command(cols, 0, CMD_DISPLAY_MAP, "level map; Enter to travel", 2);
+    _add_command(cols, 0, CMD_REPLAY_MESSAGES, "reread messages", 2);
+    _add_insert_commands(cols, 0, "<w>%></w>: basic keys (tutorial lessons)",
+                         { CMD_DISPLAY_COMMANDS });
+
+    cols.add_formatted(0, "\n<h>2. Combat and resting\n", false);
+    _add_command(cols, 0, CMD_LOOK_AROUND, "examine surroundings", 2);
+    _add_command(cols, 0, CMD_PRIMARY_ATTACK, "fire your held weapon", 2);
+    _add_command(cols, 0, CMD_FIRE, "fire your quiver; choose target", 2);
+    _add_command(cols, 0, CMD_AUTOFIRE, "fire quiver at closest enemy", 2);
+    _add_command(cols, 0, CMD_QUIVER_ITEM, "choose quivered ammo or spell", 2);
+    _add_command(cols, 0, CMD_WAIT, "wait one turn", 2);
+    _add_command(cols, 0, CMD_REST, "rest to recover health/magic", 2);
+    cols.add_formatted(0, "\n<h>When examining or targeting\n", false);
+    _add_command(cols, 0, CMD_TARGET_CYCLE_FORWARD,
+                 "select another monster", 2);
+    _add_command(cols, 0, CMD_TARGET_DESCRIBE, "describe selected monster", 2);
+    _add_command(cols, 0, CMD_TARGET_SELECT, "confirm target (also Enter)", 2);
+    cols.add_formatted(0, "<w>Escape</w>: cancel or leave a menu\n", false);
+
+    cols.add_formatted(1, "<h>3. Items and inventory\n");
+    _add_command(cols, 1, CMD_DISPLAY_INVENTORY,
+                 "inventory; select to inspect", 2);
+    _add_command(cols, 1, CMD_PICKUP, "pick up an item", 2);
+    _add_command(cols, 1, CMD_DROP, "drop an item", 2);
+    _add_command(cols, 1, CMD_EQUIP, "equip an item", 2);
+    _add_command(cols, 1, CMD_UNEQUIP, "unequip an item", 2);
+    _add_command(cols, 1, CMD_QUAFF, "drink a potion", 2);
+    _add_command(cols, 1, CMD_READ, "read a scroll", 2);
+    _add_command(cols, 1, CMD_EVOKE, "evoke a wand", 2);
+    _add_command(cols, 1, CMD_SEARCH_STASHES, "search known items/features", 2);
+    cols.add_formatted(1, "\n<h>4. Magic and allies\n", false);
+    _add_command(cols, 1, CMD_MEMORISE_SPELL, "learn a spell", 2);
+    _add_command(cols, 1, CMD_DISPLAY_SPELLS, "check your spells", 2);
+    _add_command(cols, 1, CMD_CAST_SPELL, "cast a spell (? lists spells)", 2);
+    _add_command(cols, 1, CMD_SHOUT, "give orders to allies", 2);
+    cols.add_formatted(1, "\n<h>5. Gods and abilities\n", false);
+    _add_command(cols, 1, CMD_GO_DOWNSTAIRS,
+                 "pray at an altar to join a god", 2);
+    _add_command(cols, 1, CMD_USE_ABILITY, "use an ability", 2);
+    _add_command(cols, 1, CMD_DISPLAY_RELIGION, "check your god and piety", 2);
+    _add_command(cols, 1, CMD_DISPLAY_OVERMAP, "dungeon overview", 2);
+    cols.add_formatted(1, "\n<h>Help\n", false);
+    _add_insert_commands(cols, 1, "<w>%?</w>: full command reference",
+                         { CMD_DISPLAY_COMMANDS });
+    _add_insert_commands(cols, 1, "<w>%/</w>: look up descriptions",
+                         { CMD_DISPLAY_COMMANDS });
+    cols.add_formatted(1,
+        "<w>Home</w>: help menu\n"
+        "<w>Space</w>: clear a --more-- prompt\n", false);
+}
+
 static formatted_string _col_conv(void (*func)(column_composer &))
 {
     column_composer cols(2, 42);
@@ -1326,7 +1403,7 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
     static map<int, string> headers = {
         {'*', "Manual"}, {'%', "Aptitudes"}, {'^', "Quickstart"},
         {'~', "Macros"}, {'&', "Options"}, {'t', "Tiles"},
-        {'?', "Key help"}
+        {'?', "Key help"}, {'>', "Basic keys (tutorial lessons)"}
     };
 
     if (!page_text.size())
@@ -1366,6 +1443,9 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
     scroll_out = 0;
     switch (section)
     {
+        case '>':
+            text_out = _col_conv(_add_formatted_tutorial_keyhelp);
+            return page;
         case '?':
             if (crawl_state.game_is_hints_tutorial())
                 text_out = _col_conv(_add_formatted_hints_help);
