@@ -413,8 +413,6 @@ these resistances, so always check what your equipment actually provides.
 
 Press <input>Escape</input> to return to the lesson.
 %%%%
-<<<<<<< Updated upstream
-=======
 tutorial3 branded_weapon
 
 This <w>flail of venom</w> has a brand: a special effect in addition to its
@@ -426,7 +424,6 @@ When an enemy is poisoned, you can step back and let the poison deal damage
 while it follows you. Keep your retreat route clear, and rest somewhere safe
 between fights.
 %%%%
->>>>>>> Stashed changes
 tutorial3 wand_fire
 
 You can evoke a wand with <input>$cmd[CMD_EVOKE]</input><localtiles> or with
