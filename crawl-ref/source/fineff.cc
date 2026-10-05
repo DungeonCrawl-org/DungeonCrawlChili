@@ -2045,8 +2045,6 @@ void hypnogecko_tail_fineff::fire()
 
             const int score = _movement_score_for(*ai);
 
-            mprf("(%d, %d): %d", ai->x, ai->y, score);
-
             if (score == best_score)
             {
                 if (one_chance_in(++best_count))
@@ -2085,7 +2083,7 @@ void hypnogecko_tail_fineff::fire()
 
         if (!move_pos.origin())
         {
-            you.clear_constricted();
+            you.stop_being_constricted();
             you.stop_being_caught();
             you.finalise_movement();
         }
@@ -2098,6 +2096,11 @@ void ephemeral_weapon_end_fineff::fire()
 
     const int plus = wpn.plus;
 
+    const string name = wpn.props.exists(WEAPON_NAME_KEY) ? wpn.props[WEAPON_NAME_KEY].get_string()
+                                                          : "";
+
+    item_def* orig = get_item_swap_back(wpn);
+
     unequip_item(wpn, false);
 
     // Assumes the only ephemeral weapon is a centipede. Expand when this changes.
@@ -2105,14 +2108,19 @@ void ephemeral_weapon_end_fineff::fire()
     mg.set_summoned(&you, MON_SUMM_CENTIPEDE, random_range(600, 900), false);
     mg.set_range(1, 4);
     mg.hd = 2 + plus * 4 / 3;
-    if (!you.allies_forbidden() && create_monster(mg))
+
+    monster* mon;
+    if (!you.allies_forbidden() && (mon = create_monster(mg)))
+    {
+        if (!name.empty())
+            mon->mname = name;
         mprf("Your assassin centipede leaps free of your %s with a hiss!", you.arm_name(false).c_str());
+    }
     else
         mprf("Your assassin centipede withers and dies.");
 
-    if (you.orig_wpn != -1)
-        try_equip_item(you.inv[you.orig_wpn], true);
-    you.orig_wpn = -1;
+    if (orig)
+        try_equip_item(*orig, true);
 }
 
 // Effects that occur after all other effects, even if the monster is dead.

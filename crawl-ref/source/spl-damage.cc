@@ -1315,6 +1315,10 @@ static const map<monster_type, monster_frag> fraggable_monsters = {
     { MONS_PHALANX_BEETLE,    { "metal", CYAN, frag_damage_type::metal } },
     { MONS_SPELLSPARK_SERVITOR, { "metal", CYAN, frag_damage_type::metal } },
     { MONS_PLATINUM_PARAGON,  { "platinum", CYAN, frag_damage_type::metal } },
+    { MONS_JADE_CRYSTAL_AIR,   { "jade", LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_EARTH, { "jade", LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_FIRE,  { "jade", LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_ICE,   { "jade", LIGHTCYAN, frag_damage_type::crystal } },
     { MONS_GLASS_EYE,         { "glass", LIGHTCYAN,
                                 frag_damage_type::crystal } },
     { MONS_SCREAMING_REFRACTION, { "crystal", GREEN,
@@ -2090,7 +2094,7 @@ static int _irradiate_cell(coord_def where, int pow, const actor &agent)
     if (agent.is_player())
         _player_hurt_monster(*act->as_monster(), dam, BEAM_MMISSILE);
     else if (dam)
-        act->hurt(&agent, dam, BEAM_MMISSILE);
+        act->hurt(&agent, dam, BEAM_MMISSILE, KILLED_BY_BEAM, "", "blast of magical radiation");
 
     if (act->alive())
     {
@@ -5481,6 +5485,7 @@ void trigger_dragon_vein()
     }
 
     pay_mp(1);
+    finalize_mp_cost();
     do_post_spellcast_effects(spell);
 
     // If this is your second usage on this spell cast, remove the remaining dragon veins.
