@@ -1315,6 +1315,10 @@ static const map<monster_type, monster_frag> fraggable_monsters = {
     { MONS_PHALANX_BEETLE,    { "metal", CYAN, frag_damage_type::metal } },
     { MONS_SPELLSPARK_SERVITOR, { "metal", CYAN, frag_damage_type::metal } },
     { MONS_PLATINUM_PARAGON,  { "platinum", CYAN, frag_damage_type::metal } },
+    { MONS_JADE_CRYSTAL_AIR,   { "jade", LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_EARTH, { "jade", LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_FIRE,  { "jade", LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_ICE,   { "jade", LIGHTCYAN, frag_damage_type::crystal } },
     { MONS_GLASS_EYE,         { "glass", LIGHTCYAN,
                                 frag_damage_type::crystal } },
     { MONS_SCREAMING_REFRACTION, { "crystal", GREEN,
@@ -2090,7 +2094,7 @@ static int _irradiate_cell(coord_def where, int pow, const actor &agent)
     if (agent.is_player())
         _player_hurt_monster(*act->as_monster(), dam, BEAM_MMISSILE);
     else if (dam)
-        act->hurt(&agent, dam, BEAM_MMISSILE);
+        act->hurt(&agent, dam, BEAM_MMISSILE, KILLED_BY_BEAM, "", "blast of magical radiation");
 
     if (act->alive())
     {
@@ -4234,26 +4238,25 @@ void seeker_attack(monster& seeker, actor& target, coord_def attack_pos)
 
     zap_type ztype = (seeker.type == MONS_FOXFIRE ? ZAP_FOXFIRE : ZAP_SHOOTING_STAR);
 
+    bool seen = you.can_see(seeker);
+
+    // Kill the monster before the beam, which prevents it being hit by its own
+    // beam if reflected by the Warlock's Mirror.
+    if (seeker.alive())
+        monster_die(seeker, KILL_RESET, NON_MONSTER, true);
+
     bolt beam(*summoner, ztype, seeker.get_hit_dice());
     beam.range       = 1;
     beam.source      = seeker.pos();
     beam.target      = target.pos();
+    // Set explicitly because the seeker is dead.
+    beam.seen        = seen;
     beam.hit_verb = (seeker.type == MONS_FOXFIRE ? "burns" : "hits");
     beam.fire();
 
     place_cloud(seeker_trail_type(seeker), seeker.pos(), 2, &seeker);
 
-    const bool do_knockback = target.alive() && seeker.type == MONS_SHOOTING_STAR;
-
-    if (seeker.alive())
-        monster_die(seeker, KILL_RESET, NON_MONSTER, true);
-
-    // XXX: When doing knockback, we need to kill the seeker *first*, since
-    //      seeker_attack can be called when a hostile monster moves 'into' a
-    //      shooting star (which internally swaps with it), and otherwise the
-    //      star itself will block knockback (since it's now 'behind' the
-    //      monster being pushed).
-    if (do_knockback)
+    if (target.alive() && seeker.type == MONS_SHOOTING_STAR && beam.reflections == 0)
         target.knockback(seeker, 1, 0, "", attack_pos);
 }
 
@@ -5481,6 +5484,7 @@ void trigger_dragon_vein()
     }
 
     pay_mp(1);
+    finalize_mp_cost();
     do_post_spellcast_effects(spell);
 
     // If this is your second usage on this spell cast, remove the remaining dragon veins.

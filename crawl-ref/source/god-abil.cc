@@ -3050,6 +3050,7 @@ bool valid_marionette_spell(spell_type spell)
         case SPELL_CALL_TIDE:
         case SPELL_DRUIDS_CALL:
         case SPELL_PHASE_SHIFT:
+        case SPELL_STAMPEDE:
 
         // Would be buggy to try
         case SPELL_CREATE_TENTACLES:
@@ -6638,8 +6639,10 @@ void okawaru_end_duel(bool kicked_out)
     _owakwaru_gather_arena_items();
 
     if (you.props.exists(OKAWARU_DUEL_ORIG_HP_KEY))
+    {
         set_hp(you.props[OKAWARU_DUEL_ORIG_HP_KEY].get_int(),
                "Okawaru's Duel restoration");
+    }
 
     if (you.props.exists(OKAWARU_DUEL_ORIG_MP_KEY))
         set_mp(you.props[OKAWARU_DUEL_ORIG_MP_KEY].get_int());

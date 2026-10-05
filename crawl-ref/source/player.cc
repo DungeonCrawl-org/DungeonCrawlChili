@@ -4563,7 +4563,7 @@ int contam_max_damage()
  * @return      A string describing the player when in the given contamination
  *              level.
  */
-string describe_contamination(bool verbose)
+string describe_contamination(bool verbose, bool show_damage)
 {
     if (you.magic_contamination <= 0)
         return "";
@@ -4590,7 +4590,7 @@ string describe_contamination(bool verbose)
     string msg = verbose ? verbose_desc[lvl] : terse_desc[lvl];
 
     const int dmg = contam_max_damage();
-    if (dmg > 0)
+    if (show_damage && dmg > 0)
         msg = make_stringf("%s (up to %d damage)", msg.c_str(), dmg);
 
     return msg;
@@ -4634,7 +4634,7 @@ void contaminate_player(int change, bool controlled, bool msg)
         if (msg)
         {
             mprf(player_harmful_contamination() ? MSGCH_WARN : MSGCH_PLAIN,
-                 "%s", describe_contamination().c_str());
+                 "%s", describe_contamination(true, false).c_str());
         }
         if (player_harmful_contamination())
             xom_is_stimulated(new_level * 25);
@@ -5687,7 +5687,6 @@ player::player()
     form            = transformation::none;
     default_form    = transformation::none;
     cur_talisman    = -1;
-    orig_wpn        = -1;
 
     for (auto &item : inv)
         item.clear();
@@ -5818,6 +5817,7 @@ player::player()
     banished_by.clear();
 
     last_mid = 0;
+    last_item_uid = 0;
     last_cast_spell = SPELL_NO_SPELL;
 
     // Non-saved UI state:
@@ -9636,6 +9636,8 @@ bool ench_triggers_trickster(enchant_type ench)
         case ENCH_WRETCHED:
         case ENCH_DEEP_SLEEP:
         case ENCH_VEXED:
+        case ENCH_DIMINISHED_SPELLS:
+        case ENCH_EXPOSED:
             return true;
 
         default:

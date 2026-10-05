@@ -460,7 +460,9 @@ static void _handle_encounter_messages(const vector<monster*> monsters,
         if (!mons_is_unique(mon->type) || mon->is_summoned()
             || mon->attitude() != ATT_HOSTILE
             || mons_threat_level(*mon) != MTHRT_NASTY)
+        {
             continue;
+        }
 
         mprf(MSGCH_DANGER, "%s is a red threat-level encounter!!!",
              mon->name(DESC_THE).c_str());
