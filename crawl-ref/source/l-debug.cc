@@ -102,6 +102,20 @@ LUAFN(debug_reset_player_data)
 
 LUAFN(debug_generate_level)
 {
+    // Optional tutorial map lets scripts exercise the real tutorial builder,
+    // rather than placing a vault directly and bypassing map selection.
+    const string tutorial = lua_isnoneornil(ls, 2)
+                            ? "" : luaL_checkstring(ls, 2);
+    if (!tutorial.empty())
+    {
+        const map_def *map = find_map_by_name(tutorial);
+        if (!map || !map->has_tag("tutorial"))
+            return luaL_error(ls, "Unknown tutorial map: %s", tutorial.c_str());
+    }
+    unwind_var<game_type> mode(crawl_state.type,
+        tutorial.empty() ? crawl_state.type : GAME_TYPE_TUTORIAL);
+    unwind_var<string> selected_map(crawl_state.map,
+        tutorial.empty() ? crawl_state.map : tutorial);
     msg::suppress mx;
     env.map_knowledge.init(map_cell());
     env.map_forgotten.reset();

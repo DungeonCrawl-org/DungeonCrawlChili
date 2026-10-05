@@ -806,7 +806,7 @@ static void _add_formatted_help_menu(column_composer &cols)
         "aspect of Dungeon Crawl.\n"
 
         "<w>?</w>: List of commands\n"
-        "<w>U</w>: Basic keys (tutorial lessons)\n"
+        "<w>></w>: Basic keys (tutorial lessons)\n"
         "<w>^</w>: Quickstart Guide");
     if (!crawl_state.game_started)
     {
@@ -878,7 +878,7 @@ static void _add_formatted_keyhelp(column_composer &cols)
 {
     cols.add_formatted(
             0,
-            "<w>U</w>: Basic keys from the tutorials\n"
+            "<w>></w>: Basic keys from the tutorials\n"
             "\n"
             "<h>Movement:\n"
             "To move in a direction or to attack, \n"
@@ -1356,6 +1356,8 @@ static void _add_formatted_tutorial_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_DROP, "drop an item", 2);
     _add_command(cols, 1, CMD_EQUIP, "equip an item", 2);
     _add_command(cols, 1, CMD_UNEQUIP, "unequip an item", 2);
+    _add_command(cols, 1, CMD_RESISTS_SCREEN,
+                 "equipment, defences, resistances", 2);
     _add_command(cols, 1, CMD_QUAFF, "drink a potion", 2);
     _add_command(cols, 1, CMD_READ, "read a scroll", 2);
     _add_command(cols, 1, CMD_EVOKE, "evoke a wand", 2);
@@ -1405,7 +1407,7 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
     static map<int, string> headers = {
         {'*', "Manual"}, {'%', "Aptitudes"}, {'^', "Quickstart"},
         {'~', "Macros"}, {'&', "Options"}, {'t', "Tiles"},
-        {'?', "Key help"}, {'u', "Basic keys (tutorial lessons)"}
+        {'?', "Key help"}, {'>', "Basic keys (tutorial lessons)"}
     };
 
     if (!page_text.size())
@@ -1445,7 +1447,7 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
     scroll_out = 0;
     switch (section)
     {
-        case 'u':
+        case '>':
             text_out = _col_conv(_add_formatted_tutorial_keyhelp);
             return page;
         case '?':

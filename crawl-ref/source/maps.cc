@@ -908,9 +908,11 @@ bool map_selector::accept(const map_def &mapdef) const
     switch (sel)
     {
     case PLACE:
-        if (mapdef.has_tag_prefix("tutorial")
-            && (!crawl_state.game_is_tutorial()
-                || !mapdef.has_tag(crawl_state.map)))
+        // Tutorial follow-up levels must not compete with ordinary maps
+        // that have the same PLACE (for example, Dungeon:3).
+        if (crawl_state.game_is_tutorial()
+            ? !mapdef.has_tag(crawl_state.map)
+            : mapdef.has_tag_prefix("tutorial"))
         {
             return false;
         }
