@@ -1308,7 +1308,8 @@ static void _add_formatted_hints_help(column_composer &cols)
             false);
 }
 
-// Keep these commands aligned with dat/descript/tutorial.txt.
+// Keep this page aligned with dat/descript/tutorial.txt. See
+// docs/develop/tutorial-keys.md for lesson coverage and possible additions.
 static void _add_formatted_tutorial_keyhelp(column_composer &cols)
 {
     cols.add_formatted(0,
@@ -1332,8 +1333,6 @@ static void _add_formatted_tutorial_keyhelp(column_composer &cols)
     _add_command(cols, 0, CMD_EXPLORE, "explore automatically", 2);
     _add_command(cols, 0, CMD_DISPLAY_MAP, "level map; Enter to travel", 2);
     _add_command(cols, 0, CMD_REPLAY_MESSAGES, "reread messages", 2);
-    _add_insert_commands(cols, 0, "<w>%></w>: basic keys (tutorial lessons)",
-                         { CMD_DISPLAY_COMMANDS });
 
     cols.add_formatted(0, "\n<h>2. Combat and resting\n", false);
     _add_command(cols, 0, CMD_LOOK_AROUND, "examine surroundings", 2);
@@ -1361,17 +1360,20 @@ static void _add_formatted_tutorial_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_READ, "read a scroll", 2);
     _add_command(cols, 1, CMD_EVOKE, "evoke a wand", 2);
     _add_command(cols, 1, CMD_SEARCH_STASHES, "search known items/features", 2);
+
     cols.add_formatted(1, "\n<h>4. Magic and allies\n", false);
     _add_command(cols, 1, CMD_MEMORISE_SPELL, "learn a spell", 2);
     _add_command(cols, 1, CMD_DISPLAY_SPELLS, "check your spells", 2);
     _add_command(cols, 1, CMD_CAST_SPELL, "cast a spell (? lists spells)", 2);
     _add_command(cols, 1, CMD_SHOUT, "give orders to allies", 2);
+
     cols.add_formatted(1, "\n<h>5. Gods and abilities\n", false);
     _add_command(cols, 1, CMD_GO_DOWNSTAIRS,
                  "pray at an altar to join a god", 2);
     _add_command(cols, 1, CMD_USE_ABILITY, "use an ability", 2);
     _add_command(cols, 1, CMD_DISPLAY_RELIGION, "check your god and piety", 2);
     _add_command(cols, 1, CMD_DISPLAY_OVERMAP, "dungeon overview", 2);
+
     cols.add_formatted(1, "\n<h>Help\n", false);
     _add_insert_commands(cols, 1, "<w>%?</w>: full command reference",
                          { CMD_DISPLAY_COMMANDS });
