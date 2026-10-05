@@ -1,7 +1,7 @@
 # Basic keys and tutorial coverage
 
-The **Basic keys (tutorial lessons)** help page is available from `?U`, or
-by pressing `U` in the full `??` command reference. It is available during
+The **Basic keys (tutorial lessons)** help page is available from `?>`, or
+by pressing `>` in the full `??` command reference. It is available during
 normal play as well as tutorials. Keys on the page use the player's current
 bindings, like the full reference.
 
@@ -17,7 +17,7 @@ should preferably include practice as well as a summary.
 | --- | --- |
 | Introduction | Replay messages; clear `--more--` with Space. |
 | 1: Movement | Eight movement directions; Shift + direction to run; opening doors by movement; closing doors; upstairs/downstairs; level map and Enter to travel; map stair shortcuts; Escape to leave the map; autoexplore. |
-| 2: Combat | Attack by moving into an enemy; pickup; equip; examining monsters and reading descriptions; targeting and cycling targets; firing the held weapon; firing the quiver; firing at the closest enemy (`p` / Shift-Tab); quivering; waiting; resting. |
+| 2: Combat | Attack by moving into an enemy; autofight (`Tab`) practised at the rat room entrance, including movement and manual retreat; pickup; equip; examining monsters and reading descriptions; targeting and cycling targets; firing the held weapon; firing the quiver; firing at the closest enemy (`p` / Shift-Tab); quivering; waiting; resting. |
 | 3: Items | Inventory and item descriptions; pickup/drop; equip/unequip; potions; scrolls; wand evocation; searching known items/features; command help. |
 | 4: Magic | Memorisation; spell list and failure rates; casting and `?` to list spells; quivering spells and firing them; ally orders; waiting/resting; unequipping. |
 | 5: Religion | Dungeon overview; praying at an altar; religion screen and `!` for details; divine abilities; waiting/resting; description lookup (in the summary). |
@@ -41,7 +41,6 @@ use `$cmd[...]` placeholders when writing lesson text.
 | `%` | Character overview and resistances | Explain resistances before introducing a dangerous elemental attack. |
 | `@` | Character status | Teach how to inspect temporary conditions during combat. |
 | `m` | Skill training | Add a small training exercise to the combat or magic lesson. |
-| `Tab` | Autofight | Explain automated melee attacks and when to choose actions manually in lesson 2. |
 | `G` | Travel between levels | Extend lesson 1 after teaching the level map. |
 | `;` | Inspect items underfoot | Teach inspecting a pile before picking up items in lesson 3. |
 | `A` | Mutations | Explain inspecting mutations if a future lesson introduces them. |
