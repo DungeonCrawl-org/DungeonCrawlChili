@@ -4847,6 +4847,7 @@ enum commandline_option_type
     CLO_EDIT_SAVE,
     CLO_PRINT_CHARSET,
     CLO_TUTORIAL,
+    CLO_HINTS,
     CLO_WIZARD,
     CLO_EXPLORE,
     CLO_NO_SAVE,
@@ -4914,7 +4915,7 @@ static const char *cmd_ops[] =
     "test", "script", "builddb", "help", "version", "seed", "pregen",
     "save-version", "sprint",
     "extra-opt-first", "extra-opt-last", "sprint-map", "edit-save",
-    "print-charset", "tutorial", "wizard", "explore", "no-save",
+    "print-charset", "tutorial", "hints", "wizard", "explore", "no-save",
     "no-player-bones", "gdb", "no-gdb", "nogdb", "throttle", "no-throttle",
     "lua-max-memory", "playable-json", "branches-json", "save-json",
     "gametypes-json", "bones", "descent",
@@ -5653,7 +5654,8 @@ static string _gametype_to_clo(game_type g)
         return cmd_ops[CLO_SPRINT];
     case GAME_TYPE_DESCENT: // no CLO?
         return cmd_ops[CLO_DESCENT];
-    case GAME_TYPE_HINTS: // no CLO?
+    case GAME_TYPE_HINTS:
+        return cmd_ops[CLO_HINTS];
     case GAME_TYPE_NORMAL:
     default:
         return "";
@@ -6212,6 +6214,13 @@ bool parse_args(int argc, char **argv, bool rc_only)
                 crawl_state.type = GAME_TYPE_TUTORIAL;
             else
                 Options.game.type = GAME_TYPE_TUTORIAL;
+            break;
+
+        case CLO_HINTS:
+            if (rc_only)
+                crawl_state.type = GAME_TYPE_HINTS;
+            else
+                Options.game.type = GAME_TYPE_HINTS;
             break;
 
         case CLO_NO_SAVE:
