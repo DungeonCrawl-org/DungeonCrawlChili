@@ -1,5 +1,6 @@
 -- Check lesson 3 through the full builder, including tutorial map selection.
--- Run with: ./crawl -script check-tutorial-lesson3
+-- Run with: ./crawl -tutorial -script check-tutorial-lesson3
+-- The -tutorial flag also exercises startup from the online Tutorial entry.
 
 local function place_lesson(name, depth, lesson)
   debug.goto_place("D:" .. depth)
