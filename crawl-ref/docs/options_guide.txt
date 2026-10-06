@@ -1989,7 +1989,7 @@ action_panel_scale = 100 (persistent)
         A percentage scale factor to apply to the action panel. This option is
         automatically saved between games, and only available on Webtiles.
 
-action_panel_orientation = horizontal (persistent)
+action_panel_orientation = vertical (persistent)
         (values: horizontal | vertical)
         When set to 'horizontal', the action panel will be placed along the top
         edge of the screen. When set to 'vertical', the panel will be placed
