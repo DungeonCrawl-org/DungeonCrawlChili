@@ -1971,7 +1971,9 @@ action_panel_orientation = horizontal (persistent)
         (values: horizontal | vertical)
         When set to 'horizontal', the action panel will be placed along the top
         edge of the screen. When set to 'vertical', the panel will be placed
-        along the left edge. This option is automatically saved between games,
+        along the left edge. Each item type occupies a separate row in a
+        horizontal panel or a separate column in a vertical panel. Long groups
+        wrap when necessary. This option is automatically saved between games,
         and is only available on Webtiles.
 
 action_panel_font_family = monospace (persistent)

@@ -18,6 +18,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
     var font; // cached font name for the canvas: size (in px) + family
     var draw_glyphs;
     var selected = -1;
+    var panel_cells = [];
     const NUM_RESERVED_BUTTONS = 2;
 
     function send_options()
@@ -150,7 +151,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
 
     function show_tooltip(x, y, slot)
     {
-        if (slot >= filtered_inv.length)
+        if (slot < -2 || slot >= filtered_inv.length)
         {
             hide_tooltip();
             return;
@@ -286,16 +287,19 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
             // pixel ratio to adjust the scale
             var cell_width = renderer.cell_width * scale / 100;
             var cell_height = renderer.cell_height * scale / 100;
-            var cell_length = _horizontal() ? cell_width : cell_height;
+            var bounds = $canvas[0].getBoundingClientRect();
             var loc = {
-                x: Math.round(ev.clientX / cell_width - 0.5),
-                y: Math.round(ev.clientY / cell_height - 0.5)
+                x: Math.floor((ev.clientX - bounds.left - borders_width / 2) / cell_width),
+                y: Math.floor((ev.clientY - bounds.top - borders_width / 2) / cell_height)
             };
+            var oldselected = selected;
+            var cell = panel_cells.find(function (cell) {
+                return cell.x === loc.x && cell.y === loc.y;
+            });
+            selected = cell ? cell.index : -1;
 
             if (ev.type === "mousemove" || ev.type === "mouseenter")
             {
-                var oldselected = selected;
-                selected = _horizontal() ? loc.x : loc.y;
                 update();
                 if (oldselected != selected && !settings_visible)
                 {
@@ -339,7 +343,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         }
     }
 
-    function draw_action(texture, tiles, item, offset, scale, needs_cursor,
+    function draw_action(texture, tiles, item, x, y, scale, needs_cursor,
                          text, useless)
     {
         if (item && draw_glyphs)
@@ -347,8 +351,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
             // XX just the glyph is not very informative. One idea might
             // be to tack on the subtype icon, but those are currently
             // baked into the item tile so this would be a lot of work.
-            renderer.render_glyph(_horizontal() ? offset : 0,
-                                  _horizontal() ? 0 : offset,
+            renderer.render_glyph(x, y,
                                   item, true, true, scale);
         }
         else
@@ -356,8 +359,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
             tiles = Array.isArray(tiles) ? tiles : [tiles];
             tiles.forEach(function (tile) {
                 renderer.draw_tile(tile,
-                                   _horizontal() ? offset : 0,
-                                   _horizontal() ? 0 : offset,
+                                   x, y,
                                    texture,
                                    undefined, undefined, undefined, undefined,
                                    scale);
@@ -369,16 +371,14 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
             // TODO: at some scalings, this don't dodge the green highlight
             // square very well
             renderer.draw_quantity(text,
-                                   _horizontal() ? offset : 0,
-                                   _horizontal() ? 0 : offset,
+                                   x, y,
                                    font);
         }
 
         if (needs_cursor)
         {
             renderer.draw_icon(icons.CURSOR3,
-                               _horizontal() ? offset : 0,
-                               _horizontal() ? 0 : offset,
+                               x, y,
                                undefined, undefined,
                                scale);
         }
@@ -386,11 +386,61 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         if (useless)
         {
             renderer.draw_icon(icons.OOR_MESH,
-                               _horizontal() ? offset : 0,
-                               _horizontal() ? 0 : offset,
+                               x, y,
                                undefined, undefined,
                                scale);
         }
+    }
+
+    // Horizontal panels use one row per item type; vertical panels transpose
+    // the same layout into columns. Long groups wrap without mixing types.
+    function layout_cells(items, horizontal, max_columns, max_rows)
+    {
+        var main_limit = horizontal ? max_columns : max_rows;
+        var cross_limit = horizontal ? max_rows : max_columns;
+        var main_pos = 0, cross_pos = 0;
+        var cells = [];
+        var overflow = false;
+
+        function add(index)
+        {
+            if (main_pos === main_limit)
+            {
+                main_pos = 0;
+                cross_pos++;
+            }
+            if (cross_pos >= cross_limit)
+            {
+                overflow = true;
+                return;
+            }
+            cells.push({index: index,
+                        x: horizontal ? main_pos : cross_pos,
+                        y: horizontal ? cross_pos : main_pos});
+            main_pos++;
+        }
+
+        for (var i = 0; i < NUM_RESERVED_BUTTONS; i++)
+            add(i);
+        items.forEach(function (item, index) {
+            if (index && item.action_panel_order !== items[index - 1].action_panel_order)
+            {
+                main_pos = 0;
+                cross_pos++;
+            }
+            add(index + NUM_RESERVED_BUTTONS);
+        });
+
+        // Reserve a non-clickable cell for the overflow indicator.
+        var ellipsis = overflow ? cells.pop() : null;
+        var width = Math.max(1, ...cells.map(function (cell) { return cell.x + 1; }));
+        var height = Math.max(1, ...cells.map(function (cell) { return cell.y + 1; }));
+        if (ellipsis)
+        {
+            width = Math.max(width, ellipsis.x + 1);
+            height = Math.max(height, ellipsis.y + 1);
+        }
+        return {cells: cells, width: width, height: height, ellipsis: ellipsis};
     }
 
     function update()
@@ -428,8 +478,6 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         });
 
         // Render
-        const ratio = window.devicePixelRatio;
-
         // first we readjust the dimensions according to whether the panel
         // should be horizontal or vertical, and how much space is available.
         // These calculations are in logical pixels.
@@ -437,31 +485,21 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
 
         var cell_width = renderer.cell_width * adjusted_scale;
         var cell_height = renderer.cell_height * adjusted_scale;
-        var cell_length = _horizontal() ? cell_width
-                                        : cell_height;
-        var required_length = cell_length * (filtered_inv.length + NUM_RESERVED_BUTTONS);
-        var available_length = _horizontal()
-                            ? $("#dungeon").width()
-                            : $("#dungeon").height();
-        available_length -= borders_width;
-        var max_cells = Math.floor(available_length / cell_length);
-        var panel_length = Math.min(required_length, available_length);
+        var max_columns = Math.max(1, Math.floor(
+            ($("#dungeon").width() - borders_width) / cell_width));
+        var max_rows = Math.max(1, Math.floor(
+            ($("#dungeon").height() - borders_width) / cell_height));
+        var layout = layout_cells(filtered_inv, _horizontal(), max_columns, max_rows);
+        panel_cells = layout.cells;
 
         util.init_canvas($canvas[0],
-                         _horizontal() ? panel_length : cell_width,
-                         _horizontal() ? cell_height : panel_length);
+                         layout.width * cell_width,
+                         layout.height * cell_height);
         renderer.init($canvas[0]);
         renderer.clear();
 
         // now draw the thing. From this point forward, use device pixels.
         const cell = renderer.scaled_size();
-        const inc = (_horizontal() ? cell.width : cell.height) * adjusted_scale;
-
-        // XX The "X" should definitely be a different/custom icon
-        // TODO: select tile via something like c++ `tileidx_command`
-        draw_action(gui, gui.PROMPT_NO, null, 0, adjusted_scale, selected == 0);
-        draw_action(gui, gui.CMD_GAME_MENU, null, inc, adjusted_scale,
-                    selected == 1);
 
         draw_glyphs = options.get("action_panel_glyphs");
 
@@ -474,29 +512,33 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         }
 
         // Inventory items
-        filtered_inv.slice(0, max_cells).forEach(function (item, idx) {
-            let offset = inc * (idx + NUM_RESERVED_BUTTONS);
+        panel_cells.forEach(function (position) {
+            const x = position.x * cell.width * adjusted_scale;
+            const y = position.y * cell.height * adjusted_scale;
+            const index = position.index;
+            if (index < NUM_RESERVED_BUTTONS)
+            {
+                draw_action(gui, index === 0 ? gui.PROMPT_NO : gui.CMD_GAME_MENU,
+                            null, x, y, adjusted_scale, selected === index);
+                return;
+            }
+            const item = filtered_inv[index - NUM_RESERVED_BUTTONS];
             let qty_field_name = item.qty_field;
             let qty = "";
             if (item.hasOwnProperty(qty_field_name))
                 qty = item[qty_field_name];
-            let cursor_required = selected == idx + NUM_RESERVED_BUTTONS;
+            let cursor_required = selected === index;
 
-            draw_action(main, item.tile, item, offset, adjusted_scale,
+            draw_action(main, item.tile, item, x, y, adjusted_scale,
                         cursor_required, qty, item.useless);
         });
 
-        if (available_length < required_length)
+        if (layout.ellipsis)
         {
             const ellipsis = icons.ELLIPSIS;
-            var x_pos = 0, y_pos = 0;
-
-            if (_horizontal())
-                x_pos = available_length - icons.get_tile_info(ellipsis).w * adjusted_scale;
-            else
-                y_pos = available_length - icons.get_tile_info(ellipsis).h * adjusted_scale;
-
-            renderer.draw_icon(ellipsis, x_pos * ratio, y_pos * ratio, -2, -2, adjusted_scale);
+            const x = layout.ellipsis.x * cell.width * adjusted_scale;
+            const y = layout.ellipsis.y * cell.height * adjusted_scale;
+            renderer.draw_icon(ellipsis, x, y, -2, -2, adjusted_scale);
         }
         $canvas.removeClass("hidden");
     }
