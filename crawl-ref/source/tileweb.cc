@@ -1463,8 +1463,9 @@ void TilesFramework::_send_item(item_def& current, const item_def& next,
                                || next.base_type == OBJ_WEAPONS
                                || next.base_type == OBJ_STAVES;
         json_write_int("action_panel_order", _action_panel_order(next, name));
-        json_write_string("action_panel_group", equipment ? "equipment"
-                          : item_class_name(next.base_type));
+        json_write_string("action_panel_group",
+                          next.base_type == OBJ_ARMOUR ? "armour"
+                          : equipment ? "weapons" : base_type_string(next.base_type));
         json_write_string("qty_field", _qty_field_name(next));
 
         const string prefix = item_prefix(next);
