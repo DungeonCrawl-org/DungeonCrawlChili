@@ -3606,7 +3606,9 @@ item_def* monster_die(monster& mons, killer_type killer,
         unwind_var<int> fakehp(mons.hit_points, 1);
         monster_drop_things(&mons, YOU_KILL(killer) || pet_kill);
 
-        if (mons.props.exists(UNIQUE_DATA_DROP_KEY))
+        // Illusions inherit their original's drop flag, but must not create
+        // real unique loot (notably Phantom Mirrors from Mara's copies).
+        if (mons.props.exists(UNIQUE_DATA_DROP_KEY) && !mons.is_illusion())
         {
             const mon_death_drop &drop = get_monster_data(mons.type)->death_drop;
             const mon_death_drop_item &choice = drop.options[
