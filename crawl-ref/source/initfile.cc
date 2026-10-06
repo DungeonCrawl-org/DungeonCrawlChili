@@ -968,7 +968,7 @@ const vector<GameOption*> game_options::build_options_list()
                              "monospace", true),
         new IntGameOption(SIMPLE_NAME(action_panel_font_size), 16),
         new MultipleChoiceGameOption<string>(
-            SIMPLE_NAME(action_panel_orientation), "horizontal",
+            SIMPLE_NAME(action_panel_orientation), "vertical",
             {{"horizontal", "horizontal"}, {"vertical", "vertical"}}),
         new IntGameOption(SIMPLE_NAME(action_panel_scale), 100, 20, 1600),
         new BoolGameOption(SIMPLE_NAME(action_panel_glyphs), false),
