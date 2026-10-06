@@ -1,4 +1,5 @@
--- Run with: ./crawl -script check-tutorial-lesson6
+-- Run with: ./crawl -tutorial -script check-tutorial-lesson6
+-- The -tutorial flag also exercises startup from the online Tutorial entry.
 -- Exercise the actual builder, including D:1 item restrictions and stairs.
 crawl_require("dlua/test.lua")
 
