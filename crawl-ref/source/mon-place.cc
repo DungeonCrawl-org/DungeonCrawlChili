@@ -660,6 +660,14 @@ monster* place_monster(mgen_data mg, bool force_pos, bool dont_place)
     mg.cls = resolve_monster_type(mg.cls, mg.base_type, mg.proximity,
                                   &mg.pos, mg.map_mask,
                                   &place, &want_band, allow_ood);
+    // D:2's decorative plants are withered, including those placed by vaults.
+    // Keep player-created plants and tutorial maps unchanged.
+    if (crawl_state.generating_level && !crawl_state.game_is_tutorial()
+        && level_id::current() == level_id(BRANCH_DUNGEON, 2)
+        && mg.cls == MONS_PLANT)
+    {
+        mg.cls = MONS_WITHERED_PLANT;
+    }
     // Place may have been updated inside resolve_monster_type
     // and then inside pick_random_monster for OOD.
     bool chose_ood_monster = place.absdepth() > mg.place.absdepth() + 5;
