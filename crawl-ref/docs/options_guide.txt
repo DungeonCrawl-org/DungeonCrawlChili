@@ -1953,10 +1953,18 @@ action_panel = [)|/?!}
         /       Wands
         If set to an empty string, the panel will be hidden entirely. The order
         of item types in this option determines the order of item types in the
-        action panel. Armour, weapons, and staves share the top equipment row;
-        clicking equipment opens its description. Consumables remain grouped
+        action panel. Armour and weapons occupy separate rows at the top;
+        staves share the weapons row. Clicking equipment opens its description.
+        Consumables remain grouped
         by type, with useful items first within each group, then by subtype.
         This option is only available on Webtiles.
+
+action_panel_hidden_types = (persistent)
+        A comma-separated list of item types to hide: armour, weapons, wand,
+        scroll, potion, miscellaneous. Right-click the cauldron or X on the
+        panel to show or hide each type using checkboxes. Changes apply
+        immediately and are saved between games. Hiding every type keeps the
+        panel controls available so the types can be shown again.
 
 action_panel_filter += <regex>, <regex>, ...
         (List option)

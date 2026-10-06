@@ -19,6 +19,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
     var draw_glyphs;
     var selected = -1;
     var panel_cells = [];
+    var hidden_types = "";
     const NUM_RESERVED_BUTTONS = 2;
 
     function send_options()
@@ -67,12 +68,15 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
 
     function show_settings(e)
     {
-        if (selected > 0)
+        if (selected > 1)
             return false;
         hide_tooltip();
         var o_button = $("#action-orient-" + orientation);
         // Initialize the form with the current values
         o_button.prop("checked", true);
+        $("#action-panel-types input").each(function () {
+            this.checked = hidden_types.split(",").indexOf(this.value) === -1;
+        });
 
         // TODO: should these just reset to 100/16, rather than this somewhat
         // complicate context-sensitive behavior?
@@ -164,7 +168,8 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
                           + "<span>Right click: open settings</span>");
         }
         else if (slot == -1 && game.get_input_mode() == enums.mouse_mode.COMMAND)
-            $tooltip.html("<span>Left click: show main menu</span>");
+            $tooltip.html("<span>Left click: show main menu</span><br />"
+                          + "<span>Right click: open settings</span>");
         else
         {
             var item = filtered_inv[slot];
@@ -244,6 +249,16 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         });
 
         $("#minimize-panel").click(hide_panel);
+
+        $("#action-panel-types input").on("change", function () {
+            var hidden = [];
+            $("#action-panel-types input").each(function () {
+                if (!this.checked)
+                    hidden.push(this.value);
+            });
+            options.set("action_panel_hidden_types", hidden.join(","));
+            options.send("action_panel_hidden_types");
+        });
 
         $("#action-panel-placeholder").click(function () {
             show_panel();
@@ -330,7 +345,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
             }
             else if (ev.type === "mousedown" && ev.which == 3)
             {
-                if (selected == 0) // right click on the x shows settings
+                if (selected == 0 || selected == 1)
                     show_settings(ev);
                 else if (game.get_input_mode() == enums.mouse_mode.COMMAND
                          && selected >= NUM_RESERVED_BUTTONS
@@ -396,6 +411,8 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
     {
         // Older game binaries do not send a group. base_type still groups
         // their items correctly across the usefulness tiers in the order.
+        if (item.action_panel_group === "equipment")
+            return item.base_type === 2 ? "armour" : "weapons";
         return item.action_panel_group || item.base_type;
     }
 
@@ -472,15 +489,21 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
 
         // Filter
         filtered_inv = Object.values(player.inv).filter(function (item) {
-            return item.quantity && item.action_panel_order >= 0;
+            return item.quantity && item.action_panel_order >= 0
+                && hidden_types.split(",").indexOf(item_group(item)) === -1;
         });
 
         // primary sort: determined by the `action_panel` option
         // secondary sort: determined by subtype
         filtered_inv.sort(function (a, b) {
-            // Keep the equipment row at the top, even with a custom order.
-            if ((item_group(a) === "equipment") !== (item_group(b) === "equipment"))
-                return item_group(a) === "equipment" ? -1 : 1;
+            // Keep armour and weapons in their own rows above consumables.
+            function equipment_order(item) {
+                return item_group(item) === "armour" ? 0
+                     : item_group(item) === "weapons" ? 1 : 2;
+            }
+            var equipment_diff = equipment_order(a) - equipment_order(b);
+            if (equipment_diff)
+                return equipment_diff;
             if (a.action_panel_order === b.action_panel_order)
                 return a.sub_type - b.sub_type;
 
@@ -560,6 +583,14 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         // issues with the crawl binary, this will run at least twice on
         // startup.
         var update_required = false;
+        var new_hidden = options.get("action_panel_hidden_types") || "";
+        if (hidden_types !== new_hidden)
+        {
+            hidden_types = new_hidden;
+            selected = -1;
+            hide_tooltip();
+            update_required = true;
+        }
 
         var new_scale = options.get("action_panel_scale");
         if (scale !== new_scale)

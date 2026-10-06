@@ -598,6 +598,7 @@ public:
     string      action_panel_font_family; // font used to display the quantities
     int         action_panel_font_size;
     bool        action_panel_glyphs;
+    string      action_panel_hidden_types;
 #endif
 
     int         fire_items_start; // index of first item for fire command

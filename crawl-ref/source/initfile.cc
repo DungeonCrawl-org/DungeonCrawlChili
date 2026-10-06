@@ -972,6 +972,7 @@ const vector<GameOption*> game_options::build_options_list()
             {{"horizontal", "horizontal"}, {"vertical", "vertical"}}),
         new IntGameOption(SIMPLE_NAME(action_panel_scale), 100, 20, 1600),
         new BoolGameOption(SIMPLE_NAME(action_panel_glyphs), false),
+        new StringGameOption(SIMPLE_NAME(action_panel_hidden_types), ""),
 #endif
 #ifdef USE_FT
         new BoolGameOption(SIMPLE_NAME(tile_font_ft_light), false),
@@ -2500,6 +2501,8 @@ void game_options::write_prefs(FILE *f)
                         action_panel_show ? "yes" : "no");
     fprintf(f, "action_panel_scale = %d\n", action_panel_scale);
     fprintf(f, "action_panel_font_size = %d\n", action_panel_font_size);
+    fprintf(f, "action_panel_hidden_types = %s\n",
+            action_panel_hidden_types.c_str());
 #endif
     // TODO: this variable is extremely coarse, maybe something better? Per
     // opts setting? comparison of serializable values like for newgame_def?
@@ -5633,6 +5636,7 @@ void game_options::write_webtiles_options(const string& name)
     tiles.json_write_int("action_panel_font_size",
             action_panel_font_size);
     tiles.json_write_bool("action_panel_glyphs", action_panel_glyphs);
+    tiles.json_write_string("action_panel_hidden_types", action_panel_hidden_types);
 
     _write_minimap_colours();
 
