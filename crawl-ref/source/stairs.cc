@@ -1094,8 +1094,10 @@ void floor_transition(dungeon_feature_type how,
     const bool newlevel = load_level(how, LOAD_ENTER_LEVEL, old_level);
 
     if (player_in_branch(BRANCH_DUNGEON) && you.depth == 2)
+    {
         mpr("<lightcyan>This is ominous! The trees on this level are all dead."
             "</lightcyan>");
+    }
     else if (player_in_branch(BRANCH_DUNGEON) && you.depth == 3)
         mpr("<lightcyan>There's a small castle on this level.</lightcyan>");
     else if (player_in_branch(BRANCH_DUNGEON) && you.depth == 4)

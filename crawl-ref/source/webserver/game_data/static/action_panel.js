@@ -95,6 +95,12 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         $settings.css({top: e.pageY + 10 + "px",
                       left: e.pageX + 10 + "px"});
         $settings.show();
+        $settings.css({
+            left: Math.max(10, Math.min(e.pageX + 10,
+                          window.innerWidth - $settings.outerWidth() - 10)) + "px",
+            top: Math.max(10, Math.min(e.pageY + 10,
+                         window.innerHeight - $settings.outerHeight() - 10)) + "px"
+        });
         settings_visible = true;
 
         // TODO: I have had to set the buttons with tabindex -1, as I cannot

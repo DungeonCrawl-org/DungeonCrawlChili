@@ -597,7 +597,9 @@ wint_t TilesFramework::_handle_control_message(sockaddr_un addr, string data)
         {
             if (you.inv[inv_slot].base_type == OBJ_ARMOUR
                 || you.inv[inv_slot].base_type == OBJ_WEAPONS
-                || you.inv[inv_slot].base_type == OBJ_STAVES)
+                || you.inv[inv_slot].base_type == OBJ_STAVES
+                || you.inv[inv_slot].base_type == OBJ_JEWELLERY
+                || you.inv[inv_slot].base_type == OBJ_TALISMANS)
             {
                 describe_item(you.inv[inv_slot]);
                 return CK_MOUSE_CMD;
@@ -1461,11 +1463,14 @@ void TilesFramework::_send_item(item_def& current, const item_def& next,
         // Equipment opens its description; consumables use quiver actions.
         const bool equipment = next.base_type == OBJ_ARMOUR
                                || next.base_type == OBJ_WEAPONS
-                               || next.base_type == OBJ_STAVES;
+                               || next.base_type == OBJ_STAVES
+                               || next.base_type == OBJ_JEWELLERY
+                               || next.base_type == OBJ_TALISMANS;
         json_write_int("action_panel_order", _action_panel_order(next, name));
         json_write_string("action_panel_group",
-                          next.base_type == OBJ_ARMOUR ? "armour"
-                          : equipment ? "weapons" : base_type_string(next.base_type));
+                          next.base_type == OBJ_WEAPONS
+                          || next.base_type == OBJ_STAVES
+                          ? "weapons" : base_type_string(next.base_type));
         json_write_string("qty_field", _qty_field_name(next));
 
         const string prefix = item_prefix(next);
