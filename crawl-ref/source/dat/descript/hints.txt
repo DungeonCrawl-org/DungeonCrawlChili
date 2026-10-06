@@ -14,6 +14,7 @@ For the moment, just remember the following keys and their functions:
   <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> — shows the items and the commands
   <input>$cmd[CMD_SAVE_GAME]</input>  — saves the game, to be resumed later
 (but note that death is permanent)
+  <input>$cmd[CMD_QUIT]</input> — abandons this character permanently (asks for confirmation)
   <input>$cmd[CMD_LOOK_AROUND]</input>  — examines something in your vicinity
 
 The hint mode will help you play Crawl without reading any documentation. If
