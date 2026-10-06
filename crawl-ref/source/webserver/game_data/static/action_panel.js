@@ -392,6 +392,13 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         }
     }
 
+    function item_group(item)
+    {
+        // Older game binaries do not send a group. base_type still groups
+        // their items correctly across the usefulness tiers in the order.
+        return item.action_panel_group || item.base_type;
+    }
+
     // Horizontal panels use one row per item type; vertical panels transpose
     // the same layout into columns. Long groups wrap without mixing types.
     function layout_cells(items, horizontal, max_columns, max_rows)
@@ -423,7 +430,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         for (var i = 0; i < NUM_RESERVED_BUTTONS; i++)
             add(i);
         items.forEach(function (item, index) {
-            if (index && item.action_panel_order !== items[index - 1].action_panel_order)
+            if (index && item_group(item) !== item_group(items[index - 1]))
             {
                 main_pos = 0;
                 cross_pos++;
@@ -471,6 +478,9 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
         // primary sort: determined by the `action_panel` option
         // secondary sort: determined by subtype
         filtered_inv.sort(function (a, b) {
+            // Keep the equipment row at the top, even with a custom order.
+            if ((item_group(a) === "equipment") !== (item_group(b) === "equipment"))
+                return item_group(a) === "equipment" ? -1 : 1;
             if (a.action_panel_order === b.action_panel_order)
                 return a.sub_type - b.sub_type;
 

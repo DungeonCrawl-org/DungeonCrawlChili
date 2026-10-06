@@ -595,6 +595,13 @@ wint_t TilesFramework::_handle_control_message(sockaddr_un addr, string data)
         int inv_slot = (int) slot->number_;
         if (inv_slot >=0 && inv_slot < ENDOFPACK)
         {
+            if (you.inv[inv_slot].base_type == OBJ_ARMOUR
+                || you.inv[inv_slot].base_type == OBJ_WEAPONS
+                || you.inv[inv_slot].base_type == OBJ_STAVES)
+            {
+                describe_item(you.inv[inv_slot]);
+                return CK_MOUSE_CMD;
+            }
             quiver::action_cycler tmp;
             tmp.set_from_slot(inv_slot);
             if (!tmp.is_empty())
@@ -1337,7 +1344,7 @@ void TilesFramework::_send_player(bool force_full)
 }
 
 // Checks if an item should be displayed on the action panel
-static int _useful_consumable_order(const item_def &item, const string &name)
+static int _action_panel_order(const item_def &item, const string &name)
 {
     const vector<object_class_type> &base_types = Options.action_panel;
     const auto order = std::find(base_types.begin(), base_types.end(),
@@ -1451,10 +1458,13 @@ void TilesFramework::_send_item(item_def& current, const item_def& next,
             json_write_string("name", name);
         }
 
-        // -1 in this field means don't show. *note*: showing in the action
-        // panel has undefined behavior for item types that don't have a
-        // quiver::action implementation...
-        json_write_int("action_panel_order", _useful_consumable_order(next, name));
+        // Equipment opens its description; consumables use quiver actions.
+        const bool equipment = next.base_type == OBJ_ARMOUR
+                               || next.base_type == OBJ_WEAPONS
+                               || next.base_type == OBJ_STAVES;
+        json_write_int("action_panel_order", _action_panel_order(next, name));
+        json_write_string("action_panel_group", equipment ? "equipment"
+                          : item_class_name(next.base_type));
         json_write_string("qty_field", _qty_field_name(next));
 
         const string prefix = item_prefix(next);
@@ -1498,7 +1508,9 @@ void TilesFramework::_send_item(item_def& current, const item_def& next,
         {
             auto action = quiver::slot_to_action(current.link);
             // TODO: does this stay in sync? Do anything with enabledness?
-            if (action && action->is_valid())
+            if (equipment)
+                json_write_string("action_verb", "Inspect");
+            else if (action && action->is_valid())
                 json_write_string("action_verb", action->quiver_verb());
         }
     }
