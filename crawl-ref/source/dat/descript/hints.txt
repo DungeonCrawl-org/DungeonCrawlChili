@@ -10,6 +10,7 @@ be your main goal. Try to delve as deeply as possible but beware; death lurks
 around every corner.
 
 For the moment, just remember the following keys and their functions:
+  <input>$cmd[CMD_DISPLAY_COMMANDS]></input> — shows the basic keys from the tutorial lessons
   <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> — shows the items and the commands
   <input>$cmd[CMD_SAVE_GAME]</input>  — saves the game, to be resumed later
 (but note that death is permanent)
