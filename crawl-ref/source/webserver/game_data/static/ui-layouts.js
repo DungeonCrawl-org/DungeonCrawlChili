@@ -760,6 +760,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             });
         }
         $popup.attr("data-tag", desc.tag);
+        $popup.toggleClass("wrap-text", desc.prewrapped === false);
         $body.html(body_html);
         if (desc.more)
             $popup.children(".more").html(util.formatted_string_to_html(desc.more));

@@ -918,6 +918,17 @@ canvas {
     display: block;
 }
 
+.formatted-scroller.wrap-text {
+    white-space: pre-wrap;
+    max-width: 80ch;
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
+.formatted-scroller.wrap-text > .body {
+    min-width: 0;
+}
+
 .formatted-scroller > .header {
     margin-bottom: 10px;
 }
