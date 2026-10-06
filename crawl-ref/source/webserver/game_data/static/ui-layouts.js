@@ -779,7 +779,11 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         var scroll_elem = s.scrollElement;
         scroll_elem.addEventListener("scroll", scroller_onscroll);
         $popup.on("keydown keypress", function (event) {
-            if (event.which !== 36 || desc.tag !== "help")
+            // Help uses Home and > to select pages instead of scrolling.
+            var help_hotkey = desc.tag === "help"
+                && (event.which === 36
+                    || (event.type === "keypress" && event.which === 62));
+            if (!help_hotkey)
                 scroller_handle_key(s, event);
         });
         if (desc.easy_exit && options.get("tile_web_mouse_control"))
