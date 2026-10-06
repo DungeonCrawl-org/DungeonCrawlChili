@@ -180,6 +180,9 @@ void pick_hints(newgame_def& choice)
     vbox->add_child(prompt_ui);
 
     auto main_items = make_shared<OuterMenu>(true, 1, 3);
+#ifdef USE_TILE_WEB
+    main_items->menu_id = "hints-main";
+#endif
     main_items->set_margin_for_sdl(15, 0);
     main_items->set_margin_for_crt(1, 0);
     vbox->add_child(main_items);
@@ -219,6 +222,9 @@ void pick_hints(newgame_def& choice)
     }
 
     auto sub_items = make_shared<OuterMenu>(false, 1, 2);
+#ifdef USE_TILE_WEB
+    sub_items->menu_id = "hints-sub";
+#endif
     vbox->add_child(sub_items);
 
     bool cancelled = false;
@@ -262,6 +268,15 @@ void pick_hints(newgame_def& choice)
             return done = cancelled = true;
         return false;
     });
+
+#ifdef USE_TILE_WEB
+    tiles.json_open_object();
+    tiles.json_write_string("title", prompt);
+    main_items->serialize("main-items");
+    sub_items->serialize("sub-items");
+    tiles.push_ui_layout("newgame-choice", 1);
+    popup->on_layout_pop([](){ tiles.pop_ui_layout(); });
+#endif
 
     ui::run_layout(std::move(popup), done);
 
@@ -412,6 +427,15 @@ void hints_starting_screen()
     bool done = false;
     auto popup = make_shared<ui::Popup>(prompt_ui);
     popup->on_keydown_event([&](const KeyEvent&) { return done = true; });
+
+#ifdef USE_TILE_WEB
+    tiles.json_open_object();
+    tiles.json_write_string("title", "");
+    tiles.json_write_string("body", text);
+    tiles.json_write_string("footer", "");
+    tiles.push_ui_layout("describe-generic", 0);
+    popup->on_layout_pop([](){ tiles.pop_ui_layout(); });
+#endif
 
     mouse_control mc(MOUSE_MODE_MORE);
     ui::run_layout(std::move(popup), done);
