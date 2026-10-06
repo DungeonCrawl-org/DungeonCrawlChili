@@ -396,7 +396,7 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
                                    font);
         }
 
-        if (needs_cursor)
+        if (needs_cursor || item && item.equipped)
         {
             renderer.draw_icon(icons.CURSOR3,
                                x, y,
