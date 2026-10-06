@@ -452,7 +452,12 @@ bool library_add_spells(vector<spell_type> spells, bool quiet)
         if (!quiet)
         {
             vector<string> spellnames(new_spells.size());
-            transform(new_spells.begin(), new_spells.end(), spellnames.begin(), spell_title);
+            transform(new_spells.begin(), new_spells.end(), spellnames.begin(),
+                [](spell_type spell)
+                {
+                    return make_stringf("<lightcyan>%s</lightcyan>",
+                                        spell_title(spell));
+                });
             mprf("You add the spell%s %s to your library.",
                 spellnames.size() > 1 ? "s" : "",
                 comma_separated_line(spellnames.begin(),
