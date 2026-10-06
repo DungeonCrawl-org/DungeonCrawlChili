@@ -1094,17 +1094,20 @@ void floor_transition(dungeon_feature_type how,
     const bool newlevel = load_level(how, LOAD_ENTER_LEVEL, old_level);
 
     if (player_in_branch(BRANCH_DUNGEON) && you.depth == 2)
-        mpr("This is ominous! The trees on this level are all dead.");
+        mpr("<lightcyan>This is ominous! The trees on this level are all dead."
+            "</lightcyan>");
     else if (player_in_branch(BRANCH_DUNGEON) && you.depth == 3)
-        mpr("There's a small castle on this level.");
+        mpr("<lightcyan>There's a small castle on this level.</lightcyan>");
     else if (player_in_branch(BRANCH_DUNGEON) && you.depth == 4)
-        mpr("Welcome to the Sewer!");
+        mpr("<lightcyan>Welcome to the Sewer!</lightcyan>");
     else if (player_in_branch(BRANCH_DUNGEON) && you.depth == 5)
-        mpr("Welcome to the Catacomb!");
+        mpr("<lightcyan>Welcome to the Catacomb!</lightcyan>");
     else if (player_in_branch(BRANCH_DUNGEON) && you.depth == 6)
-        mpr("There's a cold and hot theme on this floor.");
+        mpr("<lightcyan>There's a cold and hot theme on this floor."
+            "</lightcyan>");
     else if (player_in_branch(BRANCH_DUNGEON) && you.depth == 7)
-        mpr("This looks like an abandoned nature reserve.");
+        mpr("<lightcyan>This looks like an abandoned nature reserve."
+            "</lightcyan>");
 
     if (newlevel)
     {
