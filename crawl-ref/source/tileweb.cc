@@ -29,6 +29,8 @@
 #include "invent.h"
 #include "item-name.h"
 #include "item-prop.h" // is_weapon()
+#include "item-use.h"
+#include "items.h"
 #include "json.h"
 #include "json-wrapper.h"
 #include "lang-fake.h"
@@ -597,8 +599,15 @@ wint_t TilesFramework::_handle_control_message(sockaddr_un addr, string data)
         {
             if (you.inv[inv_slot].base_type == OBJ_ARMOUR
                 || you.inv[inv_slot].base_type == OBJ_WEAPONS
-                || you.inv[inv_slot].base_type == OBJ_STAVES
-                || you.inv[inv_slot].base_type == OBJ_JEWELLERY
+                || you.inv[inv_slot].base_type == OBJ_STAVES)
+            {
+                // This shortcut only equips; clicking worn gear must not
+                // invoke the equip_unequip option and remove it instead.
+                if (!item_is_equipped(you.inv[inv_slot]))
+                    try_equip_item(you.inv[inv_slot]);
+                return CK_MOUSE_CMD;
+            }
+            if (you.inv[inv_slot].base_type == OBJ_JEWELLERY
                 || you.inv[inv_slot].base_type == OBJ_TALISMANS)
             {
                 describe_item(you.inv[inv_slot]);
@@ -1380,6 +1389,11 @@ static int _action_panel_order(const item_def &item, const string &name)
 // Returns the name of an item_def field to display on the action panel
 static string _qty_field_name(const item_def &item)
 {
+    if (item.base_type == OBJ_ARMOUR || item.base_type == OBJ_WEAPONS
+        || item.base_type == OBJ_STAVES)
+    {
+        return "";
+    }
     if (item.base_type == OBJ_MISCELLANY && item.sub_type != MISC_ZIGGURAT
         || item.base_type == OBJ_WANDS)
     {
@@ -1514,7 +1528,13 @@ void TilesFramework::_send_item(item_def& current, const item_def& next,
         {
             auto action = quiver::slot_to_action(current.link);
             // TODO: does this stay in sync? Do anything with enabledness?
-            if (equipment)
+            if (current.base_type == OBJ_ARMOUR
+                || current.base_type == OBJ_WEAPONS
+                || current.base_type == OBJ_STAVES)
+            {
+                json_write_string("action_verb", "Equip");
+            }
+            else if (equipment)
                 json_write_string("action_verb", "Inspect");
             else if (action && action->is_valid())
                 json_write_string("action_verb", action->quiver_verb());
