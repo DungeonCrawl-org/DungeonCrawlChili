@@ -6978,15 +6978,24 @@ player_stats player::calc_stats(int scale) const
     stats.ev = evasion_scaled(scale, false);
     stats.sh = player_displayed_shield_class(scale, false);
     stats.delay = static_cast<int>(attack_delay(nullptr, false).expected() * scale);
+    // Include equipment resistances in previews, excluding temporary buffs
+    // and random effects just as we do for the defensive stats above.
+    stats.res_fire = player_res_fire(false, false);
+    stats.res_cold = player_res_cold(false, false);
+    stats.res_elec = player_res_electricity(false, false);
+    stats.res_poison = player_res_poison(false, false);
+    stats.res_negative = player_prot_life(false, false);
+    stats.res_corr = player_res_corrosion(false, false);
+    stats.willpower = player_willpower(false);
     for (int i = 0; i < MAX_KNOWN_SPELLS; ++i)
         stats.fail[i] = raw_spell_fail(spells[i]);
     return stats;
 }
 
 /**
- * What would our natural AC/EV/SH, attack delay, and fail rate for all known
- * spells be if we wore a given piece of equipment instead of whatever might be
- * in that slot currently (if anything)?
+ * What would our natural defences, resistances, attack delay, and fail rate
+ * for all known spells be if we wore a given piece of equipment instead of
+ * whatever might be in that slot currently (if anything)?
  *
  * Note: non-artefact rings of evasion/protection and amulets of reflection
  * are excepted from using this function.
