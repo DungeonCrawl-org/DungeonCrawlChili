@@ -6,6 +6,7 @@ msc := message_colour
 
 # Really important messages
 #
+msc += lightred:You are lethally poisoned!
 msc += $danger:drains you
 msc += $danger:feel (heavily|very heavily|extremely) drained
 msc += $danger:strangely .*stable
