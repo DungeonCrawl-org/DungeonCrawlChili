@@ -1122,7 +1122,7 @@ static bool _update_statuses(player_info& c)
     return changed;
 }
 
-player_info::player_info()
+player_info::player_info() : inv_equipped(false)
 {
     _state_ever_synced = false;
     position = coord_def(-1, -1);
@@ -1321,6 +1321,10 @@ void TilesFramework::_send_player(bool force_full)
     {
         json_open_object(to_string(i));
         _send_item(c.inv[i], you.inv[i], c.inv_uselessness[i], force_full);
+        // Equipment can change without any change to the item itself.
+        _update_int(force_full, c.inv_equipped[i],
+                    you.inv[i].defined() && item_is_equipped(you.inv[i]),
+                    "equipped");
         json_close_object(true);
     }
     json_close_object(true);
