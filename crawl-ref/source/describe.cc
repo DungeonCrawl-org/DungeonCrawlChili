@@ -1963,6 +1963,67 @@ static string _equipment_switchto_string(const item_def &item)
         return "wearing";
 }
 
+static string _armour_comparison_stat(const char* label, int current, int next)
+{
+    // Match the existing equipment preview's truncation to tenths.
+    current = current / 10 * 10;
+    next = next / 10 * 10;
+    const string values = make_stringf("%.1f -> %.1f (%+.1f)",
+                                      current / 100.0, next / 100.0,
+                                      (next - current) / 100.0);
+    const char* colour = next > current ? "lightgreen"
+                         : next < current ? "lightred" : "lightgrey";
+    return make_stringf("\n%s: <%s>%s</%s>", label, colour,
+                        values.c_str(), colour);
+}
+
+static string _armour_resistance_level(int level)
+{
+    return level < 0 ? "vulnerable" : level == 0 ? "none" : string(level, '+');
+}
+
+static string _armour_resistance_changes(const player_stats &cur,
+                                        const player_stats &next)
+{
+    string description;
+    const struct
+    {
+        const char* label;
+        int player_stats::*value;
+    } resistances[] = {
+        {"Fire resistance (rF)", &player_stats::res_fire},
+        {"Cold resistance (rC)", &player_stats::res_cold},
+        {"Electricity resistance (rElec)", &player_stats::res_elec},
+        {"Poison resistance (rPois)", &player_stats::res_poison},
+        {"Negative energy resistance (rN)", &player_stats::res_negative},
+        {"Corrosion resistance (rCorr)", &player_stats::res_corr},
+    };
+    for (const auto &resistance : resistances)
+    {
+        const int before = cur.*resistance.value;
+        const int after = next.*resistance.value;
+        if (before == after)
+            continue;
+        const char* colour = after > before ? "lightgreen" : "lightred";
+        description += make_stringf("\n%s: <%s>%s -> %s (%s)</%s>",
+            resistance.label, colour,
+            _armour_resistance_level(before).c_str(),
+            _armour_resistance_level(after).c_str(),
+            after > before ? "gain" : "loss", colour);
+    }
+    if (cur.willpower != next.willpower)
+    {
+        const char* colour = next.willpower > cur.willpower
+                             ? "lightgreen" : "lightred";
+        description += make_stringf("\nWillpower: <%s>%d -> %d (%+d)</%s>",
+            colour, cur.willpower, next.willpower,
+            next.willpower - cur.willpower, colour);
+    }
+    if (description.empty())
+        description = "\nResistances and willpower: unchanged.";
+    return description;
+}
+
 /**
  * Describe how (un)equipping a piece of equipment might change the player's
  * AC/EV/SH, spell failure, and attack delay. We don't include temporary buffs
@@ -2009,7 +2070,7 @@ static string _equipment_property_change_description(const item_def &item,
     if (cur.ac == next.ac && cur.ev == next.ev && cur.sh == next.sh
         && fail_change == 0
         && (cur.delay == next.delay || item.base_type == OBJ_WEAPONS)
-        && (item.base_type != OBJ_ARMOUR || item.sub_type == ARM_ORB))
+        && item.base_type != OBJ_ARMOUR)
     {
         return "";
     }
@@ -2018,7 +2079,36 @@ static string _equipment_property_change_description(const item_def &item,
     description.reserve(100);
     description = "\n\n";
 
-    if (remove)
+    if (item.base_type == OBJ_ARMOUR)
+    {
+        description += "<white>Armour comparison</white>\n";
+        if (remove)
+            description += "If you remove this " + _equip_type_name(item) + ":";
+        else
+        {
+            bool requires_replace = false;
+            you.equipment.find_slot_to_equip_item(item, requires_replace, true);
+            vector<item_def*> equipped;
+            if (requires_replace)
+            {
+                you.equipment.find_removable_items_for_slot(get_armour_slot(item),
+                                                            equipped, true);
+            }
+            if (!requires_replace)
+                description += "Compared with an empty equipment slot:";
+            else if (equipped.size() == 1)
+                description += "Compared with " + equipped[0]->name(DESC_A) + ":";
+            else
+                description += "If worn in addition to your current equipment:";
+        }
+        description += _armour_comparison_stat("Armour class (AC)", cur.ac, next.ac);
+        description += _armour_comparison_stat("Evasion (EV)", cur.ev, next.ev);
+        if (is_shield(item) || cur.sh != next.sh)
+            description += _armour_comparison_stat("Shielding (SH)", cur.sh, next.sh);
+        description += _armour_resistance_changes(cur, next);
+        description += "\nBased on your current skills and equipment, without temporary buffs.";
+    }
+    else if (remove)
     {
         description += "If you " + item_unequip_verb(item) + " this "
                         + _equip_type_name(item) + ":";
@@ -2035,29 +2125,21 @@ static string _equipment_property_change_description(const item_def &item,
                          + " this " + _equip_type_name(item) + ":";
     }
 
-    // Always display AC line on proper armour, even if there is no change.
-    //
-    // For AC, EV and SH we round down rather than to the nearest 0.1, so that
-    // displayed values match the one that will be shown if this is actually
-    // equipped.
-    if (item.base_type == OBJ_ARMOUR && get_armour_slot(item) != SLOT_OFFHAND
-        || cur.ac != next.ac)
+    // Armour uses the comparison rows above; retain the existing descriptions
+    // for other equipment.
+    if (item.base_type != OBJ_ARMOUR && cur.ac != next.ac)
     {
         description += "\nYour AC would "
                        + _describe_point_diff(cur.ac, next.ac) + ".";
     }
 
-    // Always display EV line on non-orb armour, even if there is no change
-    // XXX perhaps this shouldn't display on basic aux armour?
-    if (item.base_type == OBJ_ARMOUR && item.sub_type != ARM_ORB
-        || cur.ev != next.ev)
+    if (item.base_type != OBJ_ARMOUR && cur.ev != next.ev)
     {
         description += "\nYour EV would "
                        + _describe_point_diff(cur.ev, next.ev) + ".";
     }
 
-    // Always display SH line on shields, even if there is no change
-    if (is_shield(item) || cur.sh != next.sh)
+    if (item.base_type != OBJ_ARMOUR && cur.sh != next.sh)
     {
         description += "\nYour SH would "
                        + _describe_point_diff(cur.sh, next.sh) + ".";
@@ -2601,6 +2683,7 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
     // Only displayed if the player exists (not for item lookup from the menu
     // or for morgues).
     if (verbose
+        && !monster
         && crawl_state.need_save
         && can_equip_item(item)
         && item.is_identified())

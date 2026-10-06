@@ -151,6 +151,14 @@ struct player_stats
     int ev = 0;
     int sh = 0;
     int delay = 0;
+    // Resistance levels and willpower are unscaled.
+    int res_fire = 0;
+    int res_cold = 0;
+    int res_elec = 0;
+    int res_poison = 0;
+    int res_negative = 0;
+    int res_corr = 0;
+    int willpower = 0;
     FixedVector<int, MAX_KNOWN_SPELLS> fail;
 };
 
