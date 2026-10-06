@@ -2243,6 +2243,7 @@ static map<curse_type, curse_data> _ashenzari_curses =
         "Ranged Combat", "Range",
         { SK_RANGED_WEAPONS, SK_THROWING },
     } },
+#if TAG_MAJOR_VERSION == 34
     { CURSE_ELEMENTS, {
         "Elements", "Elem",
         { SK_FIRE_MAGIC, SK_ICE_MAGIC, SK_AIR_MAGIC, SK_EARTH_MAGIC },
@@ -2275,7 +2276,104 @@ static map<curse_type, curse_data> _ashenzari_curses =
         "Devices", "Dev",
         { SK_EVOCATIONS, SK_SHAPESHIFTING },
     } },
+#endif
+    { CURSE_FIRE_MAGIC, {
+        "Fire Magic", "Fire",
+        { SK_FIRE_MAGIC },
+    } },
+    { CURSE_ICE_MAGIC, {
+        "Ice Magic", "Ice",
+        { SK_ICE_MAGIC },
+    } },
+    { CURSE_AIR_MAGIC, {
+        "Air Magic", "Air",
+        { SK_AIR_MAGIC },
+    } },
+    { CURSE_EARTH_MAGIC, {
+        "Earth Magic", "Earth",
+        { SK_EARTH_MAGIC },
+    } },
+    { CURSE_CONJURATIONS, {
+        "Conjurations", "Conj",
+        { SK_CONJURATIONS },
+    } },
+    { CURSE_ALCHEMY, {
+        "Alchemy", "Alch",
+        { SK_ALCHEMY },
+    } },
+    { CURSE_SUMMONINGS, {
+        "Summonings", "Summ",
+        { SK_SUMMONINGS },
+    } },
+    { CURSE_NECROMANCY, {
+        "Necromancy", "Necro",
+        { SK_NECROMANCY },
+    } },
+    { CURSE_FORGECRAFT, {
+        "Forgecraft", "Forge",
+        { SK_FORGECRAFT },
+    } },
+    { CURSE_HEXES, {
+        "Hexes", "Hex",
+        { SK_HEXES },
+    } },
+    { CURSE_TRANSLOCATIONS, {
+        "Translocations", "Tloc",
+        { SK_TRANSLOCATIONS },
+    } },
+    { CURSE_SPELLCASTING, {
+        "Spellcasting", "Splcast",
+        { SK_SPELLCASTING },
+    } },
+    { CURSE_ARMOUR, {
+        "Armour", "Arm",
+        { SK_ARMOUR },
+    } },
+    { CURSE_SHIELDS, {
+        "Shields", "Shld",
+        { SK_SHIELDS },
+    } },
+    { CURSE_DODGING, {
+        "Dodging", "Dodg",
+        { SK_DODGING },
+    } },
+    { CURSE_STEALTH, {
+        "Stealth", "Stlth",
+        { SK_STEALTH },
+    } },
+    { CURSE_FIGHTING, {
+        "Fighting", "Fight",
+        { SK_FIGHTING },
+    } },
+    { CURSE_EVOCATIONS, {
+        "Evocations", "Evo",
+        { SK_EVOCATIONS },
+    } },
+    { CURSE_SHAPESHIFTING, {
+        "Shapeshifting", "Shape",
+        { SK_SHAPESHIFTING },
+    } },
 };
+
+static bool _curse_is_removed(curse_type curse)
+{
+    switch (curse)
+    {
+#if TAG_MAJOR_VERSION == 34
+        case CURSE_ELEMENTS:
+        case CURSE_SORCERY:
+        case CURSE_COMPANIONS:
+        case CURSE_BEGUILING:
+        case CURSE_SELF:
+        case CURSE_FORTITUDE:
+        case CURSE_CUNNING:
+        case CURSE_DEVICES:
+            return true;
+#endif
+        default:
+            return false;
+    }
+}
 
 static bool _can_use_curse(const curse_data& c)
 {
@@ -2318,19 +2416,20 @@ static string ashenzari_curse_knowledge_list()
                               curse_name));
 }
 
-string desc_curse_skills(const CrawlStoreValue& curse)
+string desc_curse_skills(const CrawlVector& curse)
 {
-    const curse_data& c =
-        _ashenzari_curses[static_cast<curse_type>(curse.get_int())];
-
     vector<skill_type> trainable;
+    for (const CrawlStoreValue& val : curse)
+    {
+        const curse_data& c =
+            _ashenzari_curses[static_cast<curse_type>(val.get_int())];
 
-    for (skill_type sk : c.boosted)
-        if (!is_useless_skill(sk))
-            trainable.push_back(sk);
+        for (skill_type sk : c.boosted)
+            if (!is_useless_skill(sk))
+                trainable.push_back(sk);
+    }
 
-    return c.name + ": "
-           + comma_separated_fn(trainable.begin(), trainable.end(), skill_name);
+    return comma_separated_fn(trainable.begin(), trainable.end(), skill_name);
 }
 
 /**
@@ -2338,41 +2437,23 @@ string desc_curse_skills(const CrawlStoreValue& curse)
  */
 static void _choose_curse_knowledge()
 {
-    // This loop choses two available skills without replacement,
-    // it is a two element version of a reservoir sampling algorithm.
-    //
-    // If Ashenzari curses need some fancier weighting this is the
-    // place to do that weighting.
-    curse_type first_choice = NUM_CURSES;
-    curse_type second_choice = NUM_CURSES;
-    int valid_curses = 0;
+    // Updated from a reservoir sample to shuffling an array since we now use
+    // three curse choices rather than two.
+    vector <curse_type> valid_curses;
     for (auto const& curse : _ashenzari_curses)
     {
-        if (_can_use_curse(curse.second))
-        {
-            ++valid_curses;
-            if (valid_curses == 1)
-                first_choice = curse.first;
-            else if (valid_curses == 2)
-            {
-                second_choice = curse.first;
-                if (coinflip())
-                    swap(first_choice, second_choice);
-            }
-            else if (one_chance_in(valid_curses))
-                first_choice = curse.first;
-            else if (one_chance_in(valid_curses - 1))
-                second_choice = curse.first;
-        }
+        if (_can_use_curse(curse.second) && !_curse_is_removed(curse.first))
+            valid_curses.push_back(curse.first);
     }
 
     you.props.erase(CURSE_KNOWLEDGE_KEY);
     CrawlVector &curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
-    if (first_choice != NUM_CURSES)
-        curses.push_back(first_choice);
-    if (second_choice != NUM_CURSES)
-        curses.push_back(second_choice);
+    shuffle_array(valid_curses);
+    int num_valid = static_cast<int>(valid_curses.size());
+
+    for (int i = 0; i < min(num_valid, 3); ++i)
+        curses.push_back(valid_curses[i]);
 
     // It's not an error for this to be empty, curses are still useful for
     // piety alone
@@ -2398,13 +2479,14 @@ void ashenzari_offer_new_curse()
     const string offer_string = curse_names.empty() ? "" :
                                 (" of " + curse_names);
 
-    mprf(MSGCH_GOD, "Ashenzari invites you to partake of a vision"
-                    " and a curse%s.", offer_string.c_str());
+    mprf(MSGCH_GOD, "Ashenzari invites you to chain yourself with knowledge%s.",
+                    offer_string.c_str());
 }
 
 static void _do_curse_item(item_def &item)
 {
-    mprf("Your %s glows black for a moment.", item.name(DESC_PLAIN).c_str());
+    mprf("You bind %s in chains and feel the brush of Ashenzari's sight against your mind.",
+         item.name(DESC_YOUR).c_str());
     item.flags |= ISFLAG_CURSED;
 
     if (item.base_type == OBJ_WEAPONS)
@@ -2422,17 +2504,17 @@ static void _do_curse_item(item_def &item)
 }
 
 /**
- * Give a prompt to curse an item.
+ * Give a prompt to bind an item.
  *
- * This is the core logic behind Ash's Curse Item ability.
- * Player can abort without penalty.
+ * This is the core logic behind Ash's Ritual of Binding ability.
+ * Player can bind without penalty.
  * Player can curse only worn items.
  *
- * @return       Whether the player cursed anything.
+ * @return       Whether the player bound anything.
  */
-bool ashenzari_curse_item()
+bool ashenzari_bind_item()
 {
-    const string prompt_msg = make_stringf("Curse which item? (Esc to abort)");
+    const string prompt_msg = make_stringf("Bind which item? (Esc to abort)");
     const int item_slot = prompt_invent_item(prompt_msg.c_str(),
                                              menu_type::invlist,
                                              OSEL_CURSABLE, OPER_ANY);
@@ -2443,7 +2525,7 @@ bool ashenzari_curse_item()
 
     if (!item_is_selected(item, OSEL_CURSABLE))
     {
-        mprf(MSGCH_PROMPT, "You cannot curse that!");
+        mprf(MSGCH_PROMPT, "You cannot bind that!");
         return false;
     }
 
@@ -2464,9 +2546,9 @@ bool ashenzari_curse_item()
  *
  * @return      Whether the player uncursed anything.
  */
-bool ashenzari_uncurse_item()
+bool ashenzari_shatter_item()
 {
-    int item_slot = prompt_invent_item("Uncurse and destroy which item?",
+    int item_slot = prompt_invent_item("Unbind and destroy which item?",
                                        menu_type::invlist,
                                        OSEL_CURSED_WORN, OPER_ANY);
     if (prompt_failed(item_slot))
@@ -2476,13 +2558,13 @@ bool ashenzari_uncurse_item()
 
     if (!item_is_selected(item, OSEL_CURSED_WORN))
     {
-        mprf(MSGCH_PROMPT, "You cannot uncurse and destroy that!");
+        mprf(MSGCH_PROMPT, "You cannot unchain and destroy that!");
         return false;
     }
 
     if (item_is_melded(item))
     {
-        mprf(MSGCH_PROMPT, "You cannot shatter the curse on %s while it is "
+        mprf(MSGCH_PROMPT, "You cannot shatter the chains on %s while it is "
                            "melded with your body!",
              item.name(DESC_THE).c_str());
         return false;
@@ -2491,8 +2573,7 @@ bool ashenzari_uncurse_item()
     if (!yesno(make_stringf("Really remove and destroy %s?%s",
                             item.name(DESC_THE).c_str(),
                             you.props.exists(AVAILABLE_CURSE_KEY) ?
-                                " Ashenzari will withdraw the offered vision "
-                                "and curse!"
+                                " Ashenzari will withdraw the current offer of knowledge!"
                                 : "").c_str(),
                             false, 'n'))
     {
@@ -2504,7 +2585,7 @@ bool ashenzari_uncurse_item()
     if (!handle_chain_removal(to_remove, true))
         return false;
 
-    mprf("You shatter the curse binding %s!", item.name(DESC_THE).c_str());
+    mprf("You shatter the chains binding %s!", item.name(DESC_THE).c_str());
 
     for (item_def* _item : to_remove)
     {
@@ -2518,7 +2599,7 @@ bool ashenzari_uncurse_item()
     you.props[ASHENZARI_CURSE_PROGRESS_KEY] = 0;
     if (you.props.exists(AVAILABLE_CURSE_KEY))
     {
-        simple_god_message(" withdraws the vision and curse.");
+        simple_god_message(" withdraws the invitation to bind yourself further.");
         you.props.erase(AVAILABLE_CURSE_KEY);
     }
 

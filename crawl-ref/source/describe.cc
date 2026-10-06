@@ -2756,9 +2756,8 @@ static string _describe_item_curse(const item_def &item)
 
     ostringstream desc;
 
-    desc << "\nIt has a curse which improves the following skills:\n";
-    desc << comma_separated_fn(curses.begin(), curses.end(), desc_curse_skills,
-                               ".\n", ".\n") << ".";
+    desc << "\nIt bears a divine curse which improves your skill at ";
+    desc << desc_curse_skills(curses) << ".";
 
     return desc.str();
 }
@@ -2791,7 +2790,7 @@ static string _describe_gizmo(const item_def &item)
                 break;
 
             case SPGIZMO_AUTODAZZLE:
-                desc  = "It sometimes fires a blinding ray at enemies whose attacks "
+                desc = "It sometimes fires a blinding ray at enemies whose attacks "
                        "you dodge.";
                 break;
 

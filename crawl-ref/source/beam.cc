@@ -3647,7 +3647,7 @@ void bolt::affect_player_enchantment(bool resistible)
             {
                 mprf("Something tries to affect you, but you %s.",
                      you.willpower() == WILL_INVULN ? "are unaffected"
-                                                   : "resist");
+                                                    : "resist");
                 need_msg = false;
             }
         }
