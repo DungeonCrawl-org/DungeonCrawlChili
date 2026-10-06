@@ -1683,6 +1683,9 @@ void game_options::reset_options()
     action_panel.emplace_back(OBJ_ARMOUR);
     action_panel.emplace_back(OBJ_WEAPONS);
     action_panel.emplace_back(OBJ_STAVES);
+    action_panel.emplace_back(OBJ_JEWELLERY);
+    action_panel.emplace_back(OBJ_MISSILES);
+    action_panel.emplace_back(OBJ_TALISMANS);
     action_panel.emplace_back(OBJ_WANDS);
     action_panel.emplace_back(OBJ_SCROLLS);
     action_panel.emplace_back(OBJ_POTIONS);
@@ -4431,6 +4434,9 @@ bool game_options::read_custom_option(opt_parse_state &state, bool runscripts)
             if (type == OBJ_ARMOUR
                 || type == OBJ_WEAPONS
                 || type == OBJ_STAVES
+                || type == OBJ_JEWELLERY
+                || type == OBJ_MISSILES
+                || type == OBJ_TALISMANS
                 || type == OBJ_SCROLLS
                 || type == OBJ_POTIONS
                 || type == OBJ_WANDS
