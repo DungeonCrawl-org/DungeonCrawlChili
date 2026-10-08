@@ -517,23 +517,22 @@ static void _init_feat_flavour(tileidx_t& flavour, dungeon_feature_type feat)
     if (feat_is_stone_stair(feat))
     {
         const bool up = feat_stair_direction(feat) == CMD_GO_UPSTAIRS;
-        if (player_in_branch(BRANCH_SHOALS))
+        // Mark stairs leading to the final floor in every branch.
+        if (!up && you.depth == brdepth[you.where_are_you] - 1)
+            flavour = TILE_DNGN_METAL_STAIRS_DOWN;
+        else if (player_in_branch(BRANCH_SHOALS))
         {
             flavour = up ? TILE_DNGN_SHOALS_STAIRS_UP
                          : TILE_DNGN_SHOALS_STAIRS_DOWN;
         }
         else if (player_in_branch(BRANCH_VAULTS))
         {
-            if (you.depth == branches[BRANCH_VAULTS].numlevels - 1 && !up)
-                flavour = TILE_DNGN_METAL_STAIRS_DOWN;
-            else if (you.depth == branches[BRANCH_VAULTS].numlevels && up)
+            if (you.depth == brdepth[BRANCH_VAULTS] && up)
                 flavour = TILE_DNGN_METAL_STAIRS_UP;
         }
         else if (player_in_branch(BRANCH_ZOT))
         {
-            if (you.depth == branches[BRANCH_VAULTS].numlevels - 1 && !up)
-                flavour = TILE_DNGN_ZOT_STAIRS_DOWN;
-            else if (you.depth == branches[BRANCH_VAULTS].numlevels && up)
+            if (you.depth == brdepth[BRANCH_ZOT] && up)
                 flavour = TILE_DNGN_ZOT_STAIRS_UP;
         }
         else if (player_in_branch(BRANCH_SLIME) && !you.royal_jelly_dead)
