@@ -99,6 +99,7 @@
     Austin Appleby
     araganzar
     argonaut
+    Argyros
     ArmiesAndCastles
     Juha Arpiainen
     Arxale
@@ -140,6 +141,7 @@
     Ian Caltabiano
     David Candido
     Edgar Carballo
+    carf
     caryoscelus
     Cedor
     Cerol
