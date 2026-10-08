@@ -633,7 +633,7 @@ static const weapon_def Weapon_prop[] =
     { WPN_SHORT_SWORD,       "short sword",         5,  4, 10,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
         WPNF_NO_FLAGS, DAMV_PIERCING, 8, 0, 30, SBL_BRANDS },
-    { WPN_RAPIER,           "rapier",               9,  4, 12,
+    { WPN_RAPIER,           "rapier",              10,  4, 12,
         SK_SHORT_BLADES, SIZE_LITTLE, SIZE_LITTLE,
         WPNF_NO_FLAGS, DAMV_PIERCING, 8, 20, 55, SBL_BRANDS },
     { WPN_ATHAME,       "athame",         7, 5, 12,
