@@ -16,6 +16,7 @@
 #include "art-enum.h"
 #include "colour.h"
 #include "coordit.h"
+#include "delay.h"
 #include "dungeon.h"
 #include "english.h"
 #include "god-conduct.h"
@@ -1058,7 +1059,8 @@ bool actor_cloud_immune(const actor &act, cloud_type type)
             return act.is_monster()
                    && (act.type == MONS_UGLY_THING
                        || act.type == MONS_VERY_UGLY_THING
-                       || act.type == MONS_CRAWLING_FLESH_CAGE);
+                       || act.type == MONS_CRAWLING_FLESH_CAGE)
+                   || act.is_peripheral();
         default:
             return false;
     }
@@ -1329,6 +1331,12 @@ static bool _actor_apply_cloud_side_effects(actor *act,
                 else
                     simple_monster_message(*mons, " glows dangerously bright.");
                 mons->add_ench(mon_enchant(ENCH_CONTAM, cloud.agent(), 0, 1));
+
+                // Try to interrupt travelling players if some ally they have in
+                // tow starts glowing dangerously (since it might eventually
+                // explode on them).
+                if (mons->friendly() && you.can_see(*mons))
+                    interrupt_activity(activity_interrupt::ally_attacked);
             }
         }
         return true;
