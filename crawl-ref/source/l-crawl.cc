@@ -1068,9 +1068,17 @@ LUARET1(crawl_random2avg, integer,
  * @tparam[opt=1] int rolls Average over multiple rolls
  * @function random_range
  */
-LUARET1(crawl_random_range, integer,
-        random_range(luaL_safe_checkint(ls, 1), luaL_safe_checkint(ls, 2),
-                      lua_isnumber(ls, 3)? luaL_safe_checkint(ls, 3) : 1))
+static int crawl_random_range(lua_State* ls)
+{
+    int low = luaL_safe_checkint(ls, 1);
+    int high = luaL_safe_checkint(ls, 2);
+    int nrolls = lua_isnumber(ls, 3) ? luaL_safe_checkint(ls, 3) : 1;
+    int result = 0;
+    if (nrolls > 0)
+        result = random_range(low, high, nrolls);
+    lua_pushinteger(ls, result);
+    return 1;
+}
 /*** Flip a coin.
  * @treturn boolean
  * @function coinflip
@@ -1100,8 +1108,16 @@ LUARET1(crawl_x_chance_in_y, boolean, x_chance_in_y(luaL_safe_checkint(ls, 1),
  * @treturn int
  * @function div_rand_round
  */
-LUARET1(crawl_div_rand_round, integer, div_rand_round(luaL_safe_checkint(ls, 1),
-                                                     luaL_safe_checkint(ls, 2)))
+static int crawl_div_rand_round(lua_State* ls)
+{
+    int num = luaL_safe_checkint(ls, 1);
+    int den = luaL_safe_checkint(ls, 2);
+    if (den == 0)
+        lua_pushnil(ls);
+    else
+        lua_pushinteger(ls, div_rand_round(num, den));
+    return 1;
+}
 /*** A random floating point number in [0,1.0)
  * @treturn number
  * @function random_real
