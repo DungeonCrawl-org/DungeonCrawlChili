@@ -8350,6 +8350,17 @@ void unmarshallMonster(reader &th, monster& m)
     if (parts & MP_GHOST_DEMON)
         m.set_ghost(_unmarshallGhost(th));
 
+    if (m.type == MONS_PLAYER_GHOST)
+    {
+        // The live spell list and the ghost template are saved separately.
+        ghost_demon live_spells;
+        live_spells.spells = m.spells;
+        live_spells.sanitize_player_spells();
+        m.spells.swap(live_spells.spells);
+        if (m.ghost)
+            m.ghost->sanitize_player_spells();
+    }
+
 #if TAG_MAJOR_VERSION == 34
     // Turn elephant slugs into ghosts because they are dummies now.
     if (m.type == MONS_ELEPHANT_SLUG)
@@ -9166,7 +9177,10 @@ static vector<ghost_demon> _tag_read_ghost(reader &th)
     }
 
     for (int i = 0; i < nghosts; ++i)
+    {
         result.push_back(_unmarshallGhost(th));
+        result.back().sanitize_player_spells();
+    }
     return result;
 }
 
