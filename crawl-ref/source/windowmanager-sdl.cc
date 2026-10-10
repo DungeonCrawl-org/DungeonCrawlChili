@@ -168,6 +168,9 @@ static int _apply_ctrlshift(int key, int mod)
     const bool shift = bool(mod & TILES_MOD_SHIFT);
     const bool ctrl = bool(mod & TILES_MOD_CTRL);
 
+    if (key == CK_F1 && shift && !ctrl)
+        return CK_SHIFT_F1;
+
     const int nav_key_offset =
           shift && ctrl ? CK_CTRL_SHIFT_UP - CK_UP
         : ctrl          ? CK_CTRL_UP - CK_UP

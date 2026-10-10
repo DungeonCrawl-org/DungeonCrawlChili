@@ -301,6 +301,9 @@ enum KEYS
     CK_F1, // (ncurses) -265, aka -KEY_F1
     CK_F0, // is this actually used?
 
+    // Local Tiles keeps contextual help distinct from the F1 game menu.
+    CK_SHIFT_F1 = -500,
+
     // Mouse codes.
     CK_MOUSE_MOVE  = -9999,
     CK_MOUSE_CMD,

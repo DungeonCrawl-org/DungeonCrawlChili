@@ -1,4 +1,14 @@
 %%%%
+CMD_COACHING_HELP
+
+Coaching Help with ChatGPT
+%%%%
+CMD_COACHING_HELP verbose
+
+Saves a live character dump (like #) and asks ChatGPT for tactical advice.
+Uses your local Codex ChatGPT sign-in, with a copy-and-open-browser fallback.
+Asking for advice takes no game time. Press Escape to cancel a request.
+%%%%
 CMD_REST
 
 Rest and heal

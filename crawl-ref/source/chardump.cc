@@ -211,6 +211,15 @@ bool dump_char(const string &fname, bool quiet, bool full_id,
     return _write_dump(fname, _get_dump(full_id, se), quiet);
 }
 
+bool save_live_character_dump(string &text)
+{
+    const dump_params dump = _get_dump();
+    if (!_write_dump(you.your_name, dump, false))
+        return false;
+    text = dump.text;
+    return true;
+}
+
 string seed_description()
 {
     return make_stringf(

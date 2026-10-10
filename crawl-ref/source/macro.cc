@@ -263,6 +263,8 @@ static int _name_to_keycode(string s)
     // be done much more elegantly via a map or similar..
     // Does not handle modifier keys besides ctrl (TODO)
     const string lower = lowercase(s);
+    if (lower == "shift-f1")
+        return CK_SHIFT_F1;
     if (s[0] == '^' && s.size() == 2)
     {
         // ^A = 1, etc.
@@ -1939,6 +1941,7 @@ string keycode_to_name(int keycode, bool shorten)
     case CK_CTRL_SPACE:        return prefix + CTRL_DESC("Space");
     case CK_CTRL_SHIFT_SPACE:  return prefix + CTRL_DESC("Shift-Space");
     case CK_F0:     return prefix + "F0";
+    case CK_SHIFT_F1: return prefix + "Shift-F1";
     case CK_F1:     return prefix + "F1";
     case CK_F2:     return prefix + "F2";
     case CK_F3:     return prefix + "F3";

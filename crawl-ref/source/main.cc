@@ -45,6 +45,7 @@
 #include "clua.h"
 #include "colour.h"
 #include "command.h"
+#include "coaching.h"
 #include "coord.h"
 #include "corpse.h"
 #include "crash.h"
@@ -833,6 +834,7 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     case CMD_LIST_GOLD:
     case CMD_CHARACTER_DUMP:
     case CMD_DISPLAY_COMMANDS:
+    case CMD_COACHING_HELP:
     case CMD_DISPLAY_INVENTORY:
     case CMD_DISPLAY_KNOWN_OBJECTS:
     case CMD_DISPLAY_MUTATIONS:
@@ -2091,6 +2093,10 @@ public:
             MEL_ITEM, '~', CMD_MACRO_MENU));
         add_entry(new CmdMenuEntry("Help and manual",
             MEL_ITEM, '?', CMD_DISPLAY_COMMANDS));
+#ifdef USE_TILE_LOCAL
+        add_entry(new CmdMenuEntry("Coaching Help [Shift-F1]",
+            MEL_ITEM, 'C', CMD_COACHING_HELP));
+#endif
         add_entry(new CmdMenuEntry("Lookup info",
             MEL_ITEM, '/', CMD_LOOKUP_HELP));
 #ifdef TARGET_OS_MACOSX
@@ -2310,6 +2316,11 @@ void process_command(command_type cmd, command_type prev_cmd)
 
         // Informational commands.
     case CMD_DISPLAY_CHARACTER_STATUS: display_char_status();          break;
+    case CMD_COACHING_HELP:
+        show_coaching_help();
+        redraw_screen();
+        update_screen();
+        break;
     case CMD_DISPLAY_COMMANDS:
         show_help();
         redraw_screen();
