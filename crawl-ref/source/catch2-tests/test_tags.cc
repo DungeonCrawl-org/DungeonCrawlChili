@@ -7,6 +7,76 @@
 #include "map-cell.h"
 #include "random.h"
 #include "tags.h"
+#include "ghost.h"
+#include "mon-cast.h"
+#include "mon-util.h"
+#include "monster.h"
+#include "spl-util.h"
+
+TEST_CASE("Saved player ghost spells are repaired", "[ghost-spells]")
+{
+    init_monsters();
+    init_spell_descs();
+    init_mons_spells();
+    ghost_demon ghost;
+    ghost.spells = {
+        { SPELL_SPORULATE, 18, MON_SPELL_WIZARD },
+        { SPELL_PLASMA_BEAM, 18, MON_SPELL_WIZARD },
+        { SPELL_DIG, 18, MON_SPELL_WIZARD },
+        { SPELL_DRAGON_CALL, 18, MON_SPELL_WIZARD },
+    };
+
+    SECTION("Active spell lists can be repaired repeatedly")
+    {
+        ghost.spells.emplace_back(SPELL_NO_SPELL, 18, MON_SPELL_WIZARD);
+        ghost.spells.emplace_back(static_cast<spell_type>(NUM_SPELLS),
+                                  18, MON_SPELL_WIZARD);
+        ghost.sanitize_player_spells();
+        ghost.sanitize_player_spells();
+    }
+    SECTION("Bones are repaired while loading")
+    {
+        vector<unsigned char> buf;
+        writer w(&buf);
+        tag_write_ghosts(w, { ghost });
+        reader r(buf);
+        r.setMinorVersion(TAG_MINOR_VERSION);
+        const auto loaded = tag_read_ghosts(r);
+        REQUIRE(loaded.size() == 1);
+        ghost = loaded.front();
+    }
+    SECTION("Placed ghosts repair both saved spell lists")
+    {
+        monster original;
+        original.type = MONS_PLAYER_GHOST;
+        original.hit_points = original.max_hit_points = 50;
+        original.mid = 1234;
+        original.set_ghost(ghost);
+        original.spells = ghost.spells;
+        vector<unsigned char> buf;
+        writer w(&buf);
+        marshallMonster(w, original);
+        reader r(buf);
+        r.setMinorVersion(TAG_MINOR_VERSION);
+        monster loaded;
+        unmarshallMonster(r, loaded);
+        REQUIRE(loaded.ghost);
+        REQUIRE(loaded.spells.size() == loaded.ghost->spells.size());
+        for (size_t i = 0; i < loaded.spells.size(); ++i)
+            REQUIRE(loaded.spells[i].spell == loaded.ghost->spells[i].spell);
+        ghost = *loaded.ghost;
+    }
+
+    REQUIRE(ghost.spells.size() == 3);
+    REQUIRE(ghost.spells[0].spell == SPELL_PLASMA_BEAM);
+    REQUIRE(ghost.spells[1].spell == SPELL_DIG);
+    REQUIRE(ghost.spells[2].spell == SPELL_SUMMON_DRAGON);
+    for (const auto &slot : ghost.spells)
+    {
+        REQUIRE(slot.freq == 18);
+        REQUIRE(slot.flags == MON_SPELL_WIZARD);
+    }
+}
 
 TEST_CASE( "Vehumet gifts can be decoded", "[single-file]" ) {
 

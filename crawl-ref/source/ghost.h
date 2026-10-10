@@ -79,6 +79,7 @@ public:
 public:
     ghost_demon();
     bool has_spells() const;
+    void sanitize_player_spells();
     void reset();
     void barebones_init();
     void init_pandemonium_lord(bool friendly = false);

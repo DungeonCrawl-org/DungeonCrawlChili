@@ -3402,7 +3402,7 @@ static const struct spell_desc spelldata[] =
 {
     SPELL_SPORULATE, "Sporulate",
     spschool::conjuration | spschool::earth,
-    spflag::monster,
+    spflag::monster | spflag::no_ghost,
     5,
     200,
     -1, -1,

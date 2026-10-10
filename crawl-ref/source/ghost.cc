@@ -1112,6 +1112,28 @@ bool ghost_demon::has_spells() const
     return spells.size() > 0;
 }
 
+// Bones and ghosts already placed in saves can contain untranslated player
+// spells. Repair those before the monster casting code sees them.
+void ghost_demon::sanitize_player_spells()
+{
+    monster_spells repaired;
+    for (auto slot : spells)
+    {
+        if (!is_valid_spell(slot.spell))
+            continue;
+        slot.spell = translate_spell(slot.spell);
+        if (slot.spell == SPELL_NO_SPELL
+            || slot.spell == SPELL_GRAVITAS
+            || !is_valid_mon_spell(slot.spell)
+            || (get_spell_flags(slot.spell) & spflag::no_ghost))
+        {
+            continue;
+        }
+        repaired.push_back(slot);
+    }
+    spells.swap(repaired);
+}
+
 // When passed the number for player spells, returns approximate and
 // equivalent monster spells. Returns SPELL_NO_SPELL with no equivalent.
 spell_type ghost_demon::translate_spell(spell_type spell) const
