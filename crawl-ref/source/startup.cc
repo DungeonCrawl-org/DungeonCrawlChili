@@ -604,8 +604,6 @@ static const vector<game_modes_menu_item> entries =
     {GAME_TYPE_NORMAL, "Dungeon Crawl Chili",
         "Dungeon Crawl: The main game: full of monsters, items, "
         "gods and danger!" },
-    {GAME_TYPE_CUSTOM_SEED, "Choose Game Seed",
-        "Play with a chosen custom dungeon seed." },
     {GAME_TYPE_TUTORIAL, "Tutorial for Dungeon Crawl",
         "Tutorial that covers the basics of Dungeon Crawl survival." },
     {GAME_TYPE_HINTS, "Hints Mode for Dungeon Crawl",
@@ -624,6 +622,8 @@ static const vector<game_modes_menu_item> entries =
 
 static const vector<game_modes_menu_item> other_gameplay_entries =
 {
+    {GAME_TYPE_CUSTOM_SEED, "Choose Game Seed",
+        "Play with a chosen custom dungeon seed." },
     {GAME_TYPE_DESCENT, "Dungeon Descent",
         "Mode with a branching, one-way path through the Dungeon." },
     {GAME_TYPE_SPRINT, "Dungeon Sprint",
