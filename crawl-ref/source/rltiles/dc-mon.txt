@@ -706,6 +706,10 @@ frostbound_tome MONS_FROSTBOUND_TOME
 ## Humans ('@')
 %sdir mon/unique
 # Unique humans, in alphabetical order
+%rim 0
+baba_yaga_hut MONS_BABA_YAGA_HUT
+baba_yaga_exposed MONS_BABA_YAGA_EXPOSED
+%rim 1
 donald MONS_DONALD
 edmund MONS_EDMUND
 edmund_weaponless MONS_EDMUND_WEAPONLESS
