@@ -1882,7 +1882,8 @@ dat/dlua/tags.lua: tag-version.h util/gen-luatags.pl
 mi-enum.h: mon-info.h util/gen-mi-enum
 	$(QUIET_GEN)util/gen-mi-enum
 
-mon-data.h: dat/mons/*.yaml util/mon-gen.py util/mon-gen/*.txt
+# Track removals too, such as monster files removed when switching branches.
+mon-data.h: dat/mons dat/mons/*.yaml util/mon-gen.py util/mon-gen/*.txt
 	$(QUIET_PYTHON)$(PYTHON) util/mon-gen.py dat/mons/ util/mon-gen/ mon-data.h
 
 form-data.h: dat/forms/*.yaml util/form-gen.py util/form-gen/*.txt
