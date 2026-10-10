@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "death-recap.h"
 
 #include "ouch.h"
 
@@ -1441,6 +1442,13 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
     // attach its HP annotation there once that message is printed.
     if (death_type != KILLED_BY_POISON)
         record_damage_taken(dam, you.hp);
+    if (dam > 0)
+    {
+        const string source_desc = scorefile_entry(0, source, death_type,
+            aux, true, death_source_name).death_description(scorefile_entry::DDV_TERSE);
+        death_recap_hp_change(replace_all(source_desc, "\n", " "),
+                              you.hp, you.hp - dam, dam);
+    }
     dec_hp(dam, true);
 
     // Even if we have low HP messages off, we'll still give a
@@ -1626,6 +1634,8 @@ void player_die(kill_method_type death_type, mid_t source, int dam,
 
     // Prevent bogus notes.
     activate_notes(false);
+    if (_is_real_death(death_type))
+        death_recap_finish();
     _print_endgame_messages(se);
     end_game(se);
 }

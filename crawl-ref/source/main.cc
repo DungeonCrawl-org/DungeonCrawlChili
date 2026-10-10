@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "death-recap.h"
 
 #include <algorithm>
 #include <cerrno>
@@ -1087,6 +1088,7 @@ static int _stun_delay()
 //
 static void _input()
 {
+    death_recap_begin_turn();
     if (crawl_state.seen_hups)
         save_game(true, "Game saved, see you later!");
 
