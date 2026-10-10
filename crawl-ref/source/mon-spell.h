@@ -2731,6 +2731,21 @@ static const mon_spellbook mspell_list[] =
       }
     },
 
+    { MST_BABA_YAGA_HUT,
+      {
+       { SPELL_SPLINTERSPRAY, 30, MON_SPELL_NATURAL },
+       { SPELL_CONFUSE, 15, MON_SPELL_WIZARD },
+       { SPELL_SLOW, 15, MON_SPELL_WIZARD },
+      }
+    },
+
+    { MST_BABA_YAGA,
+      {
+       { SPELL_CONFUSE, 20, MON_SPELL_WIZARD },
+       { SPELL_SLOW, 20, MON_SPELL_WIZARD },
+      }
+    },
+
     {  MST_PEREGRINE,
       {
        { SPELL_INVISIBILITY, 100, MON_SPELL_WIZARD },

@@ -4499,6 +4499,11 @@ int monster::hurt(const actor *agent, int amount, beam_type flavour,
         }
     }
 
+    // Break the hut even when the caller defers death cleanup (e.g. melee).
+    // The exposed witch retains her identity and receives her own HP pool.
+    if (hit_points <= 0 && get_hit_dice() > 0)
+        baba_yaga_leave_hut(*this);
+
     if (cleanup_dead && (hit_points <= 0 || get_hit_dice() <= 0)
         && !invalid_monster(this))
     {

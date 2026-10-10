@@ -1,0 +1,24 @@
+name: "Baba Yaga"
+enum: baba_yaga_exposed
+glyph: {char: "@", colour: lightmagenta}
+flags: [speaks, unique, female, see_invis, warm_blood]
+resists: {poison: 1}
+exp: 1400
+species: baba_yaga
+genus: baba_yaga
+will: 120
+attacks:
+ - {type: hit, damage: 25}
+hd: 16
+hp_10x: 1000
+ac: 4
+ev: 16
+spells: baba_yaga
+shout: shout
+intelligence: human
+habitat: amphibious
+speed: 14
+uses: starting_equipment
+size: medium
+shape: humanoid
+tile: fenstrider_witch

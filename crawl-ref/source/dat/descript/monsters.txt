@@ -76,6 +76,16 @@ Azrael
 A powerful, belligerent efreet. (Is there any other kind?)
 
 %%%%
+Baba Yaga
+The bone-legged witch of the deep marshes. She rides in a mortar and steers with
+an enormous enchanted pestle, but prefers to fight from the doorway of her
+walking hut, which strides through the swamp on giant chicken legs.
+
+The hut shields her behind thick timber, tramples intruders, and fires sprays of
+wooden splinters. Destroying it forces Baba Yaga out into her mortar: she loses
+her armour and Splinterspray, but moves much faster. Silence prevents her from
+casting her confusion and slowing hexes, though the hut can still fire splinters.
+%%%%
 Bai Suzhen
 
 A weary draconian with foreign and watery scales. She has come to the Dungeon

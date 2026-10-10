@@ -1469,6 +1469,8 @@ enum monster_type                      // env.mons[].type
     MONS_KATINBOO,
     MONS_PEREGRINE,
     MONS_SCAVE,
+    MONS_BABA_YAGA,
+    MONS_BABA_YAGA_EXPOSED,
 
     NUM_MONSTERS,               // used for polymorph
 

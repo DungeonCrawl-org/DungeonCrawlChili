@@ -319,6 +319,10 @@ NAME:   uniq_agnes
 DEPTH:  D:14-, Elf, !Elf:$, Snake, Spider
 : place_unique(_G, "Agnes")
 
+NAME:   uniq_baba_yaga
+DEPTH:  Swamp:2-3
+: place_unique(_G, "Baba Yaga")
+
 ################################################################################
 # Uniques which can appear in the Depths:
 ################################################################################
