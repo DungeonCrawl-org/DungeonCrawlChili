@@ -792,6 +792,15 @@ void TilesFramework::send_dump_info(const string& type, const string& filename)
     finish_message();
 }
 
+void TilesFramework::send_coaching_context(const string& prompt)
+{
+    write_message("*{\"msg\":\"coaching_context\",\"prompt\":\"");
+    write_message_escaped(prompt);
+    write_message("\"}");
+    finish_message();
+    flush_messages();
+}
+
 void TilesFramework::_send_version()
 {
 #ifdef WEB_DIR_PATH

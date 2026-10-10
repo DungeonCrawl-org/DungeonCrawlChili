@@ -1,7 +1,7 @@
 define(["jquery", "comm", "client", "./ui", "./enums", "./cell_renderer",
     "./util", "./scroller", "./tileinfo-main", "./tileinfo-gui",
-    "./tileinfo-player", "./options"],
-function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, options) {
+    "./tileinfo-player", "./options", "./coaching"],
+function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, options, coaching) {
     "use strict";
 
     var describe_scale = 2.0;
@@ -775,6 +775,9 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             $popup.children(".header").html(util.formatted_string_to_html(desc.title));
         else
             $popup.children(".header").remove();
+
+        if (desc.tag === "coaching_help")
+            coaching.install_controls($popup);
 
         var s = scroller($body[0]);
         var scroll_elem = s.scrollElement;

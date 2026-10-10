@@ -1,5 +1,31 @@
 # Coaching Help prototype
 
+## Webtiles
+
+Press **Shift-F1**, click **Coaching Help [Shift-F1]** under the player stats,
+or choose **Coaching Help** in the F1 menu. The game saves a fresh live morgue
+file using the same settings as `#` and opens a coaching dialog.
+
+Choose **Copy and open ChatGPT [B]**, then paste the copied prompt and dump
+into ChatGPT. This uses the player's browser session and account; the game
+server does not need an API key or Codex login. The clipboard prompt includes
+short tactical coaching instructions followed by the complete live dump.
+**C** copies without opening a tab, and **Escape** returns to play.
+
+If clipboard access is unavailable, the dialog offers selectable text for
+manual copying. Spectators cannot launch coaching and do not receive the
+private clipboard context. No request is sent to an AI by the game server.
+
+Install both the updated game client and the updated Webtiles server's
+`webtiles/process_handler.py`, which routes coaching context only to the
+playing account. Restart the Webtiles service to load that routing change;
+existing game processes need to be saved and reopened with the new binary.
+
+Web checks (from `source/`): `node webserver/tests/coaching.test.js` and
+`python3 webserver/tests/test_coaching_routing.py`.
+
+## Local Tiles
+
 In local Tiles, press **Shift-F1**, click **Coaching Help [Shift-F1]** under
 the player stats, or choose **Coaching Help** in the F1 game menu.
 Normal F1 and the quiver keys `(` and `)` keep their existing actions.

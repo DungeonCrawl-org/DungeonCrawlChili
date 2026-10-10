@@ -1,10 +1,12 @@
 #include "AppHdr.h"
 #include "coaching.h"
 
-#ifdef USE_TILE_LOCAL
+#ifdef USE_TILE
 #include <fstream>
 #include <chrono>
+#ifdef USE_TILE_LOCAL
 #include <SDL.h>
+#endif
 #ifdef UNIX
 #include <cerrno>
 #include <csignal>
@@ -21,6 +23,9 @@
 #include "state.h"
 #include "ui.h"
 #include "viewgeom.h"
+#ifdef USE_TILE_WEB
+#include "tileweb.h"
+#endif
 
 const char *coaching_help_label()
 {
@@ -55,6 +60,7 @@ public:
         : m_prompt(prompt)
     {
         set_title(formatted_string("Coaching Help - ChatGPT"));
+        set_tag("coaching_help");
         add_raw_text(text);
         set_more(formatted_string(
             "[B] Copy dump and open ChatGPT   [C] Copy only   [Esc] Return"));
@@ -64,6 +70,7 @@ protected:
     {
         if (key == 'b' || key == 'B' || key == 'c' || key == 'C')
         {
+#ifdef USE_TILE_LOCAL
             const bool copied = SDL_SetClipboardText(m_prompt.c_str()) == 0;
             bool opened = false;
 #if SDL_VERSION_ATLEAST(2, 0, 14)
@@ -75,6 +82,7 @@ protected:
                           : "\nCopied. Open chatgpt.com and paste the dump.")
                 : "\nCould not copy to the clipboard. Use the saved morgue file.");
             m_contents_dirty = true;
+#endif
             return true;
         }
         return formatted_scroller::process_key(key);
@@ -83,7 +91,7 @@ private:
     string m_prompt;
 };
 
-#ifdef UNIX
+#if defined(UNIX) && defined(USE_TILE_LOCAL)
 static string _ask_chatgpt(const string &prompt)
 {
     const string helper = datafile_path("coaching/chatgpt-coach.py", false);
@@ -201,7 +209,14 @@ void show_coaching_help()
         return;
     }
     const string prompt = _prompt(dump);
-#ifdef UNIX
+#ifdef USE_TILE_WEB
+    // Route the live dump only to the playing account, never to spectators.
+    tiles.send_coaching_context(prompt);
+    const string answer = "Your live morgue file has been saved (like #).\n\n"
+        "Choose Copy and open ChatGPT below, then paste into ChatGPT to ask "
+        "for advice using your own account.\n\n"
+        "The game stays paused here; asking for help takes no turn.";
+#elif defined(UNIX)
     const string answer = _ask_chatgpt(prompt);
 #else
     const string answer = "Your live morgue file is saved. Use the browser "

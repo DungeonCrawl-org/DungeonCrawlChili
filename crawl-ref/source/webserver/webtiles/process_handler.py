@@ -1185,6 +1185,12 @@ class CrawlProcessHandler(CrawlProcessHandlerBase):
                         self.send_to_all("dump", url = url)
                     else:
                         self.exit_dump_url = url
+            elif msgobj["msg"] == "coaching_context":
+                # Keep the full dump private to the playing account; spectators
+                # may watch the advice popup but cannot initiate AI requests.
+                prompt = msgobj.get("prompt")
+                if isinstance(prompt, str) and len(prompt) <= 1024 * 1024:
+                    self.send_to_user(self.username, "coaching_context", prompt=prompt)
             elif msgobj["msg"] == "exit_reason":
                 self.exit_reason = msgobj["type"]
                 if "message" in msgobj:

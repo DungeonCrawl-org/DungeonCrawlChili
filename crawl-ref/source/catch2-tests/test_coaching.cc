@@ -45,6 +45,9 @@ TEST_CASE("SDL distinguishes Shift-F1 from the F1 game menu", "[coaching]")
     }
 }
 
+#endif
+
+#ifdef USE_TILE
 TEST_CASE("Coaching shortcut is distinct and leaves existing keys intact", "[coaching]")
 {
     init_keybindings();
