@@ -25,6 +25,7 @@ clua.o \
 cluautil.o \
 colour.o \
 command.o \
+coaching.o \
 coord.o \
 coord-circle.o \
 coordit.o \
@@ -309,6 +310,7 @@ glwrapper-ogl.o \
 fontwrapper-ft.o
 
 TEST_OBJECTS = \
+catch2-tests/test_coaching.o \
 catch2-tests/test_branch.o \
 catch2-tests/test_coordit.o \
 catch2-tests/test_describe.o \

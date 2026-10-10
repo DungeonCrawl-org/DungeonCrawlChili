@@ -166,8 +166,9 @@ enum command_type
     CMD_REVEAL_OPTIONS,
 #endif
     CMD_LUA_CONSOLE,
+    CMD_COACHING_HELP,
 
-    CMD_MAX_NORMAL = CMD_LUA_CONSOLE,
+    CMD_MAX_NORMAL = CMD_COACHING_HELP,
 
     // inventory only
     CMD_SET_SKILL_TARGET,

@@ -1593,6 +1593,8 @@ endif
 	$(COPY)   dat/clua/*.lua $(datadir_fp)/dat/clua/
 	$(COPY_R) dat/database/* $(datadir_fp)/dat/database/
 	$(COPY_R) dat/defaults/* $(datadir_fp)/dat/defaults/
+	mkdir -p $(datadir_fp)/dat/coaching
+	$(COPY) dat/coaching/*.py $(datadir_fp)/dat/coaching/
 	$(COPY) dat/descript/*.txt $(datadir_fp)/dat/descript/
 	for LANG in $(LANGUAGES); \
 		do $(COPY) dat/descript/$$LANG/*.txt $(datadir_fp)/dat/descript/$$LANG; \

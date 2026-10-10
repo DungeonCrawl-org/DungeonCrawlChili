@@ -63,6 +63,7 @@ function ($, exports, comm, client, key_conversion, dungeon_renderer, display,
 
         // any version-specific keycode overrides can be added here. (Though
         // hopefully this will be rarely needed in the future...)
+        key_conversion.shift[112] = -500; // Shift-F1: Coaching Help
     }
 
     function init()

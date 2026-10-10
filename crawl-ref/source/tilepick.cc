@@ -4222,6 +4222,7 @@ tileidx_t tileidx_command(const command_type cmd)
         return TILEG_CMD_EDIT_PLAYER_TILE;
 #endif
     case CMD_DISPLAY_COMMANDS:
+    case CMD_COACHING_HELP:
         return TILEG_CMD_DISPLAY_COMMANDS;
     case CMD_LOOKUP_HELP:
         return TILEG_CMD_LOOKUP_HELP;

@@ -5,6 +5,7 @@
 #include "tilereg-stat.h"
 
 #include "command.h"
+#include "coaching.h"
 #include "format.h"
 #include "libutil.h"
 #include "macro.h"
@@ -34,6 +35,9 @@ int StatRegion::handle_mouse(wm_mouse_event &event)
     if (event.event != wm_mouse_event::PRESS || event.button != wm_mouse_event::LEFT)
         return 0;
 
+    if (coaching_help_at(m_mouse_cell.x, m_mouse_cell.y))
+        return encode_command_as_key(CMD_COACHING_HELP);
+
 #ifdef __ANDROID__
     if (tiles.is_using_small_layout())
         return command_to_key(CMD_TOGGLE_TAB_ICONS);
@@ -47,6 +51,12 @@ bool StatRegion::update_tip_text(string& tip)
 {
     if (mouse_control::current_mode() != MOUSE_MODE_COMMAND)
         return false;
+
+    if (coaching_help_at(m_mouse_cell.x, m_mouse_cell.y))
+    {
+        tip = "[L-Click / Shift-F1] Coaching Help with ChatGPT";
+        return true;
+    }
 
     const int status = status_light_at(m_mouse_cell.x, m_mouse_cell.y);
     status_info inf;

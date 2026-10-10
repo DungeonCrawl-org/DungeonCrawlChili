@@ -40,6 +40,8 @@ void dump_map(const char* fname, bool debug = false, bool dist = false, bool log
 void dump_map(FILE *fp, bool debug = false, bool dist = false, bool log = false);
 void display_notes();
 void display_char_dump();
+// Save the same live dump as '#', and return exactly the text written.
+bool save_live_character_dump(string &text);
 string chardump_desc(const item_def& item);
 
 string seed_description();
