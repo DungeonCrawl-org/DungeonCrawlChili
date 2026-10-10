@@ -33,6 +33,8 @@
 class actor;
 class monster;
 
+bool baba_yaga_leave_hut(monster& mons, bool quiet = false);
+
 #define MONSTER_DIES_LUA_KEY "monster_dies_lua_key"
 
 // Mid of the monster who left this corpse (used to identify apostle corpses)

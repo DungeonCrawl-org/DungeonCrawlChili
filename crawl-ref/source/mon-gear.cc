@@ -1185,6 +1185,16 @@ int make_mons_weapon(monster_type type, int level, bool melee_only)
     // special cases.
     switch (type)
     {
+    case MONS_BABA_YAGA:
+    case MONS_BABA_YAGA_EXPOSED:
+        force_item = true;
+        item.base_type = OBJ_WEAPONS;
+        item.sub_type = WPN_GREAT_MACE;
+        item.plus = random_range(3, 5);
+        set_item_ego_type(item, OBJ_WEAPONS, SPWPN_VORPAL);
+        item.props[ITEM_NAME_KEY] = "pestle";
+        break;
+
     case MONS_KOBOLD:
     case MONS_KOBOLD_BRIGAND:
         item.base_type = OBJ_WEAPONS;

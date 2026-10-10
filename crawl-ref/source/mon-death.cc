@@ -1127,6 +1127,41 @@ static void _blorkula_bat_merge_message(monster* blork, int bat_count)
     }
 }
 
+/** Destroy Baba Yaga's hut while preserving the witch and her combat state. */
+bool baba_yaga_leave_hut(monster& mons, bool quiet)
+{
+    if (mons.type != MONS_BABA_YAGA)
+        return false;
+
+    const auto old_flags = mons.flags;
+    const auto old_ench = mons.enchantments;
+    const auto old_ench_cache = mons.ench_cache;
+    const auto old_ench_countdown = mons.ench_countdown;
+    const auto old_energy = mons.speed_increment;
+    const auto old_god = mons.god;
+    const string old_name = mons.mname;
+
+    mons.type = MONS_BABA_YAGA_EXPOSED;
+    define_monster(mons);
+    mons.flags = old_flags & ~MF_EXPLODE_KILL;
+    mons.enchantments = old_ench;
+    mons.ench_cache = old_ench_cache;
+    mons.ench_countdown = old_ench_countdown;
+    mons.speed_increment = old_energy;
+    mons.god = old_god;
+    mons.mname = old_name;
+    mons.calc_speed();
+
+    // Equipment, summons, status effects, attitude, mid, and damage attribution
+    // belong to the same witch. No death, XP award, or item drop occurs here.
+    if (!quiet && mons.observable())
+    {
+        mprf(MSGCH_WARN, "Baba Yaga's hut collapses into splinters! "
+                        "She leaps into her mortar, clutching her pestle.");
+    }
+    return true;
+}
+
 /**
  * Attempt to save the given monster's life at the last moment.
  *
@@ -1147,6 +1182,18 @@ static bool _monster_avoided_death(monster* mons, killer_type killer,
 
     if (mons->max_hit_points <= 0 || mons->get_hit_dice() < 1)
         return false;
+
+    // Also handle direct kills which bypass monster::hurt. Dismissal,
+    // banishment and summon expiry must still remove the whole encounter.
+    if (!RESET_KILL(killer) && killer != KILL_BANISHED
+        && killer != KILL_TIMEOUT
+#if TAG_MAJOR_VERSION == 34
+        && killer != KILL_UNSUMMONED
+#endif
+        && baba_yaga_leave_hut(*mons))
+    {
+        return true;
+    }
 
     // Before the hp check since this should not care about the power of the
     // finishing blow

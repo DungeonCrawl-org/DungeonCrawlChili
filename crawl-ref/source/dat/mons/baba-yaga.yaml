@@ -1,0 +1,22 @@
+name: "Baba Yaga"
+glyph: {char: "8", colour: brown}
+flags: [speaks, unique, female, see_invis]
+resists: {poison: 1}
+exp: 1400
+will: 120
+attacks:
+ - {type: trample, flavour: trample, damage: 30}
+ - {type: hit, damage: 15}
+hd: 16
+hp_10x: 1600
+ac: 18
+ev: 5
+spells: baba_yaga_hut
+shout: shout
+intelligence: human
+habitat: amphibious
+speed: 10
+uses: starting_equipment
+size: giant
+shape: misc
+tile: treant
