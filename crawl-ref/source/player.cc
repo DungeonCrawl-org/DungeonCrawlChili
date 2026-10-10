@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "death-recap.h"
 
 #include "player.h"
 
@@ -4352,6 +4353,8 @@ void inc_hp(int hp_gain, bool silent, const char *source)
 
     if (source)
         record_hp_restored(you.hp - old_hp, source);
+    else
+        death_recap_hp_change("Healing", old_hp, you.hp);
 }
 
 int undrain_hp(int hp_recovered)

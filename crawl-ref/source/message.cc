@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "death-recap.h"
 
 #include "message.h"
 
@@ -2358,6 +2359,7 @@ void record_hp_change(int change, const char *source)
     }
 
     buffer.add_history_only_hp_message(source, change);
+    death_recap_hp_change(source, you.hp - change, you.hp);
 }
 
 bool recent_error_messages()

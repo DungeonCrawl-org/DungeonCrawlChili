@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "death-recap.h"
 
 #include "chardump.h"
 
@@ -179,12 +180,26 @@ static dump_params _get_dump(bool full_id = false,
                              const scorefile_entry *se = nullptr)
 {
     dump_params par("", full_id, se);
+    string recap;
+    if (se && se->get_death_type() != KILLED_BY_QUITTING
+        && se->get_death_type() != KILLED_BY_WINNING
+        && se->get_death_type() != KILLED_BY_LEAVING)
+    {
+        recap = final_death_recap();
+    }
 
     for (const string &section : Options.dump_order)
     {
+        if (section == "messages")
+        {
+            par.text += recap;
+            recap.clear();
+        }
         par.section = section;
         dump_section(par);
     }
+    // Preserve the recap even if message history is disabled or omitted.
+    par.text += recap;
 
     // Hopefully we get RVO so we don't have to copy the text.
     return par;

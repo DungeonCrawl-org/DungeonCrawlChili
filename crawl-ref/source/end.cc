@@ -4,6 +4,7 @@
  **/
 
 #include "AppHdr.h"
+#include "death-recap.h"
 
 #include "end.h"
 
@@ -367,6 +368,8 @@ NORETURN void end_game(scorefile_entry &se)
     string hiscore = hiscores_format_single_long(se, true);
 
     goodbye_msg += hiscore;
+    if (!non_death)
+        goodbye_msg += "\n" + final_death_recap();
 
     goodbye_msg += make_stringf("\nBest Crawlers - %s\n",
             crawl_state.game_type_name().c_str());
@@ -381,15 +384,19 @@ NORETURN void end_game(scorefile_entry &se)
     int num_lines = 100;
     string hiscores = hiscores_print_list(num_lines, SCORE_TERSE, hiscore_index, start);
     auto scroller = make_shared<HiscoreScroller>();
-    auto hiscores_txt = make_shared<Text>(formatted_string::parse_string(hiscores));
+    // Death recaps can be longer than the window; scroll them with the scores.
+    auto hiscores_txt = make_shared<Text>(formatted_string::parse_string(
+        non_death ? hiscores : goodbye_msg + hiscores));
     scroller->set_child(hiscores_txt);
     scroller->set_scrollbar_visible(false);
-    scroller->scroll_target = (hiscore_index - start)*line_height + (line_height/2);
+    scroller->scroll_target = non_death
+        ? (hiscore_index - start)*line_height + (line_height/2) : 0;
 
     mouse_control mc(MOUSE_MODE_MORE);
 
     auto goodbye_txt = make_shared<Text>(formatted_string::parse_string(goodbye_msg));
-    vbox->add_child(goodbye_txt);
+    if (non_death)
+        vbox->add_child(goodbye_txt);
     vbox->add_child(scroller);
 
 #ifndef DGAMELAUNCH
