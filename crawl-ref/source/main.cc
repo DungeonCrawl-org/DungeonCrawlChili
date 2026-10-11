@@ -468,7 +468,10 @@ NORETURN static void _launch_game()
 #endif
 
     if (game_start)
-       _announce_goal_message();
+    {
+        _announce_goal_message();
+        mprf("You start with %d gold pieces.", you.gold);
+    }
 
     _god_greeting_message(game_start);
 
