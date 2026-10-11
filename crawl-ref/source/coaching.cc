@@ -185,7 +185,7 @@ static string _read_ttyrec(const string &path)
     return result;
 }
 
-static string _ask_chatgpt(const string &prompt)
+static string _ask_chatgpt(const string &prompt, bool postmortem)
 {
     const string helper = datafile_path("coaching/chatgpt-coach.py", false);
     if (helper.empty())
@@ -224,9 +224,11 @@ static string _ask_chatgpt(const string &prompt)
             bool cancelled = false;
             auto box = make_shared<ui::Box>(ui::Widget::VERT);
             auto text = make_shared<ui::Text>();
-            text->set_text(formatted_string(
-                "Coaching Help - ChatGPT\n\nSending the live character dump.\n"
-                "The game is paused. This may take a minute.\n\n[Esc] Cancel"));
+            text->set_text(formatted_string(postmortem
+                ? "Post-mortem analysis - ChatGPT\n\nSending the final morgue and any attached ttyrec excerpts.\n"
+                  "This may take a minute.\n\n[Esc] Cancel"
+                : "Coaching Help - ChatGPT\n\nSending the live character dump.\n"
+                  "The game is paused. This may take a minute.\n\n[Esc] Cancel"));
             box->add_child(text);
             auto popup = make_shared<ui::Popup>(box);
             popup->on_keydown_event([&cancelled](const ui::KeyEvent &event) {
@@ -446,7 +448,7 @@ static void _show_tiles_coaching(string prompt, bool postmortem = false)
 #ifdef UNIX
         if (_selected_provider == coaching_provider::chatgpt)
         {
-            const string response = _ask_chatgpt(prompt);
+            const string response = _ask_chatgpt(prompt, postmortem);
             if (postmortem)
             {
                 formatted_scroller analysis;
