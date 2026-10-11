@@ -67,7 +67,12 @@ TEST_CASE("Post-mortem instructions preserve evidence and known item properties"
     const string prompt = postmortem_prompt(dump);
     CHECK(prompt.find("BEGIN FINAL MORGUE\n" + dump + "\nEND FINAL MORGUE") != string::npos);
     CHECK(prompt.find("All items are identified in Dungeon Crawl Chili") != string::npos);
-    CHECK(prompt.find("No ttyrec supplied") != string::npos);
+    CHECK(prompt.find("solely an analysis of the final morgue file") != string::npos);
+    CHECK(prompt.find("ttyrec") == string::npos);
+    CHECK(prompt.find("RECORDING:") == string::npos);
+    const string web_prompt = postmortem_prompt(dump, true);
+    CHECK(web_prompt.find("BEGIN FINAL MORGUE\n" + dump + "\nEND FINAL MORGUE") != string::npos);
+    CHECK(web_prompt.find("No ttyrec supplied") != string::npos);
     CHECK(prompt.find("available THEN") != string::npos);
     CHECK(prompt.find("do not just repeat the message history") != string::npos);
 }
