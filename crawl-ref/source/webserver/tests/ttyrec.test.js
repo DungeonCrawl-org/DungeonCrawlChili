@@ -93,4 +93,4 @@ workerDecoder.read(new ArrayBuffer(12)).then(text => {
     assert.equal(workerUrl, '/gamedata/chili/ttyrec-worker.js');
     assert.equal(text, 'decoded');
     console.log('Versioned game worker path check passed.');
-});
+}).catch(error => { console.error(error); process.exitCode = 1; });
