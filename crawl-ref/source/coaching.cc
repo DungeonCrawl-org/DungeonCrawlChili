@@ -26,7 +26,9 @@ string postmortem_prompt(const string &dump, bool include_recording)
               "conclusions on that file and its death recap. Acknowledge evidence "
               "limits where relevant without discussing missing recordings or "
               "asking for additional files. ")
-        + "Do not use tools, browse or play the game. Give plain text.\n\n"
+        + "Use short numbered section titles (1. through 5.), each on its own "
+          "line followed by a blank line. Do not use tools, browse or play the "
+          "game. Give plain text.\n\n"
           "BEGIN FINAL MORGUE\n" + dump + "\nEND FINAL MORGUE\n"
         + (include_recording ? "\nRECORDING: No ttyrec supplied.\n" : "");
 }
@@ -248,6 +250,34 @@ static string _ask_chatgpt(const string &prompt, bool postmortem)
 #ifdef USE_TILE_LOCAL
 static coaching_provider _selected_provider = coaching_provider::chatgpt;
 
+// Keep AI text literal while highlighting its numbered section titles.
+static formatted_string _postmortem_report(const string &response)
+{
+    formatted_string report(LIGHTGREY);
+    size_t start = 0;
+    while (start < response.size())
+    {
+        const size_t end = response.find('\n', start);
+        const string line = response.substr(start, end == string::npos
+            ? string::npos : end - start);
+        const size_t first = line.find_first_not_of(" \t");
+        const bool heading = first != string::npos && line.size() <= 80
+            && line[first] >= '1' && line[first] <= '5'
+            && first + 2 < line.size()
+            && (line[first + 1] == '.' || line[first + 1] == ')')
+            && line[first + 2] == ' '
+            && (end == string::npos || end + 1 == response.size()
+                || response[end + 1] == '\n' || response[end + 1] == '\r');
+        report.textcolour(heading ? WHITE : LIGHTGREY);
+        report += line;
+        if (end == string::npos)
+            break;
+        report += "\n";
+        start = end + 1;
+    }
+    return report;
+}
+
 static void _show_tiles_coaching(string prompt, bool postmortem = false)
 {
     using namespace ui;
@@ -362,7 +392,7 @@ static void _show_tiles_coaching(string prompt, bool postmortem = false)
             {
                 formatted_scroller analysis;
                 analysis.set_title(formatted_string("Post-mortem analysis - ChatGPT"));
-                analysis.add_raw_text(response);
+                analysis.add_formatted_string(_postmortem_report(response));
                 analysis.show();
             }
             else
