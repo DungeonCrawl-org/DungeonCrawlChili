@@ -84,7 +84,7 @@ Choose ChatGPT, Claude, Gemini, or Copilot and use **B** to copy/open or **C**
 to copy only. Paste the context into the chosen service using your own account.
 No server API key or separate browser app is required.
 
-An optional ttyrec adds timestamped terminal screen excerpts. The converter
+In Webtiles, an optional ttyrec adds timestamped terminal screen excerpts. The converter
 samples changed screens across the recording and retains finer detail near
 the end, within a 120,000-character excerpt budget. These are output frames,
 not keypresses or turns: partial redraws, unsupported terminal operations,
@@ -93,13 +93,12 @@ separates evidence from inference and checks for a mismatched recording.
 All items are identified in Chili; the prompt treats their properties as
 known, while requiring evidence that a resource was available at the time.
 
-In desktop Tiles, press **T** and enter the recording's file path. Python 3
-supports uncompressed ttyrec, `.gz`, and `.bz2` files, including `~/` paths.
-The recording replaces any previous attachment. Enter an empty path to
-remove it and return to morgue-only analysis. Tiles does not create a
-recording automatically. With ChatGPT selected, **G** requests the analysis
-through the player's Codex login, and displays a scrollable report inside
-Tiles. Escape returns from the report to the analysis chooser.
+In desktop Tiles, analysis uses solely the final morgue file, including its
+death recap. The instructions ask the AI to base conclusions on that evidence
+without discussing missing recordings or requesting additional files.
+With ChatGPT selected, **G** requests the analysis through the player's Codex
+login and displays a scrollable report inside Tiles. Escape returns from the
+report to the analysis chooser.
 
 In Webtiles, use the optional file chooser for an **uncompressed .ttyrec**.
 Decompress `.gz`/`.bz2` recordings first. The browser reads and converts the
