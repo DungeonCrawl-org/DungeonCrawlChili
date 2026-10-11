@@ -106,7 +106,12 @@ async function main() {
     cxc.module.install_controls(cxcPopup, morgue, true);
     assert.equal(cxcPopup.more.nodes.find(n => n.tag === "a").attrs.href,
         "https://crawl.xtahua.com/crawl/ttyrec/");
-    for (const hostname of ["crawl.project357.org", "localhost", "dungeoncrawlforks.org.example.com"]) {
+    const cpo = fixture({ hostname: "crawl.project357.org" });
+    const cpoPopup = new Element();
+    cpo.module.install_controls(cpoPopup, morgue, true);
+    assert.equal(cpoPopup.more.nodes.find(n => n.tag === "a").attrs.href,
+        "https://crawl.project357.org/ttyrec/");
+    for (const hostname of ["localhost", "dungeoncrawlforks.org.example.com"]) {
         const other = fixture({ hostname });
         const otherPopup = new Element();
         other.module.install_controls(otherPopup, morgue, true);

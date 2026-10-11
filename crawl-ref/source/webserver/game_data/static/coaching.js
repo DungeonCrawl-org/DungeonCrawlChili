@@ -129,6 +129,8 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             var hostname = window.location.hostname.toLowerCase();
             var recording_url = hostname === "crawl.xtahua.com"
                 ? "https://crawl.xtahua.com/crawl/ttyrec/"
+                : hostname === "crawl.project357.org"
+                    ? "https://crawl.project357.org/ttyrec/"
                 : /(^|\.)dungeoncrawlforks\.org$/.test(hostname)
                     ? "https://dcf-data.dungeoncrawlforks.org/ttyrec/" : null;
             if (recording_url) $("<a>").attr({
