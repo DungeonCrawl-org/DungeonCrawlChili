@@ -160,9 +160,15 @@ define(["jquery", "comm", "client", "ttyrec"], function ($, comm, client, ttyrec
         }
         if (postmortem && !recording_id) {
             var recording_label = $("<label>").text("Optional ttyrec (uncompressed .ttyrec, up to 50 MiB): ").appendTo(controls);
+            recording_label.on("click", function (event) { event.stopPropagation(); });
             var recording = $("<input>").attr({ type: "file", "aria-label": "Post-mortem ttyrec recording" }).appendTo(recording_label);
+            recording.on("cancel", function (event) {
+                event.stopPropagation();
+                copy_button[0].focus();
+            });
             recording.on("change", function (event) {
                 event.stopPropagation();
+                copy_button[0].focus();
                 var file = this.files && this.files[0];
                 if (!file) return;
                 var request_id = ++file_generation;
@@ -252,7 +258,7 @@ define(["jquery", "comm", "client", "ttyrec"], function ($, comm, client, ttyrec
                 window.open(providers[selected_provider].url, "_blank", "noopener,noreferrer");
         }
 
-        $("<button>").attr("type", "button").text(postmortem ? "Copy analysis context [C]" : "Copy dump [C]")
+        var copy_button = $("<button>").attr("type", "button").text(postmortem ? "Copy analysis context [C]" : "Copy dump [C]")
             .on("click", function (event) { event.stopPropagation(); copy(false); })
             .appendTo(controls);
         var open_button = $("<button>").attr("type", "button")

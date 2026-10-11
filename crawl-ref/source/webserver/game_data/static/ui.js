@@ -48,6 +48,20 @@ function ($, comm, client, options, focus_trap) {
         if ($(focused).closest("#ui-stack").length !== 1)
             return;
 
+        var popup = top_popup();
+        var tag = popup && popup.attr("data-tag");
+        if (ev.key === "Escape"
+            && (tag === "coaching_help" || tag === "postmortem_help"))
+        {
+            // Blurring native controls lets the focus trap select them again.
+            // Close these dialogs explicitly, before the generic blur handler.
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            if (!client.is_watching())
+                comm.send_message("key", { keycode: 27 });
+            return;
+        }
+
         if (ev.key == "Escape" && focused)
         {
             document.activeElement.blur();

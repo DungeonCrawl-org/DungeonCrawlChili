@@ -81,8 +81,17 @@ async function main() {
     const morgue = "Analyze this run\nBEGIN FINAL MORGUE\nHP: -2/50\nEND FINAL MORGUE\n\nRECORDING: No ttyrec supplied.\n";
     post.module.install_controls(postPopup, morgue, true);
     const upload = postPopup.more.nodes.find(n => n.tag === "label" && n.nodes.some(c => c.tag === "input")).nodes[0];
+    const uploadLabel = postPopup.more.nodes.find(n => n.nodes.includes(upload));
+    let pickerClickStopped = false;
+    uploadLabel.trigger("click", {stopPropagation() { pickerClickStopped = true; }});
+    assert(pickerClickStopped, "Opening the picker must not reach the popup click-to-close handler");
+    const postCopyButton = postPopup.more.nodes.find(n => n.label === "Copy analysis context [C]");
+    upload.trigger("cancel");
+    assert(postCopyButton.focused, "Cancelling the picker restores focus for popup shortcuts");
+    postCopyButton.focused = false;
     upload.files = [{ size: 50, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) }];
     upload.trigger("change");
+    assert(postCopyButton.focused, "Selecting a file restores popup shortcut focus");
     postPopup.trigger("keydown", { key: "b" });
     assert.equal(post.opened.length, 0, "Do not copy incomplete context while loading");
     await new Promise(resolve => setImmediate(resolve));
