@@ -972,6 +972,15 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             $popup.append(analysis);
             // Keep native button activation and focus navigation in the browser.
             $popup.off("keydown keypress").on("keydown keypress", function (event) {
+                var key = event.key || String.fromCharCode(event.which);
+                if (!event.ctrlKey && !event.altKey && !event.metaKey
+                    && key.toLowerCase() === "p") {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    if (event.type === "keydown")
+                        comm.send_message("key", { keycode: 112 });
+                    return;
+                }
                 if ($(event.target).is("button") || event.key === "Tab") {
                     event.stopImmediatePropagation();
                     return;
