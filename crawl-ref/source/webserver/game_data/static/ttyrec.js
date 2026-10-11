@@ -98,7 +98,7 @@ define(["require"], function (require) {
         if (typeof Worker !== "function")
             return Promise.reject(new Error("Recording conversion requires Web Workers. Use morgue-only analysis or a browser with worker support."));
         return new Promise(function (resolve, reject) {
-            var worker = new Worker(require.toUrl("ttyrec-worker.js"));
+            var worker = new Worker(require.toUrl("./ttyrec-worker.js"));
             var timer = setTimeout(function () {
                 worker.terminate(); reject(new Error("Recording conversion timed out."));
             }, 15000);
