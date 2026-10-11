@@ -41,6 +41,39 @@ worker.onmessage({data: new ArrayBuffer(3)});
 assert(replies[1].error.includes('Truncated'));
 console.log('Ttyrec worker checks passed: readable output and safe malformed-file errors.');
 
+async function workerLifecycleChecks() {
+    await assert.rejects(decoder.read(new ArrayBuffer(12)), /requires Web Workers/);
+    let reader, instance, timeout, timerCleared = false;
+    class Worker {
+        constructor() { instance = this; }
+        terminate() { this.terminated = true; }
+        postMessage() { if (this.fail) throw new Error('Transfer failed'); }
+    }
+    vm.runInNewContext(fs.readFileSync(__dirname + '/../game_data/static/ttyrec.js', 'utf8'), {
+        TextDecoder, Worker,
+        setTimeout(fn) { timeout = fn; return 1; },
+        clearTimeout() { timerCleared = true; },
+        define(_, factory) { reader = factory({ toUrl: name => name }); }
+    });
+    let result = reader.read(new ArrayBuffer(12));
+    instance.onmessage({data: {transcript: 'Decoded'}});
+    assert.equal(await result, 'Decoded');
+    assert(instance.terminated && timerCleared);
+    result = reader.read(new ArrayBuffer(12));
+    timeout();
+    await assert.rejects(result, /timed out/);
+    assert(instance.terminated);
+    result = reader.read(new ArrayBuffer(12));
+    instance.onerror();
+    await assert.rejects(result, /could not start/);
+    assert(instance.terminated);
+    Worker.prototype.fail = true;
+    timerCleared = false;
+    await assert.rejects(reader.read(new ArrayBuffer(12)), /Transfer failed/);
+    assert(instance.terminated && timerCleared);
+    console.log('Ttyrec lifecycle checks passed: no blocking fallback, timeout and startup/transfer cleanup.');
+}
+workerLifecycleChecks().catch(error => { console.error(error); process.exitCode = 1; });
 // A versioned game module must resolve its worker beside itself, not in the lobby.
 let workerDecoder, workerUrl;
 vm.runInNewContext(fs.readFileSync(__dirname + '/../game_data/static/ttyrec.js', 'utf8'), {

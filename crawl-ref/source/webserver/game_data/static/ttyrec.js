@@ -96,7 +96,7 @@ define(["require"], function (require) {
     }
     function read(buffer) {
         if (typeof Worker !== "function")
-            return Promise.resolve().then(function () { return transcript(buffer); });
+            return Promise.reject(new Error("Recording conversion requires Web Workers. Use morgue-only analysis or a browser with worker support."));
         return new Promise(function (resolve, reject) {
             var worker = new Worker(require.toUrl("./ttyrec-worker.js"));
             var timer = setTimeout(function () {
@@ -110,7 +110,8 @@ define(["require"], function (require) {
             worker.onerror = function () {
                 clearTimeout(timer); worker.terminate(); reject(new Error("Recording decoder could not start."));
             };
-            worker.postMessage(buffer, [buffer]);
+            try { worker.postMessage(buffer, [buffer]); }
+            catch (error) { clearTimeout(timer); worker.terminate(); reject(error); }
         });
     }
     return { transcript: transcript, read: read };
