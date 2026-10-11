@@ -126,6 +126,17 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
         var reading_recording = false;
         var file_generation = 0;
         if (postmortem) {
+            var hostname = window.location.hostname.toLowerCase();
+            var recording_url = hostname === "crawl.xtahua.com"
+                ? "https://crawl.xtahua.com/crawl/ttyrec/"
+                : /(^|\.)dungeoncrawlforks\.org$/.test(hostname)
+                    ? "https://dcf-data.dungeoncrawlforks.org/ttyrec/" : null;
+            if (recording_url) $("<a>").attr({
+                href: recording_url,
+                target: "_blank", rel: "noopener noreferrer"
+            }).text("Download a ttyrec recording")
+                .on("click", function (event) { event.stopPropagation(); })
+                .appendTo(controls);
             var recording_label = $("<label>").text("Optional ttyrec (uncompressed .ttyrec, up to 50 MiB): ").appendTo(controls);
             recording_label.on("click", function (event) { event.stopPropagation(); });
             var recording = $("<input>").attr({ type: "file", "aria-label": "Post-mortem ttyrec recording" }).appendTo(recording_label);

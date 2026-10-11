@@ -43,7 +43,7 @@ class Element {
 }
 
 function fixture({ watching = false, clipboardFails = false, legacyCopy = false, fetchFails = false,
-    storage = {}, storageFails = false } = {}) {
+    storage = {}, storageFails = false, hostname = "dct.dungeoncrawlforks.org" } = {}) {
     const document = new Element("document");
     document.execCommand = () => legacyCopy;
     const launch = new Element("button");
@@ -56,7 +56,7 @@ function fixture({ watching = false, clipboardFails = false, legacyCopy = false,
             copied.push(text);
             return clipboardFails ? Promise.reject(new Error("Denied")) : Promise.resolve();
         } } },
-        window: { open(...args) { opened.push(args); }, localStorage: {
+        window: { location: { hostname }, open(...args) { opened.push(args); }, localStorage: {
             getItem(key) { if (storageFails) throw new Error("Disabled"); return storage[key]; },
             setItem(key, value) { if (storageFails) throw new Error("Disabled"); storage[key] = value; }
         } },
@@ -92,6 +92,28 @@ async function main() {
     const postPopup = new Element();
     const morgue = "Analyze this run\nBEGIN FINAL MORGUE\nHP: -2/50\nEND FINAL MORGUE\n\nRECORDING: No ttyrec supplied.\n";
     post.module.install_controls(postPopup, morgue, true);
+    const recordingLink = postPopup.more.nodes.find(n => n.tag === "a");
+    assert.equal(recordingLink.attrs.href, "https://dcf-data.dungeoncrawlforks.org/ttyrec/");
+    assert.equal(recordingLink.attrs.target, "_blank");
+    let linkStopped = false, linkPrevented = false;
+    recordingLink.trigger("click", {
+        stopPropagation() { linkStopped = true; },
+        preventDefault() { linkPrevented = true; }
+    });
+    assert(linkStopped && !linkPrevented, "Open the recording directory without closing the analysis popup");
+    const cxc = fixture({ hostname: "crawl.xtahua.com" });
+    const cxcPopup = new Element();
+    cxc.module.install_controls(cxcPopup, morgue, true);
+    assert.equal(cxcPopup.more.nodes.find(n => n.tag === "a").attrs.href,
+        "https://crawl.xtahua.com/crawl/ttyrec/");
+    for (const hostname of ["crawl.project357.org", "localhost", "dungeoncrawlforks.org.example.com"]) {
+        const other = fixture({ hostname });
+        const otherPopup = new Element();
+        other.module.install_controls(otherPopup, morgue, true);
+        assert(!otherPopup.more.nodes.some(n => n.tag === "a"), "Do not link another server's recordings");
+        assert(otherPopup.more.nodes.some(n => n.nodes.some(c => c.tag === "input")),
+            "Keep manual recording uploads available");
+    }
     const upload = postPopup.more.nodes.find(n => n.tag === "label" && n.nodes.some(c => c.tag === "input")).nodes[0];
     const uploadLabel = postPopup.more.nodes.find(n => n.nodes.includes(upload));
     let pickerClickStopped = false;
