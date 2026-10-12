@@ -96,7 +96,9 @@ bool read_replay_checkpoint(const string &path, replay_checkpoint &checkpoint)
         if (!std::getline(input, magic) || magic != "ChiliDeathReplay1"
             || !std::getline(input, turn) || !std::getline(input, seed)
             || !std::getline(input, birth) || !std::getline(input, name))
+        {
             return false;
+        }
         checkpoint = replay_checkpoint();
         checkpoint.path = path;
         checkpoint.turn = std::stoi(turn);
@@ -150,7 +152,9 @@ void checkpoint_death_replay()
 {
     if (!crawl_state.game_started || crawl_state.generating_level || is_death_replay()
         || Options.no_save || !you.save || you.hp <= 0 || !you.on_current_level)
+    {
         return;
+    }
     const int last = you.props.exists(LAST_KEY) ? you.props[LAST_KEY].get_int() : -1;
     if (!death_replay_checkpoint_due(you.num_turns, last))
         return;
@@ -207,7 +211,9 @@ void archive_death_replay(const scorefile_entry &score)
         if (!read_replay_checkpoint(source, info) || info.name != you.your_name
             || info.seed != you.game_seed || info.birth != you.birth_time
             || info.turn > you.num_turns)
+        {
             continue;
+        }
         const string target = base + ".replay-" + std::to_string(slot) + ".cs";
         if (_copy_save(source, target))
             std::remove(source.c_str());
@@ -251,7 +257,9 @@ bool prepare_death_replay(const string &path)
         replay_checkpoint info;
         if (read_replay_checkpoint(base + ".replay-" + std::to_string(slot) + ".cs", info)
             && info.name == data->name && info.seed == data->seed && info.turn <= data->turns)
+        {
             checkpoints.push_back(info);
+        }
     }
     sort(checkpoints.begin(), checkpoints.end(), [](const replay_checkpoint &a, const replay_checkpoint &b) { return a.turn < b.turn; });
     if (checkpoints.empty())
