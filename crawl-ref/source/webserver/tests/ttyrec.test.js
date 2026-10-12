@@ -73,7 +73,7 @@ async function workerLifecycleChecks() {
     assert(instance.terminated && timerCleared);
     console.log('Ttyrec lifecycle checks passed: no blocking fallback, timeout and startup/transfer cleanup.');
 }
-workerLifecycleChecks().catch(error => { console.error(error); process.exitCode = 1; });
+workerLifecycleChecks().catch (error => { console.error(error); process.exitCode = 1; });
 // A versioned game module must resolve its worker beside itself, not in the lobby.
 let workerDecoder, workerUrl;
 vm.runInNewContext(fs.readFileSync(__dirname + '/../game_data/static/ttyrec.js', 'utf8'), {
@@ -93,4 +93,4 @@ workerDecoder.read(new ArrayBuffer(12)).then(text => {
     assert.equal(workerUrl, '/gamedata/chili/ttyrec-worker.js');
     assert.equal(text, 'decoded');
     console.log('Versioned game worker path check passed.');
-}).catch(error => { console.error(error); process.exitCode = 1; });
+}).catch (error => { console.error(error); process.exitCode = 1; });

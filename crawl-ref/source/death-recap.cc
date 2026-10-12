@@ -4,6 +4,7 @@
 #include "player.h"
 #include "item-name.h"
 #include "item-prop.h"
+#include "level-id.h"
 #include "state.h"
 #include "status.h"
 #include "store.h"
@@ -98,6 +99,11 @@ void death_recap_hp_change(const string &source, int before, int after, int dama
 string death_recap_text()
 {
     string text = "Death recap (last three turns)\n";
+    // Preserve engine coordinates, rather than viewport-relative positions,
+    // so a future replay can locate this square on the seeded level.
+    text += make_stringf("  Final location: %s, x=%d, y=%d (0-based map coordinates), turn %d\n",
+                         level_id::current().describe().c_str(),
+                         you.pos().x, you.pos().y, you.num_turns);
     map<string, pair<int, int>> sources;
     int damage = 0, healing = 0, costs = 0;
     vector<string> hp_trend;
