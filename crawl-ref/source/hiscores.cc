@@ -25,6 +25,7 @@
 
 #include "branch.h"
 #include "chardump.h"
+#include "death-replay.h"
 #include "cio.h"
 #include "dungeon.h"
 #include "end.h"
@@ -400,6 +401,8 @@ public:
 private:
     void _construct_hiscore_table();
     void _add_hiscore_row(scorefile_entry& se, int id);
+    void _request_replay();
+    int selected_score = -1;
 
     Widget* initial_focus = nullptr;
     bool have_allocated {false};
@@ -446,6 +449,15 @@ UIHiscoresMenu::UIHiscoresMenu()
     {
         m_root->add_child(m_description);
         m_root->add_child(m_score_entries);
+#ifdef USE_TILE_LOCAL
+        auto replay = make_shared<MenuButton>();
+        replay->set_child(make_shared<Text>("Death Replay selected entry [R]"));
+        replay->on_activate_event([this](const ActivateEvent&) {
+            _request_replay();
+            return true;
+        });
+        m_root->add_child(replay);
+#endif
     }
     else
     {
@@ -455,6 +467,13 @@ UIHiscoresMenu::UIHiscoresMenu()
     }
 
     on_hotkey_event([this](const KeyEvent& ev) {
+#ifdef USE_TILE_LOCAL
+        if (ev.key() == 'r' || ev.key() == 'R')
+        {
+            _request_replay();
+            return true;
+        }
+#endif
         return done = (key_is_escape(ev.key()) || ev.key() == CK_MOUSE_CMD);
     });
 }
@@ -493,7 +512,8 @@ void UIHiscoresMenu::_add_hiscore_row(scorefile_entry& se, int id)
         _show_morgue(*hs_list[id]);
         return true;
     });
-    btn->on_focusin_event([this, se](const FocusEvent&) {
+    btn->on_focusin_event([this, se, id](const FocusEvent&) {
+        selected_score = id;
         formatted_string desc(hiscores_format_single_long(se, true));
         desc.cprintf(string(max(0, 9-count_linebreaks(desc)), '\n'));
         m_description->set_text(std::move(desc));
@@ -503,6 +523,25 @@ void UIHiscoresMenu::_add_hiscore_row(scorefile_entry& se, int id)
     if (!initial_focus)
         initial_focus = btn.get();
     m_score_entries->add_button(std::move(btn), 0, nhsr++);
+}
+
+void UIHiscoresMenu::_request_replay()
+{
+    if (selected_score < 0)
+        return;
+    const auto &score = *hs_list[selected_score];
+    const int death = score.get_death_type();
+    if (death == KILLED_BY_QUITTING || death == KILLED_BY_WINNING || death == KILLED_BY_LEAVING)
+    {
+        formatted_scroller notice;
+        notice.add_raw_text("Death Replay requires a death entry. Select a character that died.");
+        notice.show();
+        return;
+    }
+    const string path = catpath(morgue_directory(),
+        strip_filename_unsafe_chars(morgue_name(score.get_name(), score.get_death_time())) + ".txt");
+    if (prepare_death_replay(path))
+        done = true;
 }
 
 void UIHiscoresMenu::_render()

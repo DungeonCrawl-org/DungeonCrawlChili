@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "death-replay.h"
 #include "death-recap.h"
 
 #include <algorithm>
@@ -1098,6 +1099,8 @@ static void _input()
         save_game(true, "Game saved, see you later!");
 
     crawl_state.clear_mon_acting();
+
+    checkpoint_death_replay();
 
     disable_check player_disabled(you.incapacitated());
     religion_turn_start();

@@ -94,6 +94,37 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Death recap freezes final level and map coordinates",
+                 "[death-recap]")
+{
+    you.props.erase("death_recap_turns");
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 8;
+    you.set_position(coord_def(23, 17));
+    you.num_turns = 4193;
+    death_recap_finish();
+    const string frozen = final_death_recap();
+    CHECK(frozen.find("Final location: D:8, x=23, y=17 (0-based map coordinates), turn 4193")
+          != string::npos);
+
+    // The morgue must use the captured location even after cleanup moves us.
+    you.where_are_you = BRANCH_LAIR;
+    you.depth = 2;
+    you.set_position(coord_def(40, 31));
+    you.num_turns = 4194;
+    CHECK(final_death_recap() == frozen);
+
+    vector<unsigned char> bytes;
+    writer out(&bytes);
+    you.props.write(out);
+    you.props.clear();
+    reader in(bytes);
+    in.setMinorVersion(TAG_MINOR_VERSION);
+    you.props.read(in);
+    CHECK(final_death_recap() == frozen);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "Death recap freezes known supplies before death identification",
                  "[death-recap]")
 {

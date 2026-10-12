@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 #include "death-recap.h"
+#include "death-replay.h"
 #include "coaching.h"
 #ifdef USE_TILE
 #include "outer-menu.h"
@@ -64,6 +65,11 @@ bool crawl_should_restart(game_exit exit)
     UNUSED(exit);
     return false;
 #else
+#ifdef USE_TILE_LOCAL
+    // An explicitly requested replay must survive normal restart preferences.
+    if (death_replay_pending())
+        return true;
+#endif
 #ifdef USE_TILE_WEB
     if (is_tiles() && Options.name_bypasses_menu)
         return false;
@@ -290,21 +296,21 @@ NORETURN void end_game(scorefile_entry &se)
                         || death_type == KILLED_BY_LEAVING;
 
     int hiscore_index = -1;
+    bool score_game = !is_death_replay();
 #ifndef SCORE_WIZARD_CHARACTERS
-    if (!you.wizard && !you.explore)
+    score_game &= !you.wizard && !you.explore;
 #endif
+    if (score_game)
     {
         // Add this highscore to the score file.
         hiscore_index = hiscores_new_entry(se);
         logfile_new_entry(se);
     }
-#ifndef SCORE_WIZARD_CHARACTERS
     else
         hiscores_read_to_memory();
-#endif
 
     // Never generate bones files of wizard or tutorial characters -- bwr
-    if (!non_death && !crawl_state.game_is_tutorial() && !you.wizard)
+    if (!non_death && !crawl_state.game_is_tutorial() && !you.wizard && !is_death_replay())
         save_ghosts(ghost_demon::find_ghosts());
 
     for (auto &item : you.inv)
@@ -312,6 +318,9 @@ NORETURN void end_game(scorefile_entry &se)
             add_inscription(item, "unknown");
 
     identify_inventory();
+
+    if (!non_death)
+        archive_death_replay(se);
 
     delete_files();
 
@@ -416,6 +425,26 @@ NORETURN void end_game(scorefile_entry &se)
     vbox->add_child(make_shared<Text>(formatted_string::parse_string(morgue_dir)));
 #endif
 
+    bool done = false;
+#ifdef USE_TILE_LOCAL
+    const bool replay_available = !non_death && !is_death_replay();
+    auto request_replay = [&]() {
+        const string path = catpath(morgue_directory(),
+            strip_filename_unsafe_chars(fname) + ".txt");
+        if (prepare_death_replay(path))
+            done = true;
+    };
+    if (replay_available)
+    {
+        auto replay_button = make_shared<MenuButton>();
+        replay_button->set_child(make_shared<Text>("Death Replay [R]"));
+        replay_button->on_activate_event([&](const ActivateEvent&) {
+            request_replay();
+            return true;
+        });
+        vbox->add_child(replay_button);
+    }
+#endif
 #ifdef USE_TILE
     auto analysis_button = make_shared<MenuButton>();
     analysis_button->set_child(make_shared<Text>("Post-mortem analysis [P]"));
@@ -428,6 +457,13 @@ NORETURN void end_game(scorefile_entry &se)
     auto popup = make_shared<ui::Popup>(std::move(vbox));
 #ifdef USE_TILE
     popup->on_hotkey_event([&](const KeyEvent &event) {
+#ifdef USE_TILE_LOCAL
+        if (replay_available && (event.key() == 'r' || event.key() == 'R'))
+        {
+            request_replay();
+            return true;
+        }
+#endif
         if (event.key() == 'p' || event.key() == 'P')
         {
             show_postmortem_help(analysis_dump);
@@ -436,7 +472,6 @@ NORETURN void end_game(scorefile_entry &se)
         return false;
     });
 #endif
-    bool done = false;
     popup->on_keydown_event([&](const KeyEvent &event) {
 #ifdef USE_TILE_LOCAL
         if (event.key() == '\t' || event.key() == CK_SHIFT_TAB)
