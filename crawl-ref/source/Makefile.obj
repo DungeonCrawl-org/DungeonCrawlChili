@@ -19,6 +19,7 @@ branch-data-json.o \
 bloodspatter.o \
 chardump.o \
 death-recap.o \
+death-replay.o \
 cio.o \
 cloud.o \
 clua.o \
@@ -315,6 +316,7 @@ catch2-tests/test_branch.o \
 catch2-tests/test_coordit.o \
 catch2-tests/test_describe.o \
 catch2-tests/test_death_recap.o \
+catch2-tests/test_death_replay.o \
 catch2-tests/test_english.o \
 catch2-tests/test_files.o \
 catch2-tests/test_items.o \

@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "death-replay.h"
 
 #include "startup.h"
 
@@ -454,6 +455,7 @@ static constexpr int STARTUP_PLAY_WEBTILES = -13;
 static constexpr int STARTUP_VIEW_LAST_MORGUE = -14;
 static constexpr int STARTUP_GAME_OPTIONS = -15;
 static constexpr int STARTUP_OPEN_MORGUE_FOLDER = -16;
+static constexpr int STARTUP_DEATH_REPLAY = -17;
 
 static void _show_last_morgue()
 {
@@ -624,6 +626,10 @@ static const vector<game_modes_menu_item> other_gameplay_entries =
 {
     {GAME_TYPE_CUSTOM_SEED, "Choose Game Seed",
         "Play with a chosen custom dungeon seed." },
+#ifdef USE_TILE_LOCAL
+    {STARTUP_DEATH_REPLAY, "Death Replay",
+        "Open High Scores, select a death, and press R to replay a saved checkpoint in wizard practice mode." },
+#endif
     {GAME_TYPE_DESCENT, "Dungeon Descent",
         "Mode with a branching, one-way path through the Dungeon." },
     {GAME_TYPE_SPRINT, "Dungeon Sprint",
@@ -720,6 +726,8 @@ static void _add_game_modes_menu_entry(shared_ptr<OuterMenu>& container,
                     ? static_cast<tileidx_t>(TILEG_CMD_REPLAY_MESSAGES)
                 : entry.id == STARTUP_OTHER_GAMEPLAY_OPTIONS
                     ? static_cast<tileidx_t>(TILEG_STARTUP_SPRINT)
+                : entry.id == STARTUP_DEATH_REPLAY
+                    ? static_cast<tileidx_t>(TILEG_STARTUP_HIGH_SCORES)
                 : tileidx_gametype(static_cast<game_type>(entry.id));
     tile->set_tile(tile_def(icon));
     tile->set_margin_for_sdl(0, 6, 0, 0);
@@ -1147,6 +1155,7 @@ private:
 
         case GAME_TYPE_ARENA:
         case GAME_TYPE_HIGH_SCORES:
+        case STARTUP_DEATH_REPLAY:
         case STARTUP_VIEW_LAST_MORGUE:
         case STARTUP_OPEN_MORGUE_FOLDER:
         case GAME_TYPE_INSTRUCTIONS:
@@ -1401,7 +1410,13 @@ void UIStartupMenu::menu_item_activated(int id)
         return;
 
     case GAME_TYPE_HIGH_SCORES:
+    case STARTUP_DEATH_REPLAY:
         show_hiscore_table();
+        if (death_replay_pending())
+        {
+            configure_death_replay(ng_choice);
+            done = true;
+        }
         return;
 
     case STARTUP_VIEW_LAST_MORGUE:
@@ -1685,7 +1700,13 @@ bool startup_step()
          && Options.name_bypasses_menu
          && is_good_name(choice.name, false);
 
-    if (crawl_state.last_type == GAME_TYPE_TUTORIAL
+    if (death_replay_pending())
+    {
+        configure_death_replay(choice);
+        crawl_state.type = choice.type;
+        crawl_state.bypassed_startup_menu = false;
+    }
+    else if (crawl_state.last_type == GAME_TYPE_TUTORIAL
         || crawl_state.last_type == GAME_TYPE_SPRINT)
     {
         // this counts as showing the startup menu
@@ -1733,7 +1754,13 @@ bool startup_step()
     if (choice.filename.empty() && !choice.name.empty())
         choice.filename = get_save_filename(choice.name);
 
-    if (save_exists(choice.filename) && restore_game(choice.filename))
+    if (death_replay_pending())
+    {
+        configure_death_replay(ng);
+        if (!restore_death_replay(ng))
+            game_ended(game_exit::abort);
+    }
+    else if (save_exists(choice.filename) && restore_game(choice.filename))
         save_player_name();
     else if (choose_game(ng, choice, defaults)
              && restore_game(ng.filename))
@@ -1749,10 +1776,13 @@ bool startup_step()
                                     // setup_game.
         write_newgame_options_file(choice);
     }
-    if (Options.remember_name)
+    if (Options.remember_name && !death_replay_pending() && !is_death_replay())
         crawl_state.default_startup_name = you.your_name;
 
     _post_init(newchar);
+
+    if (death_replay_pending())
+        start_death_replay();
 
     return newchar;
 }
