@@ -931,6 +931,9 @@
     <ClCompile Include="..\death-recap.cc">
       <Filter>cc</Filter>
     </ClCompile>
+    <ClCompile Include="..\death-replay.cc">
+      <Filter>cc</Filter>
+    </ClCompile>
     <ClCompile Include="..\death-curse.cc">
       <Filter>cc</Filter>
     </ClCompile>
@@ -2288,6 +2291,9 @@
     <ClInclude Include="..\mon-explode.h" />
     <ClInclude Include="..\outer-menu.h" />
     <ClInclude Include="..\death-recap.h">
+      <Filter>h</Filter>
+    </ClInclude>
+    <ClInclude Include="..\death-replay.h">
       <Filter>h</Filter>
     </ClInclude>
     <ClInclude Include="..\death-curse.h">
