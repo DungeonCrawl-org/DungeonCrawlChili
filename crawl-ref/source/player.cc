@@ -1072,6 +1072,10 @@ void update_vision_range()
     if (you.get_mutation_level(MUT_NIGHTSTALKER))
         you.normal_vision -= you.get_mutation_level(MUT_NIGHTSTALKER);
 
+    // Vision form increases your sight range by 1 (but can't for barachi).
+    if (you.form == transformation::vision)
+        you.normal_vision = min(LOS_MAX_RANGE, you.normal_vision + 1);
+
     // Halo and umbra radius scale with you.normal_vision, so to avoid
     // penalizing players with low LOS from items, don't shrink normal_vision.
     you.current_vision = you.normal_vision;
@@ -6566,7 +6570,7 @@ int player::skill(skill_type sk, int scale, bool real, bool include_temp) const
             case SK_ICE_MAGIC:
             case SK_EARTH_MAGIC:
             case SK_AIR_MAGIC:
-               level = level + (2 * scale);
+               level = level + (get_form()->get_skill_bonus() * scale / 10);
                break;
 
             default:

@@ -662,7 +662,7 @@ public:
     {
     }
 protected:
-    bool mergeable(const final_effect&) const override { return false; }
+    bool mergeable(const final_effect& eff) const override;
     item_def& wpn;
 };
 
@@ -1004,6 +1004,13 @@ bool beogh_resurrection_fineff::mergeable(const final_effect& fe) const
     const beogh_resurrection_fineff& o =
         static_cast<const beogh_resurrection_fineff&>(fe);
     return ostracism_only == o.ostracism_only;
+}
+
+bool ephemeral_weapon_end_fineff::mergeable(const final_effect& fe) const
+{
+    const ephemeral_weapon_end_fineff& o =
+        static_cast<const ephemeral_weapon_end_fineff&>(fe);
+    return &wpn == &o.wpn;
 }
 
 void mirror_damage_fineff::merge(const final_effect &fe)
@@ -2006,7 +2013,7 @@ void hypnogecko_tail_fineff::fire()
 
     mgen_data mg(MONS_HYPNOTAIL, BEH_FRIENDLY, you.pos(), MHITNOT, MG_FORCE_PLACE);
     mg.set_summoned(&you, MON_SUMM_HYPNOTAIL, random_range(150, 220), false);
-    mg.hp = random_range(10, 14) * get_form(transformation::hypnogecko)->get_effect_size() / 100;
+    mg.hp = get_form(transformation::hypnogecko)->get_effect_size();
 
     // Determine either where to move the player or where to drop the tail.
     if (!monster_habitable_grid(MONS_HYPNOTAIL, you.pos())
