@@ -55,7 +55,23 @@ for (const key of ['Tab', 'Enter', ' ']) {
 }
 button.handlers.click({stopPropagation() {}});
 assert.equal(messages.at(-1).data.keycode, 112);
+const replayPopup = gameOver({title: 'Goodbye', body: 'Final score',
+    postmortem_available: true, death_replay_available: true, tile: {}});
+assert.equal(replayPopup.nodes.length, 2);
+const replayButton = replayPopup.nodes[0];
+for (const key of ['r', 'R']) {
+    const before = messages.length;
+    for (const type of ['keydown', 'keypress']) {
+        replayPopup.handlers[type]({type, key, target: replayButton,
+            preventDefault() {}, stopImmediatePropagation() {}});
+    }
+    assert.equal(messages.length, before + 1);
+    assert.equal(messages.at(-1).data.keycode, 114);
+}
+replayButton.handlers.click({stopPropagation() {}});
+assert.equal(messages.at(-1).data.keycode, 114);
 watching = true;
-const spectator = gameOver({title: 'Goodbye', body: 'Final score', postmortem_available: true, tile: {}});
+const spectator = gameOver({title: 'Goodbye', body: 'Final score',
+    postmortem_available: true, death_replay_available: true, tile: {}});
 assert.equal(spectator.nodes.length, 0, 'Spectators do not get an analysis control');
 console.log('Game-over checks passed: P/p with button focus, one request, native activation and spectator controls.');

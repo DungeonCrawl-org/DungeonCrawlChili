@@ -63,18 +63,20 @@ TEST_CASE("Death Replay rejects malformed replay metadata", "[death-replay]")
     CHECK_FALSE(parse_death_replay(string(2 * 1024 * 1024 + 1, 'x'), data, error));
 }
 
-TEST_CASE("Death Replay checkpoints at 100-turn boundaries without duplicate writes", "[death-replay]")
+TEST_CASE("Death Replay checkpoints at 50-turn boundaries without duplicate writes", "[death-replay]")
 {
     CHECK(death_replay_checkpoint_due(0, -1));
     CHECK_FALSE(death_replay_checkpoint_due(0, 0));
     // Resuming an older game establishes a checkpoint immediately.
     CHECK(death_replay_checkpoint_due(17, -1));
-    CHECK_FALSE(death_replay_checkpoint_due(50, 0));
-    CHECK_FALSE(death_replay_checkpoint_due(99, 0));
-    CHECK(death_replay_checkpoint_due(100, 0));
+    CHECK(death_replay_checkpoint_due(50, 0));
+    CHECK_FALSE(death_replay_checkpoint_due(50, 50));
+    CHECK_FALSE(death_replay_checkpoint_due(99, 50));
+    CHECK(death_replay_checkpoint_due(100, 50));
     CHECK_FALSE(death_replay_checkpoint_due(100, 100));
-    CHECK_FALSE(death_replay_checkpoint_due(150, 100));
-    CHECK(death_replay_checkpoint_due(200, 100));
+    CHECK_FALSE(death_replay_checkpoint_due(125, 100));
+    CHECK(death_replay_checkpoint_due(150, 100));
+    CHECK(death_replay_checkpoint_due(200, 150));
     CHECK_FALSE(death_replay_checkpoint_due(200, 200));
     CHECK_FALSE(death_replay_checkpoint_due(-1, -1));
 }

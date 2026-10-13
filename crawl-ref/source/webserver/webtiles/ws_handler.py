@@ -327,6 +327,7 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
             "set_login_cookie": self.set_login_cookie,
             "forget_login_cookie": self.forget_login_cookie,
             "play": self.start_crawl,
+            "list_death_replays": self.list_death_replays,
             "pong": self.pong,
             "watch": self.watch,
             "chat_msg": self.post_chat_message,
@@ -746,7 +747,22 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
         # start.
         return "allowed_with_hold" not in game or game["allowed_with_hold"]
 
-    def start_crawl(self, game_id):
+    def list_death_replays(self, game_id):
+        if not self.username or not self.game_id_allowed(game_id):
+            return
+        from webtiles.death_replay import list_replays, morgue_directory
+        directory = morgue_directory(config.games[game_id], "")
+        entries = list_replays(directory)
+        for entry in entries:
+            morgue_url = config.games[game_id].templated(
+                "morgue_url", username=entry["player"])
+            entry["morgue_url"] = (
+                morgue_url.rstrip("/") + "/" + entry["file"]
+                if morgue_url else "")
+        self.send_message("death_replays", game_id=game_id,
+                          entries=entries)
+
+    def start_crawl(self, game_id, death_replay=None, death_replay_player=None):
         if config.get('dgl_mode') and game_id not in config.games:
             self.go_lobby()
             return
@@ -784,6 +800,21 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
         if config.get('dgl_mode'):
             self.process = process_handler.CrawlProcessHandler(
                             config.games[game_id], self.username, self.logger)
+            if death_replay is not None:
+                import os
+                from webtiles.death_replay import list_replays, morgue_directory
+                root = morgue_directory(config.games[game_id], "")
+                allowed = {(entry["player"], entry["file"])
+                           for entry in list_replays(root)}
+                if (not death_replay_player
+                        or (death_replay_player, death_replay) not in allowed):
+                    self.process = None
+                    self.go_lobby()
+                    return
+                directory = morgue_directory(config.games[game_id],
+                                             death_replay_player)
+                self.process.death_replay_morgue = os.path.join(
+                    directory, death_replay)
         else:
             self.process = process_handler.DGLLessCrawlProcessHandler(self.logger)
 

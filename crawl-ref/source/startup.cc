@@ -1656,6 +1656,11 @@ bool startup_step()
 {
     _initialize();
 
+#ifdef USE_TILE_WEB
+    if (!start_queued_death_replay(Options.game.name))
+        game_ended(game_exit::abort, "The selected Death Replay is unavailable.");
+#endif
+
     newgame_def choice   = Options.game;
 
     // Setup base game type *before* reading startup prefs -- the prefs file

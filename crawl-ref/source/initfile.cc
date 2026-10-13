@@ -31,6 +31,7 @@
 #include "clua.h"
 #include "colour.h"
 #include "defines.h"
+#include "death-replay.h"
 #include "delay.h"
 #include "describe.h"
 #include "directn.h"
@@ -4835,6 +4836,7 @@ enum commandline_option_type
 {
     CLO_SCORES,
     CLO_NAME,
+    CLO_DEATH_REPLAY,
     CLO_RACE,
     CLO_CLASS,
     CLO_DIR,
@@ -4930,7 +4932,7 @@ static set<commandline_option_type> clo_headless_ok = {
 
 static const char *cmd_ops[] =
 {
-    "scores", "name", "species", "background", "dir", "rc", "rcdir", "tscores",
+    "scores", "name", "death-replay", "species", "background", "dir", "rc", "rcdir", "tscores",
     "vscores", "scorefile", "morgue", "macro", "mapstat", "dump-disconnect",
     "veto-closets", "objstat", "iters", "force-map", "arena", "dump-maps",
     "test", "script", "builddb", "help", "version", "seed", "pregen",
@@ -6107,6 +6109,14 @@ bool parse_args(int argc, char **argv, bool rc_only)
                 Options.game.name = next_arg;
                 crawl_state.default_startup_name = Options.game.name;
             }
+            nextUsed = true;
+            break;
+
+        case CLO_DEATH_REPLAY:
+            if (!next_is_param)
+                return false;
+            if (!rc_only)
+                queue_death_replay(next_arg);
             nextUsed = true;
             break;
 
