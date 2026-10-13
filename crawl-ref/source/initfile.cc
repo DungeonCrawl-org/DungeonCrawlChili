@@ -44,6 +44,7 @@
 #include "files.h"
 #include "game-options.h"
 #include "ghost.h"
+#include "version.h"
 #include "invent.h"
 #include "item-prop.h"
 #include "items.h"
@@ -433,6 +434,10 @@ const vector<GameOption*> game_options::build_options_list()
 
         new BoolGameOption(SIMPLE_NAME(autopickup_starting_ammo), true),
         new BoolGameOption(autopickup_on, {"default_autopickup"}, true),
+#ifdef CRAWL_HAS_DEATH_REPLAY
+        new BoolGameOption(opt_out_death_replay,
+                           {"opt-out_death-replay", "opt-out-death-replay"}, false),
+#endif
         new StringGameOption(SIMPLE_NAME(game_seed), "", false,
             [this]() {
                 // special handling because of the large type.
@@ -2684,6 +2689,7 @@ game_options::game_options()
     : base_game_options(),
     seed(0), seed_from_rc(0),
     no_save(false), no_player_bones(false),
+    opt_out_death_replay(false),
     sc_entries(0), sc_format(-1),
     language(lang_t::EN),
     lang_name(nullptr)

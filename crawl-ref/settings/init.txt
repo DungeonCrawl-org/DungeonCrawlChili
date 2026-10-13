@@ -6,6 +6,9 @@
 # online at:
 # https://github.com/crawl/crawl/blob/master/crawl-ref/docs/options_guide.txt
 #
+# Death Replay is enabled by default. Set this to yes to opt out:
+# opt-out_death-replay = yes
+#
 # Crawl uses the first file of the following list as its option file:
 #  * init.txt in the -rcdir directory (if specified)
 #  * .crawlrc in the -rcdir directory (if specified)
