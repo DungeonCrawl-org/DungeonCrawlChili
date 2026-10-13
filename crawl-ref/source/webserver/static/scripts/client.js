@@ -1513,7 +1513,31 @@ function (exports, $, key_conversion, chat, comm) {
                 if (ev.target === panel[0]) close_death_replays();
             });
             $(document).off("keydown.deathReplay").on("keydown.deathReplay", function (ev) {
-                if (ev.key === "Escape" && panel.is(":visible")) close_death_replays();
+                if (!panel.is(":visible")) return;
+                if (ev.key === "Escape") {
+                    close_death_replays();
+                    return;
+                }
+
+                var content = panel.find(".death_replays_content");
+                if (ev.key === "PageDown" || ev.key === "PageUp") {
+                    ev.preventDefault();
+                    content[0].scrollTop += (ev.key === "PageDown" ? 1 : -1)
+                        * Math.max(1, content[0].clientHeight - 32);
+                } else if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+                    ev.preventDefault();
+                    var rows = content.find(".death_replay_row");
+                    if (!rows.length) return;
+                    var index = rows.index(document.activeElement);
+                    if (index < 0)
+                        index = ev.key === "ArrowDown" ? 0 : rows.length - 1;
+                    else
+                        index = Math.max(0, Math.min(rows.length - 1,
+                            index + (ev.key === "ArrowDown" ? 1 : -1)));
+                    var row = rows.eq(index);
+                    row.trigger("focus");
+                    row[0].scrollIntoView({block: "nearest"});
+                }
             });
         }
         panel.show().attr("tabindex", "-1");
@@ -1590,7 +1614,7 @@ function (exports, $, key_conversion, chat, comm) {
             });
             body.empty();
             entries.forEach(function (entry) {
-                var row = $("<tr>").attr({role: "link", tabindex: "0",
+                var row = $("<tr>").addClass("death_replay_row").attr({role: "link", tabindex: "0",
                     title: "Left-click to load the replay checkpoint; right-click to open the morgue"})
                     .css("cursor", "pointer");
                 var date = entry.date.replace(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})$/,
