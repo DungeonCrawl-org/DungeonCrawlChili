@@ -17,11 +17,36 @@
 static const char *const REPLAY_KEY = "death_replay_source";
 static const char *const LAST_KEY = "death_replay_last_checkpoint";
 static const char *const META_KEY = "death-replay";
+static const char *const DEATH_BRANCH_KEY = "death_replay_death_branch";
+static const char *const DEATH_DEPTH_KEY = "death_replay_death_depth";
+static const char *const DEATH_X_KEY = "death_replay_death_x";
+static const char *const DEATH_Y_KEY = "death_replay_death_y";
 static const int CHECKPOINT_INTERVAL = 50;
 
 bool is_death_replay()
 {
     return you.props.exists(REPLAY_KEY);
+}
+
+bool death_replay_marker_position(coord_def &position)
+{
+    if (!is_death_replay() || !you.props.exists(DEATH_BRANCH_KEY)
+        || !you.props.exists(DEATH_DEPTH_KEY) || !you.props.exists(DEATH_X_KEY)
+        || !you.props.exists(DEATH_Y_KEY))
+    {
+        return false;
+    }
+
+    const level_id death_level(
+        static_cast<branch_type>(you.props[DEATH_BRANCH_KEY].get_int()),
+        you.props[DEATH_DEPTH_KEY].get_int());
+    if (!death_level.is_valid() || level_id::current() != death_level)
+        return false;
+
+    position = coord_def(you.props[DEATH_X_KEY].get_int(),
+                         you.props[DEATH_Y_KEY].get_int());
+    return position.x > 0 && position.x < GXM - 1
+        && position.y > 0 && position.y < GYM - 1;
 }
 
 bool death_replay_checkpoint_due(int turn, int last)
@@ -287,6 +312,11 @@ void checkpoint_death_replay()
         } marker;
         you.props[REPLAY_KEY] = you.your_name;
         save_game_state();
+        // save_game(false) does not normally persist the current level on
+        // desktop builds. A replay checkpoint must include current map
+        // knowledge and level contents, rather than the level chunk from
+        // when it was last entered or left.
+        save_level(level_id::current());
         const string metadata = "ChiliDeathReplay1\n" + std::to_string(you.num_turns)
             + "\n" + std::to_string(you.game_seed) + "\n" + std::to_string(you.birth_time)
             + "\n" + you.your_name + "\n";
@@ -527,6 +557,10 @@ bool restore_death_replay(const newgame_def &game)
     you.your_name = game.name;
     you.wizard = true;
     you.props[REPLAY_KEY] = selected.name;
+    you.props[DEATH_BRANCH_KEY] = static_cast<int>(pending->level.branch);
+    you.props[DEATH_DEPTH_KEY] = pending->level.depth;
+    you.props[DEATH_X_KEY] = pending->position.x;
+    you.props[DEATH_Y_KEY] = pending->position.y;
     return true;
 }
 
@@ -535,13 +569,17 @@ void start_death_replay()
     ASSERT(pending);
     const int rewind = pending->turns - selected.turn;
     const string name = pending->name;
+    const string death_level = pending->level.describe();
+    const coord_def death_position = pending->position;
     pending.reset();
     save_game_state();
-    _notice(make_stringf("Loaded %s at turn %d, %d turns before death.\n\n"
+    _notice(make_stringf("Loaded %s at turn %d, %d turns before death.\n"
+        "Death location: %s, x=%d, y=%d (0-based map coordinates).\n\n"
         "The complete checkpoint state is restored. Choose different actions and play forward. "
         "This is wizard practice: scores and ghost creation are disabled. "
         "You can only quit a Death Replay with Ctrl-Q.",
-        name.c_str(), you.num_turns, rewind));
+        name.c_str(), you.num_turns, rewind, death_level.c_str(),
+        death_position.x, death_position.y));
 }
 
 #else

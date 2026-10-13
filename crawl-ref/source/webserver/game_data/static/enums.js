@@ -314,6 +314,10 @@ define(function () {
     exports.MF_PLAYER = val++;
     exports.MF_DEEP_WATER = val++;
     exports.MF_PORTAL = val++;
+    exports.MF_TRANSPORTER = val++;
+    exports.MF_TRANSPORTER_LANDING = val++;
+    exports.MF_EXPLORE_HORIZON = val++;
+    exports.MF_DEATH_REPLAY = val++;
     exports.MF_MAX = val++;
 
     exports.MF_SKIP = val++;

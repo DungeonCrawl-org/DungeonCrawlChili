@@ -17,6 +17,7 @@
 #include "colour.h"
 #include "coord.h"
 #include "coordit.h"
+#include "death-replay.h"
 #include "dgn-overview.h"
 #include "tile-env.h"
 #include "god-conduct.h"
@@ -34,6 +35,7 @@
  #include "tilepick.h"
  #include "tilepick-p.h"
  #include "tileview.h"
+ #include "rltiles/tiledef-feat.h"
 #endif
 #include "tiles-build-specific.h"
 #include "traps.h"
@@ -686,6 +688,11 @@ void viewwindow(bool show_updates, bool tiles_only, animation *a, view_renderer 
             tile_draw_map_cells();
 #endif
             view_clear_overlays();
+#ifdef USE_TILE
+            coord_def replay_death_position;
+            if (death_replay_marker_position(replay_death_position))
+                view_add_tile_overlay(replay_death_position, TILE_DNGN_GRAVESTONE);
+#endif
         }
 
         if (show_updates)

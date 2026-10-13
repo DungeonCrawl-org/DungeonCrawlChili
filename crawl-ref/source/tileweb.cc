@@ -20,6 +20,7 @@
 #include "branch.h"
 #include "command.h"
 #include "coord.h"
+#include "death-replay.h"
 #include "database.h"
 #include "describe.h"
 #include "directn.h"
@@ -1666,7 +1667,7 @@ void TilesFramework::_send_cell(const coord_def &gc,
         json_write_null("mon");
 
     map_feature mf = get_cell_map_feature(gc);
-    if (get_cell_map_feature(current_mc) != mf)
+    if (get_cell_map_feature(current_mc) != mf || is_death_replay())
         json_write_int("mf", mf);
 
     // Glyph and colour
