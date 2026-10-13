@@ -7,6 +7,7 @@
 #include "death-recap.h"
 #include "death-replay.h"
 #include "coaching.h"
+#include "version.h"
 #ifdef USE_TILE
 #include "outer-menu.h"
 #endif
@@ -426,7 +427,10 @@ NORETURN void end_game(scorefile_entry &se)
 #endif
 
     bool done = false;
-#ifdef USE_TILE
+#if defined(USE_TILE_WEB) || (defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY))
+    bool replay_available = false;
+#endif
+#if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
     const string replay_name = strip_filename_unsafe_chars(fname);
     const string replay_morgue = catpath(morgue_directory(), replay_name);
     string replay_morgue_dir = morgue_directory();
@@ -436,7 +440,7 @@ NORETURN void end_game(scorefile_entry &se)
     const string replay_archive = catpath(
         catpath(get_parent_directory(replay_morgue_dir), "death-replay"),
         replay_name);
-    const bool replay_available = !non_death && !is_death_replay()
+    replay_available = !non_death && !is_death_replay()
         && (file_exists(replay_morgue + ".replay-0.cs")
             || file_exists(replay_morgue + ".replay-1.cs")
             || file_exists(replay_archive + ".replay-0.cs")
@@ -468,7 +472,7 @@ NORETURN void end_game(scorefile_entry &se)
     auto popup = make_shared<ui::Popup>(std::move(vbox));
 #ifdef USE_TILE
     popup->on_hotkey_event([&](const KeyEvent &event) {
-#ifdef USE_TILE
+#if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
         if (replay_available && (event.key() == 'r' || event.key() == 'R'))
         {
             request_replay();

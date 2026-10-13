@@ -12,6 +12,7 @@
 #include "player.h"
 #include "store.h"
 #include "stringutil.h"
+#include "version.h"
 
 static const char *const REPLAY_KEY = "death_replay_source";
 static const char *const LAST_KEY = "death_replay_last_checkpoint";
@@ -113,7 +114,7 @@ bool read_replay_checkpoint(const string &path, replay_checkpoint &checkpoint)
     }
 }
 
-#ifdef USE_TILE
+#if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
 #include "chardump.h"
 #include "format.h"
 #include "hiscores.h"
