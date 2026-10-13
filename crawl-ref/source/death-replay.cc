@@ -155,7 +155,7 @@ bool read_replay_checkpoint(const string &path, replay_checkpoint &checkpoint)
 static std::unique_ptr<death_replay_data> pending;
 static replay_checkpoint selected;
 static string queued_morgue;
-static const size_t MAX_ARCHIVED_DEATHS = 1000;
+static const size_t MAX_ARCHIVED_DEATHS = 100;
 
 static string _parent_directory(string path)
 {
@@ -581,6 +581,7 @@ void start_death_replay()
 #endif
     _notice(make_stringf("Loaded %s at turn %d, %d turns before death.\n"
         "Death location: %s, x=%d, y=%d (0-based map coordinates).\n\n"
+        "The death occurred at the location of the red dot on the minimap.\n\n"
         "The complete checkpoint state is restored. Choose different actions and play forward. "
         "This is wizard practice: scores and ghost creation are disabled. "
         "You can only quit a Death Replay with Ctrl-Q.",
