@@ -160,7 +160,7 @@ function ($, map_knowledge, dungeon_renderer, view_data,
             options.get("tile_transporter_col"),    // MF_TRANSPORTER
             options.get("tile_transporter_landing_col"), // MF_TRANSPORTER_LANDING
             options.get("tile_explore_horizon_col"), // MF_EXPLORE_HORIZON
-            "red"                                    // MF_DEATH_REPLAY
+            {r: 255, g: 0, b: 0, a: 255}             // MF_DEATH_REPLAY
         ].map(vcolour_to_css_colour);
     }
 
