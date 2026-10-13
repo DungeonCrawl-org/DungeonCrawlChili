@@ -2391,6 +2391,7 @@ void TilesFramework::update_minimap(const coord_def& gc)
         return;
 
     mark_for_redraw(gc);
+    m_need_redraw = true;
 }
 
 void TilesFramework::clear_minimap()
