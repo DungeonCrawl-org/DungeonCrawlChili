@@ -29,6 +29,7 @@ enum map_feature
     MF_TRANSPORTER,
     MF_TRANSPORTER_LANDING,
     MF_EXPLORE_HORIZON,
+    MF_DEATH_REPLAY,
     MF_MAX,
 
     MF_SKIP,

@@ -62,6 +62,7 @@ void MapRegion::init_colours()
     m_colours[MF_TRANSPORTER]   = Options.tile_transporter_col;
     m_colours[MF_TRANSPORTER_LANDING] = Options.tile_transporter_landing_col;
     m_colours[MF_EXPLORE_HORIZON] = Options.tile_explore_horizon_col;
+    m_colours[MF_DEATH_REPLAY] = VColour(255, 0, 0);
 }
 
 void MapRegion::pack_buffers()

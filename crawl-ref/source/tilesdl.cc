@@ -9,6 +9,7 @@
 #include "cio.h"
 #include "command.h"
 #include "coord.h"
+#include "death-replay.h"
 #include "env.h"
 #include "files.h"
 #include "glwrapper.h"
@@ -1386,7 +1387,10 @@ void TilesFramework::update_minimap(const coord_def& gc)
 
     map_feature mf;
 
-    if (!crawl_state.game_is_arena() && gc == you.pos() && you.on_current_level)
+    coord_def death_position;
+    if (death_replay_marker_position(death_position) && gc == death_position)
+        mf = MF_DEATH_REPLAY;
+    else if (!crawl_state.game_is_arena() && gc == you.pos() && you.on_current_level)
         mf = MF_PLAYER;
     else
         mf = get_cell_map_feature(gc);

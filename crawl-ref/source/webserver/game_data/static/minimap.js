@@ -159,14 +159,17 @@ function ($, map_knowledge, dungeon_renderer, view_data,
             options.get("tile_portal_col"),         // MF_PORTAL
             options.get("tile_transporter_col"),    // MF_TRANSPORTER
             options.get("tile_transporter_landing_col"), // MF_TRANSPORTER_LANDING
-            options.get("tile_explore_horizon_col") // MF_EXPLORE_HORIZON
+            options.get("tile_explore_horizon_col"), // MF_EXPLORE_HORIZON
+            "red"                                    // MF_DEATH_REPLAY
         ].map(vcolour_to_css_colour);
     }
 
     function update(x, y, cell)
     {
         cell = cell || map_knowledge.get(x, y);
-        if (x == player.pos.x && y == player.pos.y)
+        if (cell.mf == enums.MF_DEATH_REPLAY)
+            set(x, y, minimap_colours[enums.MF_DEATH_REPLAY]);
+        else if (x == player.pos.x && y == player.pos.y)
             set(x, y, minimap_colours[enums.MF_PLAYER]);
         else
             set(x, y, minimap_colours[cell.mf || enums.MF_UNSEEN]);

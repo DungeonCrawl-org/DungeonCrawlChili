@@ -6,6 +6,7 @@
 #include "coordit.h"
 #include "directn.h"
 #include "dgn-overview.h"
+#include "death-replay.h"
 #include "env.h"
 #include "level-state-type.h"
 #include "losglobal.h"
@@ -257,6 +258,10 @@ bool is_explore_horizon(const coord_def& c)
  */
 map_feature get_cell_map_feature(const coord_def& gc)
 {
+    coord_def death_position;
+    if (death_replay_marker_position(death_position) && gc == death_position)
+        return MF_DEATH_REPLAY;
+
     if (is_explore_horizon(gc))
         return MF_EXPLORE_HORIZON;
 
