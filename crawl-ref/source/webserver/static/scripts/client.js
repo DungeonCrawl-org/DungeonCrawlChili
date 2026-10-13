@@ -1545,6 +1545,8 @@ function (exports, $, key_conversion, chat, comm) {
             "location", "detail"];
         content.append($("<p>").text(
             "Left-click a row to load its checkpoint; right-click to open its morgue."));
+        content.append($("<p>").text(
+            "To opt out of Death Replay, add opt-out_death-replay = yes to your RC file."));
         var head = $("<thead>").appendTo(table);
         var heading_row = $("<tr>").appendTo(head);
         headings.forEach(function (label, index) {
