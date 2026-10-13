@@ -7,6 +7,7 @@
 #include "death-recap.h"
 #include "death-replay.h"
 #include "coaching.h"
+#include "version.h"
 #ifdef USE_TILE
 #include "outer-menu.h"
 #endif
@@ -426,7 +427,7 @@ NORETURN void end_game(scorefile_entry &se)
 #endif
 
     bool done = false;
-#ifdef USE_TILE_LOCAL
+#if defined(USE_TILE_LOCAL) && defined(CRAWL_HAS_DEATH_REPLAY)
     const bool replay_available = !non_death && !is_death_replay();
     auto request_replay = [&]() {
         const string path = catpath(morgue_directory(),
@@ -457,7 +458,7 @@ NORETURN void end_game(scorefile_entry &se)
     auto popup = make_shared<ui::Popup>(std::move(vbox));
 #ifdef USE_TILE
     popup->on_hotkey_event([&](const KeyEvent &event) {
-#ifdef USE_TILE_LOCAL
+#if defined(USE_TILE_LOCAL) && defined(CRAWL_HAS_DEATH_REPLAY)
         if (replay_available && (event.key() == 'r' || event.key() == 'R'))
         {
             request_replay();

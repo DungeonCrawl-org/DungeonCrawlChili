@@ -10,6 +10,8 @@
 // attention, as well as the main menu, etc)
 #define CRAWL "Dungeon Crawl Chili"
 #define CRAWL_SHORT "Chili"
+// Chili-specific replay and configuration features.
+#define CRAWL_HAS_DEATH_REPLAY 1
 // shown in crashes:
 #define CRAWL_BUG_REPORT "https://github.com/DungeonCrawl-org/DungeonCrawlChili/issues"
 // reminder, modifications of the following should obey the licensing, you

@@ -12,6 +12,7 @@
 #include "player.h"
 #include "store.h"
 #include "stringutil.h"
+#include "version.h"
 
 static const char *const REPLAY_KEY = "death_replay_source";
 static const char *const LAST_KEY = "death_replay_last_checkpoint";
@@ -113,7 +114,7 @@ bool read_replay_checkpoint(const string &path, replay_checkpoint &checkpoint)
     }
 }
 
-#ifdef USE_TILE_LOCAL
+#if defined(USE_TILE_LOCAL) && defined(CRAWL_HAS_DEATH_REPLAY)
 #include "chardump.h"
 #include "format.h"
 #include "hiscores.h"
@@ -151,7 +152,8 @@ static string _checkpoint_path(int slot)
 void checkpoint_death_replay()
 {
     if (!crawl_state.game_started || crawl_state.generating_level || is_death_replay()
-        || Options.no_save || !you.save || you.hp <= 0 || !you.on_current_level)
+        || Options.no_save || Options.opt_out_death_replay || !you.save
+        || you.hp <= 0 || !you.on_current_level)
     {
         return;
     }
@@ -200,6 +202,12 @@ void archive_death_replay(const scorefile_entry &score)
 {
     if (is_death_replay() || Options.no_save)
         return;
+    if (Options.opt_out_death_replay)
+    {
+        for (int slot = 0; slot < 2; ++slot)
+            std::remove(_checkpoint_path(slot).c_str());
+        return;
+    }
     string directory = morgue_directory();
     if (!check_mkdir("morgue", &directory, true)) return;
     const string base = catpath(directory,
