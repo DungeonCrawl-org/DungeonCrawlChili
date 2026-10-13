@@ -5,7 +5,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from webtiles.death_replay import list_replays, morgue_directory
+from webtiles.death_replay import (list_replays, morgue_directory,
+                                   record_replay)
 
 
 class DeathReplayListTests(unittest.TestCase):
@@ -43,6 +44,25 @@ class DeathReplayListTests(unittest.TestCase):
                         "cwd": "/crawl"}[key]
         self.assertEqual(morgue_directory(Game(), "Player"),
                          os.path.join("/crawl", "rcs", "Player"))
+
+    def test_replay_count_is_persisted_for_the_death(self):
+        with tempfile.TemporaryDirectory() as folder:
+            player_dir = Path(folder, "Player")
+            archive_dir = Path(folder, "death-replay")
+            player_dir.mkdir()
+            archive_dir.mkdir()
+            filename = "morgue-Player-20261013-120000.txt"
+            Path(player_dir, filename).write_text(
+                "399 Player the Fighter (level 9, -1/50 HPs)\n"
+                "Began as a Kobold Artificer on Oct 12, 2026.\n")
+            Path(archive_dir, filename[:-4] + ".replay-0.cs").touch()
+
+            entries = list_replays(folder)
+            self.assertEqual(entries[0]["replayed"], 0)
+            self.assertTrue(record_replay(folder, "Player", filename, entries))
+            self.assertTrue(record_replay(folder, "Player", filename, entries))
+            self.assertEqual(list_replays(folder)[0]["replayed"], 2)
+            self.assertFalse(record_replay(folder, "Player", "../invalid.txt", entries))
 
 
 if __name__ == "__main__":

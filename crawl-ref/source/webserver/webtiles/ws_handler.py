@@ -763,6 +763,8 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
                           entries=entries)
 
     def start_crawl(self, game_id, death_replay=None, death_replay_player=None):
+        replay_root = None
+        replay_entries = None
         if config.get('dgl_mode') and game_id not in config.games:
             self.go_lobby()
             return
@@ -804,8 +806,10 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
                 import os
                 from webtiles.death_replay import list_replays, morgue_directory
                 root = morgue_directory(config.games[game_id], "")
+                replay_root = root
+                replay_entries = list_replays(root)
                 allowed = {(entry["player"], entry["file"])
-                           for entry in list_replays(root)}
+                           for entry in replay_entries}
                 if (not death_replay_player
                         or (death_replay_player, death_replay) not in allowed):
                     self.process = None
@@ -834,6 +838,15 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
             if self.process is None: # Can happen if the process creation fails
                 # lobby should be handled in exit callback
                 return
+
+            if death_replay is not None and replay_root and replay_entries is not None:
+                try:
+                    from webtiles.death_replay import record_replay
+                    record_replay(replay_root, death_replay_player,
+                                  death_replay, replay_entries)
+                except Exception:
+                    self.logger.warning("Could not record Death Replay play count.",
+                                        exc_info=True)
 
             self.send_message("game_started")
             self.restore_blocklist()
