@@ -12,6 +12,7 @@
 #include "player.h"
 #include "store.h"
 #include "stringutil.h"
+#include "tiles-build-specific.h"
 #include "version.h"
 
 static const char *const REPLAY_KEY = "death_replay_source";
@@ -573,6 +574,11 @@ void start_death_replay()
     const coord_def death_position = pending->position;
     pending.reset();
     save_game_state();
+#ifdef USE_TILE
+    coord_def marker_position;
+    if (death_replay_marker_position(marker_position))
+        tiles.update_minimap(marker_position);
+#endif
     _notice(make_stringf("Loaded %s at turn %d, %d turns before death.\n"
         "Death location: %s, x=%d, y=%d (0-based map coordinates).\n\n"
         "The complete checkpoint state is restored. Choose different actions and play forward. "
