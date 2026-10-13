@@ -756,6 +756,7 @@ class CrawlProcessHandler(CrawlProcessHandlerBase):
         self.exit_reason = None
         self.exit_message = None
         self.exit_dump_url = None
+        self.death_replay_morgue = None
 
         self._stale_pid = None
         self._stale_lockfile = None
@@ -927,6 +928,8 @@ class CrawlProcessHandler(CrawlProcessHandlerBase):
 
         call = self._base_call() + ["-webtiles-socket", self.socketpath,
                                     "-await-connection"]
+        if self.death_replay_morgue:
+            call += ["-death-replay", self.death_replay_morgue]
 
         ttyrec_path = self.config_path("ttyrec_path")
         if ttyrec_path and config.get('enable_ttyrecs'):

@@ -1,3 +1,8 @@
+{% comment Death Replay at the end of its game row %}
+{% set death_replay_ids = [key for key in games if key == "dcchili" or "chili" in games[key]["name"].lower()] %}
+{% set death_replay_game_id = death_replay_ids[0] if death_replay_ids else None %}
+{% set death_replay_group = [key for key in games if death_replay_game_id and games[key]["rcfile_path"] == games[death_replay_game_id]["rcfile_path"]] %}
+{% set death_replay_last_id = death_replay_group[-1] if death_replay_group else None %}
 Play now:
 {% try %}
     {% set rcs = set() %}
@@ -16,6 +21,7 @@ Play now:
             <a href="javascript:"
                class="edit_rc_link"
                data-game_id="{{ id }}">(edit rc)</a>
+
         {% else %}
             {% if "separator" in games[id] %}
               {% raw games[id]["separator"] %}
@@ -25,7 +31,11 @@ Play now:
             {% if save_info[id] %}
                 <span>{% if not disabled(save_info[id]) %}<a href="#play-{{ id }}">{% end %}{{ save_info[id] }}{% if not disabled(save_info[id]) %}</a>{% end %}</span>
             {% end %}
+
         {% end %}
+{% if id == death_replay_last_id %}
+ | <a href="javascript:" class="death_replay_link" data-game_id="{{ death_replay_game_id }}">Death Replay - NEW!</a>
+{% end %}
         </span>
     {% end %}
 {% except %}
@@ -41,11 +51,16 @@ Play now:
     <a href="javascript:"
        class="edit_rc_link"
        data-game_id="{{ id }}">(edit rc)</a>
+
     {% else %}
     {% if "separator" in games[id] %}
     {% raw games[id]["separator"] %}
     {% else %} | {% end %}
     <a href="#play-{{ id }}">{{ games[id]["name"] }}</a>
+
     {% end %}
+{% if id == death_replay_last_id %}
+ | <a href="javascript:" class="death_replay_link" data-game_id="{{ death_replay_game_id }}">Death Replay - NEW!</a>
+{% end %}
     {% end %}
 {% end %}

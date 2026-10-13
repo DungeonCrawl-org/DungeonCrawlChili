@@ -530,6 +530,9 @@ static void _show_commandline_options_help()
     puts("Command line options:");
     puts("  -help                 prints this list of options");
     puts("  -name <string>        character name");
+#ifdef USE_TILE_WEB
+    puts("  -death-replay <file>  replay an archived death belonging to -name");
+#endif
     puts("  -species <arg>        preselect character species (by letter, abbreviation, or name)");
     puts("  -background <arg>     preselect character background (by letter, abbreviation, or name)");
     puts("  -dir <path>           crawl directory");
@@ -2480,6 +2483,11 @@ void process_command(command_type cmd, command_type prev_cmd)
 
     case CMD_SAVE_GAME:
     {
+        if (is_death_replay())
+        {
+            mpr("You can only quit a Death Replay with Ctrl-Q.");
+            break;
+        }
         const char * const prompt
             = (crawl_should_restart(game_exit::save))
               ? "Save game and return to main menu?"
@@ -2494,6 +2502,11 @@ void process_command(command_type cmd, command_type prev_cmd)
     }
 
     case CMD_SAVE_GAME_NOW:
+        if (is_death_replay())
+        {
+            mpr("You can only quit a Death Replay with Ctrl-Q.");
+            break;
+        }
         mpr("Saving game... please wait.");
         save_game(true);
         break;

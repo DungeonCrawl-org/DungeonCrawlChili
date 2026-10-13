@@ -30,6 +30,7 @@ function (exports, $, key_conversion, chat, comm) {
     var game_version = null;
     var loaded_modules = null;
     var text_decoder = null;
+    var death_replay_timeout = null;
     if ("TextDecoder" in window)
         text_decoder = new TextDecoder('utf-8');
 
@@ -574,6 +575,8 @@ function (exports, $, key_conversion, chat, comm) {
         $("#logout_link").hide();
         $("#account_restricted").hide();
         $("#play_now").html("");
+        clearTimeout(death_replay_timeout);
+        $("#death_replays").empty().hide();
 
         $("#admin_panel_button").hide();
         $("#admin_panel").hide();
@@ -1406,6 +1409,8 @@ function (exports, $, key_conversion, chat, comm) {
         current_hash = location.hash;
 
         var watch = location.hash.match(/^#watch-(.+)/i);
+        var replay = location.hash.match(
+            /^#play-(.+)-replay\?player=([^&]*)&file=(.*)$/i);
         var play = location.hash.match(/^#play-(.+)/i);
         if (watch)
         {
@@ -1413,6 +1418,21 @@ function (exports, $, key_conversion, chat, comm) {
             send_message("watch", {
                 username: watch_user
             });
+        }
+        else if (replay)
+        {
+            try
+            {
+                send_message("play", {
+                    game_id: decodeURIComponent(replay[1]),
+                    death_replay: decodeURIComponent(replay[3]),
+                    death_replay_player: decodeURIComponent(replay[2])
+                });
+            }
+            catch (error)
+            {
+                send_message("go_lobby");
+            }
         }
         else if (play)
         {
@@ -1436,6 +1456,181 @@ function (exports, $, key_conversion, chat, comm) {
             var id = $(this).data("game_id").toString();
             edit_rc(id);
         });
+        $("#play_now .death_replay_link").click(function (ev) {
+            ev.preventDefault();
+            clearTimeout(death_replay_timeout);
+            var panel = $("#death_replays").attr("aria-busy", "true");
+            show_death_replays();
+            var content = panel.find(".death_replays_content").empty();
+            var status = $("<p>").attr("role", "status")
+                .text("Loading saved replay checkpoints…").appendTo(content);
+            death_replay_timeout = setTimeout(function () {
+                panel.attr("aria-busy", "false");
+                status.text("The replay list did not arrive. Click Death Replay to try again.");
+            }, 10000);
+            try
+            {
+                send_message("list_death_replays", {
+                    game_id: $(this).data("game_id").toString()
+                });
+            }
+            catch (error)
+            {
+                clearTimeout(death_replay_timeout);
+                panel.attr("aria-busy", "false");
+                status.text("Could not contact the server. Reconnect and try Death Replay again.");
+            }
+        });
+    }
+
+    function show_death_replays()
+    {
+        var panel = $("#death_replays");
+        if (!panel.find(".death_replays_dialog").length)
+        {
+            panel.empty().css({position: "fixed", inset: "0", zIndex: "10000",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                padding: "2vh 2vw", boxSizing: "border-box",
+                background: "rgba(0, 0, 0, 0.8)"});
+            var dialog = $("<div>").addClass("death_replays_dialog")
+                .attr({role: "dialog", "aria-modal": "true",
+                    "aria-labelledby": "death_replays_title", tabindex: "-1"})
+                .css({width: "min(1100px, 96vw)", maxHeight: "92vh", display: "flex",
+                    flexDirection: "column", overflow: "hidden", color: "#ddd",
+                    background: "#080808", border: "2px solid #94743b",
+                    boxSizing: "border-box", padding: "12px"});
+            var bar = $("<div>").css({display: "flex", alignItems: "center",
+                justifyContent: "space-between", gap: "1em"});
+            bar.append($("<h3>").attr("id", "death_replays_title")
+                .text("Death Replay — newest deaths first").css({margin: "0.2em 0 0.7em"}));
+            var close = $("<button>").attr({type: "button", "aria-label": "Close Death Replay"})
+                .text("Close").on("click", close_death_replays);
+            bar.append(close);
+            var content = $("<div>").addClass("death_replays_content")
+                .css({overflow: "auto", minHeight: "0", overscrollBehavior: "contain"});
+            dialog.append(bar, content);
+            panel.append(dialog).off("click.deathReplay").on("click.deathReplay", function (ev) {
+                if (ev.target === panel[0]) close_death_replays();
+            });
+            $(document).off("keydown.deathReplay").on("keydown.deathReplay", function (ev) {
+                if (ev.key === "Escape" && panel.is(":visible")) close_death_replays();
+            });
+        }
+        panel.show().attr("tabindex", "-1");
+        panel.find(".death_replays_dialog").trigger("focus");
+        panel.find(".death_replays_content").scrollTop(0);
+        panel.find(".death_replays_dialog button").first().trigger("focus");
+    }
+
+    function close_death_replays()
+    {
+        clearTimeout(death_replay_timeout);
+        $("#death_replays").hide().empty().off("click.deathReplay");
+        $(document).off("keydown.deathReplay");
+    }
+
+    function death_replays(data)
+    {
+        clearTimeout(death_replay_timeout);
+        var panel = $("#death_replays").attr("aria-busy", "false");
+        var content = panel.find(".death_replays_content").empty();
+        if (!data.entries.length)
+            content.append($("<p>").text("No deaths with saved replay checkpoints yet."));
+        var table = $("<table>");
+        table.css({width: "100%", borderCollapse: "collapse"});
+        var headings = ["Date", "Player", "Species", "Background", "Score", "XL",
+            "Death location", "Death"];
+        var sort = {key: "date", direction: -1};
+        var sort_keys = ["date", "player", "species", "background", "score", "level",
+            "location", "detail"];
+        content.append($("<p>").text(
+            "Left-click a row to load its checkpoint; right-click to open its morgue."));
+        var head = $("<thead>").appendTo(table);
+        var heading_row = $("<tr>").appendTo(head);
+        headings.forEach(function (label, index) {
+            var key = sort_keys[index];
+            var th = $("<th>").attr("scope", "col").css({position: "sticky", top: "0",
+                background: "#080808", textAlign: "left", padding: "4px"}).appendTo(heading_row);
+            var button = $("<button>").attr({type: "button", "data-sort-key": key})
+                .text(label).css({color: "inherit", font: "inherit", fontWeight: "bold",
+                    background: "transparent", border: "0", padding: "2px", cursor: "pointer"});
+            button.on("click", function () {
+                if (sort.key === key) sort.direction *= -1;
+                else { sort.key = key; sort.direction = key === "date" ? -1 : 1; }
+                render_rows();
+            });
+            th.append(button);
+        });
+        var body = $("<tbody>").appendTo(table);
+        var entries = data.entries.slice();
+        function render_rows()
+        {
+            entries.sort(function (a, b) {
+                var av = a[sort.key], bv = b[sort.key];
+                if (av == null || bv == null)
+                    return av == null ? (bv == null ? 0 : 1) : -1;
+                if (sort.key === "score" || sort.key === "level") {
+                    av = Number(av);
+                    bv = Number(bv);
+                } else {
+                    av = String(av == null ? "" : av).toLocaleLowerCase();
+                    bv = String(bv == null ? "" : bv).toLocaleLowerCase();
+                }
+                if (av < bv) return -1 * sort.direction;
+                if (av > bv) return 1 * sort.direction;
+                return 0;
+            });
+            heading_row.find("th").each(function (index) {
+                var key = sort_keys[index];
+                var active = key === sort.key;
+                $(this).attr("aria-sort", active ? (sort.direction > 0 ? "ascending" : "descending") : "none");
+                $(this).find("button").text(headings[index] + (active ? (sort.direction > 0 ? " ▲" : " ▼") : ""));
+            });
+            body.empty();
+            entries.forEach(function (entry) {
+                var row = $("<tr>").attr({role: "link", tabindex: "0",
+                    title: "Left-click to load the replay checkpoint; right-click to open the morgue"})
+                    .css("cursor", "pointer");
+                var date = entry.date.replace(/^(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})$/,
+                    "$1-$2-$3 $4:$5:$6");
+                row.append($("<td>").text(date));
+                row.append($("<td>").text(entry.player));
+                row.append($("<td>").text(entry.species || ""));
+                row.append($("<td>").text(entry.background || ""));
+                row.append($("<td>").text(entry.score == null ? "" : entry.score));
+                row.append($("<td>").text(entry.level == null ? "" : entry.level));
+                row.append($("<td>").text(entry.location || "Unknown"));
+                row.append($("<td>").text(entry.detail));
+                function open_replay()
+                {
+                    var replay_hash = "#play-" + encodeURIComponent(data.game_id)
+                        + "-replay?player=" + encodeURIComponent(entry.player)
+                        + "&file=" + encodeURIComponent(entry.file);
+                    current_hash = replay_hash;
+                    location.hash = replay_hash;
+                    close_death_replays();
+                    send_message("play", {
+                        game_id: data.game_id,
+                        death_replay: entry.file,
+                        death_replay_player: entry.player
+                    });
+                }
+                row.on("click", open_replay).on("keydown", function (ev) {
+                    if (ev.key === "Enter" || ev.key === " ") {
+                        ev.preventDefault();
+                        open_replay();
+                    }
+                }).on("contextmenu", function (ev) {
+                    if (!entry.morgue_url) return;
+                    ev.preventDefault();
+                    window.open(entry.morgue_url, "_blank", "noopener");
+                });
+                body.append(row);
+            });
+        }
+        render_rows();
+        content.append(table);
+        show_death_replays();
     }
 
     function set_html(data)
@@ -1571,6 +1766,7 @@ function (exports, $, key_conversion, chat, comm) {
         "multi": handle_multi_message,
 
         "set_game_links": set_game_links,
+        "death_replays": death_replays,
         "html": set_html,
         "show_dialog": handle_dialog,
         "hide_dialog": hide_dialog,

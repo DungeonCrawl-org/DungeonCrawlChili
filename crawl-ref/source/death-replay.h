@@ -31,6 +31,8 @@ bool death_replay_checkpoint_due(int turn, int last);
 void checkpoint_death_replay();
 void archive_death_replay(const scorefile_entry &score);
 bool prepare_death_replay(const std::string &morgue_path);
+void queue_death_replay(const std::string &morgue_file);
+bool start_queued_death_replay(const std::string &player_name);
 bool death_replay_pending();
 void configure_death_replay(newgame_def &game);
 bool restore_death_replay(const newgame_def &game);

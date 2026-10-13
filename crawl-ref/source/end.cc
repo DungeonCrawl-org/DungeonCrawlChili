@@ -7,6 +7,7 @@
 #include "death-recap.h"
 #include "death-replay.h"
 #include "coaching.h"
+#include "version.h"
 #ifdef USE_TILE
 #include "outer-menu.h"
 #endif
@@ -61,15 +62,15 @@ using namespace ui;
  */
 bool crawl_should_restart(game_exit exit)
 {
-#ifdef DGAMELAUNCH
-    UNUSED(exit);
-    return false;
-#else
-#ifdef USE_TILE_LOCAL
+#ifdef USE_TILE
     // An explicitly requested replay must survive normal restart preferences.
     if (death_replay_pending())
         return true;
 #endif
+#ifdef DGAMELAUNCH
+    UNUSED(exit);
+    return false;
+#else
 #ifdef USE_TILE_WEB
     if (is_tiles() && Options.name_bypasses_menu)
         return false;
@@ -426,12 +427,26 @@ NORETURN void end_game(scorefile_entry &se)
 #endif
 
     bool done = false;
-#ifdef USE_TILE_LOCAL
-    const bool replay_available = !non_death && !is_death_replay();
+#if defined(USE_TILE_WEB) || (defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY))
+    bool replay_available = false;
+#endif
+#if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
+    const string replay_name = strip_filename_unsafe_chars(fname);
+    const string replay_morgue = catpath(morgue_directory(), replay_name);
+    string replay_morgue_dir = morgue_directory();
+    while (replay_morgue_dir.size() > 1
+            && (replay_morgue_dir.back() == '/' || replay_morgue_dir.back() == '\\'))
+        replay_morgue_dir.pop_back();
+    const string replay_archive = catpath(
+        catpath(get_parent_directory(replay_morgue_dir), "death-replay"),
+        replay_name);
+    replay_available = !non_death && !is_death_replay()
+        && (file_exists(replay_morgue + ".replay-0.cs")
+            || file_exists(replay_morgue + ".replay-1.cs")
+            || file_exists(replay_archive + ".replay-0.cs")
+            || file_exists(replay_archive + ".replay-1.cs"));
     auto request_replay = [&]() {
-        const string path = catpath(morgue_directory(),
-            strip_filename_unsafe_chars(fname) + ".txt");
-        if (prepare_death_replay(path))
+        if (prepare_death_replay(catpath(morgue_directory(), replay_name) + ".txt"))
             done = true;
     };
     if (replay_available)
@@ -457,7 +472,7 @@ NORETURN void end_game(scorefile_entry &se)
     auto popup = make_shared<ui::Popup>(std::move(vbox));
 #ifdef USE_TILE
     popup->on_hotkey_event([&](const KeyEvent &event) {
-#ifdef USE_TILE_LOCAL
+#if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
         if (replay_available && (event.key() == 'r' || event.key() == 'R'))
         {
             request_replay();
@@ -491,6 +506,7 @@ NORETURN void end_game(scorefile_entry &se)
     tiles.json_write_int("tex", get_tile_texture(death_tile.tile));
     tiles.json_close_object();
     tiles.json_write_bool("postmortem_available", true);
+    tiles.json_write_bool("death_replay_available", replay_available);
     tiles.json_write_string("title", goodbye_title);
     tiles.json_write_string("body", goodbye_msg
             + hiscores_print_list(11, SCORE_TERSE, hiscore_index, start));
@@ -502,7 +518,8 @@ NORETURN void end_game(scorefile_entry &se)
     }
 
 #ifdef USE_TILE_WEB
-    tiles.send_exit_reason(reason, hiscore);
+    if (!death_replay_pending())
+        tiles.send_exit_reason(reason, hiscore);
 #endif
 
     game_ended(exit_reason);

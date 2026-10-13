@@ -12,11 +12,12 @@
 #include "player.h"
 #include "store.h"
 #include "stringutil.h"
+#include "version.h"
 
 static const char *const REPLAY_KEY = "death_replay_source";
 static const char *const LAST_KEY = "death_replay_last_checkpoint";
 static const char *const META_KEY = "death-replay";
-static const int CHECKPOINT_INTERVAL = 100;
+static const int CHECKPOINT_INTERVAL = 50;
 
 bool is_death_replay()
 {
@@ -113,7 +114,7 @@ bool read_replay_checkpoint(const string &path, replay_checkpoint &checkpoint)
     }
 }
 
-#ifdef USE_TILE_LOCAL
+#if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
 #include "chardump.h"
 #include "format.h"
 #include "hiscores.h"
@@ -122,10 +123,115 @@ bool read_replay_checkpoint(const string &path, replay_checkpoint &checkpoint)
 #include "outer-menu.h"
 #include "scroller.h"
 #include "state.h"
+#include "syscalls.h"
 #include "unwind.h"
 
 static std::unique_ptr<death_replay_data> pending;
 static replay_checkpoint selected;
+static string queued_morgue;
+static const size_t MAX_ARCHIVED_DEATHS = 1000;
+
+static string _parent_directory(string path)
+{
+    while (path.size() > 1 && (path.back() == '/' || path.back() == '\\'))
+        path.pop_back();
+    const size_t separator = path.find_last_of("/\\");
+    return separator == string::npos ? "" : path.substr(0, separator);
+}
+
+static bool _checkpoint_stem(const string &filename, string &stem)
+{
+    static const std::regex checkpoint_name(
+        "(morgue-.+-[0-9]{8}-[0-9]{6})\\.replay-[01]\\.cs");
+    std::smatch match;
+    if (!std::regex_match(filename, match, checkpoint_name))
+        return false;
+    stem = match[1];
+    return true;
+}
+
+static void _prune_replay_archive(const string &archive_dir)
+{
+    vector<string> deaths;
+    for (const string &filename : get_dir_files(archive_dir))
+    {
+        string stem;
+        if (_checkpoint_stem(filename, stem)
+            && std::find(deaths.begin(), deaths.end(), stem) == deaths.end())
+            deaths.push_back(stem);
+    }
+    // Player names precede timestamps in morgue filenames, so sort by the
+    // timestamp suffix to retain the newest deaths across the whole server.
+    sort(deaths.begin(), deaths.end(), [](const string &a, const string &b) {
+        const string date_a = a.substr(a.size() - 15);
+        const string date_b = b.substr(b.size() - 15);
+        return date_a == date_b ? a > b : date_a > date_b;
+    });
+    for (size_t i = MAX_ARCHIVED_DEATHS; i < deaths.size(); ++i)
+        for (int slot = 0; slot < 2; ++slot)
+        {
+            const string old_file = catpath(archive_dir,
+                deaths[i] + ".replay-" + std::to_string(slot) + ".cs");
+            std::remove(old_file.c_str());
+        }
+}
+
+void queue_death_replay(const string &morgue_file)
+{
+    queued_morgue = morgue_file;
+}
+
+bool start_queued_death_replay(const string &player_name)
+{
+    if (queued_morgue.empty())
+        return true;
+    const string file = queued_morgue;
+    queued_morgue.clear();
+    // Webtiles sends an absolute, server-validated path when the selected
+    // death belongs to another account. Keep the filename and containing
+    // player directory tied together before opening it.
+    if (!file.empty() && file[0] == '/')
+    {
+        const size_t slash = file.find_last_of('/');
+        const string directory = slash == string::npos ? "" : file.substr(0, slash);
+        string directory_player = directory.substr(directory.find_last_of('/') == string::npos
+            ? 0 : directory.find_last_of('/') + 1);
+        if (directory_player == "death-replay")
+        {
+            const string account_dir = directory.substr(0,
+                directory.find_last_of('/'));
+            directory_player = account_dir.substr(
+                account_dir.find_last_of('/') == string::npos
+                ? 0 : account_dir.find_last_of('/') + 1);
+        }
+        const string filename = slash == string::npos ? file : file.substr(slash + 1);
+        const string prefix = "morgue-";
+        const size_t date_start = filename.size() >= 20 ? filename.size() - 20 : 0;
+        if (filename.size() != date_start + 20 || date_start <= prefix.size()
+            || !starts_with(filename, prefix)
+            || filename.substr(date_start, 1) != "-"
+            || filename.substr(filename.size() - 4) != ".txt")
+            return false;
+        const string archive_player = filename.substr(prefix.size(),
+                                                       date_start - prefix.size());
+        const string date = filename.substr(date_start + 1, 15);
+        if (archive_player.empty() || archive_player != directory_player
+            || !std::all_of(date.begin(), date.end(), [](char c) {
+                return c == '-' || (c >= '0' && c <= '9');
+            }))
+            return false;
+        return prepare_death_replay(file);
+    }
+    const string prefix = "morgue-" + player_name + "-";
+    if (!starts_with(file, prefix) || file.size() != prefix.size() + 19
+        || file.substr(file.size() - 4) != ".txt"
+        || !std::all_of(file.begin() + prefix.size(), file.end() - 4,
+            [](char c) { return c == '-' || (c >= '0' && c <= '9'); }))
+    {
+        return false;
+    }
+    return prepare_death_replay(catpath(morgue_directory(), file));
+}
 
 static bool _copy_save(const string &source, const string &target)
 {
@@ -202,8 +308,33 @@ void archive_death_replay(const scorefile_entry &score)
         return;
     string directory = morgue_directory();
     if (!check_mkdir("morgue", &directory, true)) return;
-    const string base = catpath(directory,
-        strip_filename_unsafe_chars(morgue_name(score.get_name(), score.get_death_time())));
+    const string morgue_root = _parent_directory(directory);
+    string archive_dir = catpath(morgue_root, "death-replay");
+    if (!check_mkdir("Death Replay directory", &archive_dir, true)) return;
+
+    // Consolidate checkpoints written by earlier prototype versions into the
+    // shared archive before applying the server-wide retention limit.
+    for (const string &player_dir_name : get_dir_files(morgue_root))
+    {
+        const string player_dir = catpath(morgue_root, player_dir_name);
+        if (player_dir_name == "death-replay" || !dir_exists(player_dir))
+            continue;
+        for (const string &filename : get_dir_files(player_dir))
+        {
+            string stem;
+            if (!_checkpoint_stem(filename, stem))
+                continue;
+            const string source = catpath(player_dir, filename);
+            const string target = catpath(archive_dir, filename);
+            if (file_exists(target))
+                std::remove(source.c_str());
+            else
+                rename_u(source.c_str(), target.c_str());
+        }
+    }
+
+    const string base = strip_filename_unsafe_chars(
+        morgue_name(score.get_name(), score.get_death_time()));
     for (int slot = 0; slot < 2; ++slot)
     {
         const string source = _checkpoint_path(slot);
@@ -214,22 +345,28 @@ void archive_death_replay(const scorefile_entry &score)
         {
             continue;
         }
-        const string target = base + ".replay-" + std::to_string(slot) + ".cs";
+        const string target = catpath(archive_dir,
+            base + ".replay-" + std::to_string(slot) + ".cs");
         if (_copy_save(source, target))
             std::remove(source.c_str());
         else
             mprf(MSGCH_ERROR, "Could not preserve Death Replay checkpoint %d.", slot);
     }
+    _prune_replay_archive(archive_dir);
 }
 
 bool death_replay_pending() { return bool(pending); }
 
 static void _notice(const string &text)
 {
+#ifdef USE_TILE_LOCAL
     formatted_scroller screen;
     screen.set_title(formatted_string("Death Replay", WHITE));
     screen.add_raw_text(text);
     screen.show();
+#else
+    mpr(text);
+#endif
 }
 
 bool prepare_death_replay(const string &path)
@@ -251,11 +388,28 @@ bool prepare_death_replay(const string &path)
         return false;
     }
     vector<replay_checkpoint> checkpoints;
+    const size_t separator = path.find_last_of("/\\");
+    const string morgue_dir = separator == string::npos
+        ? "" : path.substr(0, separator);
+    const string archive_dir = catpath(_parent_directory(morgue_dir),
+                                       "death-replay");
     const string base = path.substr(0, path.size() - 4);
+    const size_t base_separator = base.find_last_of("/\\");
+    const string base_name = base.substr(base_separator == string::npos
+        ? 0 : base_separator + 1);
     for (int slot = 0; slot < 2; ++slot)
     {
         replay_checkpoint info;
-        if (read_replay_checkpoint(base + ".replay-" + std::to_string(slot) + ".cs", info)
+        string checkpoint_path = catpath(archive_dir,
+            base_name + ".replay-" + std::to_string(slot) + ".cs");
+        bool checkpoint_loaded = read_replay_checkpoint(checkpoint_path, info);
+        if (!checkpoint_loaded)
+        {
+            // Continue to recognize files archived by the previous prototype.
+            checkpoint_path = base + ".replay-" + std::to_string(slot) + ".cs";
+            checkpoint_loaded = read_replay_checkpoint(checkpoint_path, info);
+        }
+        if (checkpoint_loaded
             && info.name == data->name && info.seed == data->seed && info.turn <= data->turns)
         {
             checkpoints.push_back(info);
@@ -266,10 +420,15 @@ bool prepare_death_replay(const string &path)
     {
         _notice("No preserved checkpoints exist for this death.\n\n"
             "This prototype requires Final location in Death Recap and a recorded checkpoint. "
-            "New local Tiles games save a practice checkpoint at their first input and every 100 turns, retaining the last two. "
+            "New games save a practice checkpoint at their first input and every 50 turns, retaining the last two. "
             "A morgue alone cannot restore a playable game.");
         return false;
     }
+#ifdef USE_TILE_WEB
+    selected = checkpoints.front();
+    pending = std::move(data);
+    return true;
+#else
     using namespace ui;
     auto box = make_shared<Box>(Widget::VERT);
     auto description = make_shared<Text>(make_stringf(
@@ -308,6 +467,7 @@ bool prepare_death_replay(const string &path)
     selected = checkpoints[choice];
     pending = std::move(data);
     return true;
+#endif
 }
 
 void configure_death_replay(newgame_def &game)
@@ -316,7 +476,14 @@ void configure_death_replay(newgame_def &game)
     game = newgame_def();
     for (int suffix = 1; ; ++suffix)
     {
-        game.name = "DeathReplay" + std::to_string(suffix);
+        // Webtiles shares one save directory across accounts. The '+' cannot
+        // occur in an ordinary player name, so another account cannot load
+        // this practice save by choosing the same character name.
+#ifdef USE_TILE_WEB
+        game.name = selected.name + "+DeathReplay" + std::to_string(suffix);
+#else
+        game.name = selected.name + "-DeathReplay" + std::to_string(suffix);
+#endif
         if (!save_exists(get_save_filename(game.name))) break;
     }
     game.filename = get_save_filename(game.name);
@@ -366,7 +533,7 @@ void start_death_replay()
     _notice(make_stringf("Loaded %s at turn %d, %d turns before death.\n\n"
         "The complete checkpoint state is restored. Choose different actions and play forward. "
         "This is wizard practice: scores and ghost creation are disabled. "
-        "Saving creates a separate DeathReplay character; the checkpoint archive is unchanged.",
+        "You can only quit a Death Replay with Ctrl-Q.",
         name.c_str(), you.num_turns, rewind));
 }
 
@@ -378,4 +545,6 @@ bool death_replay_pending() { return false; }
 void configure_death_replay(newgame_def &) {}
 bool restore_death_replay(const newgame_def &) { return false; }
 void start_death_replay() {}
+void queue_death_replay(const string &) {}
+bool start_queued_death_replay(const string &) { return true; }
 #endif

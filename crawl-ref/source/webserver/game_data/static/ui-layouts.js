@@ -963,22 +963,34 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             scroller_handle_key(s, event);
         });
 
-        if (desc.postmortem_available && !client.is_watching()) {
-            var analysis = $("<button>").attr("type", "button").text("Post-mortem analysis [P]");
-            analysis.on("click", function (event) {
+        if (desc.death_replay_available && !client.is_watching()) {
+            var replay = $("<button>").attr("type", "button").text("Death Replay [R]");
+            replay.on("click", function (event) {
                 event.stopPropagation();
-                comm.send_message("key", { keycode: 112 });
+                comm.send_message("key", { keycode: 114 });
             });
-            $popup.append(analysis);
+            $popup.append(replay);
+        }
+
+        if ((desc.postmortem_available || desc.death_replay_available) && !client.is_watching()) {
+            if (desc.postmortem_available) {
+                var analysis = $("<button>").attr("type", "button").text("Post-mortem analysis [P]");
+                analysis.on("click", function (event) {
+                    event.stopPropagation();
+                    comm.send_message("key", { keycode: 112 });
+                });
+                $popup.append(analysis);
+            }
             // Keep native button activation and focus navigation in the browser.
             $popup.off("keydown keypress").on("keydown keypress", function (event) {
                 var key = event.key || String.fromCharCode(event.which);
                 if (!event.ctrlKey && !event.altKey && !event.metaKey
-                    && key.toLowerCase() === "p") {
+                    && ((key.toLowerCase() === "p" && desc.postmortem_available)
+                        || (key.toLowerCase() === "r" && desc.death_replay_available))) {
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     if (event.type === "keydown")
-                        comm.send_message("key", { keycode: 112 });
+                        comm.send_message("key", { keycode: key.toLowerCase().charCodeAt(0) });
                     return;
                 }
                 if ($(event.target).is("button") || event.key === "Tab") {
