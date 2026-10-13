@@ -1512,20 +1512,22 @@ function (exports, $, key_conversion, chat, comm) {
             panel.append(dialog).off("click.deathReplay").on("click.deathReplay", function (ev) {
                 if (ev.target === panel[0]) close_death_replays();
             });
-            $(document).off("keydown.deathReplay").on("keydown.deathReplay", function (ev) {
-                if (!panel.is(":visible")) return;
+            dialog.on("keydown.deathReplay", function (ev) {
                 if (ev.key === "Escape") {
+                    ev.preventDefault();
+                    ev.stopImmediatePropagation();
                     close_death_replays();
                     return;
                 }
 
-                var content = panel.find(".death_replays_content");
                 if (ev.key === "PageDown" || ev.key === "PageUp") {
                     ev.preventDefault();
+                    ev.stopImmediatePropagation();
                     content[0].scrollTop += (ev.key === "PageDown" ? 1 : -1)
                         * Math.max(1, content[0].clientHeight - 32);
                 } else if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
                     ev.preventDefault();
+                    ev.stopImmediatePropagation();
                     var rows = content.find(".death_replay_row");
                     if (!rows.length) return;
                     var index = rows.index(document.activeElement);
@@ -1541,16 +1543,18 @@ function (exports, $, key_conversion, chat, comm) {
             });
         }
         panel.show().attr("tabindex", "-1");
-        panel.find(".death_replays_dialog").trigger("focus");
         panel.find(".death_replays_content").scrollTop(0);
-        panel.find(".death_replays_dialog button").first().trigger("focus");
+        var first_row = panel.find(".death_replay_row").first();
+        if (first_row.length)
+            first_row.trigger("focus");
+        else
+            panel.find(".death_replays_dialog button").first().trigger("focus");
     }
 
     function close_death_replays()
     {
         clearTimeout(death_replay_timeout);
         $("#death_replays").hide().empty().off("click.deathReplay");
-        $(document).off("keydown.deathReplay");
     }
 
     function death_replays(data)
@@ -1563,14 +1567,17 @@ function (exports, $, key_conversion, chat, comm) {
         var table = $("<table>");
         table.css({width: "100%", borderCollapse: "collapse"});
         var headings = ["Date", "Player", "Species", "Background", "Score", "XL",
-            "Death location", "Death"];
+            "Death location", "Death", "Replayed"];
         var sort = {key: "date", direction: -1};
         var sort_keys = ["date", "player", "species", "background", "score", "level",
-            "location", "detail"];
+            "location", "detail", "replayed"];
         content.append($("<p>").text(
             "Left-click a row to load its checkpoint; right-click to open its morgue."));
-        content.append($("<p>").text(
-            "To opt out of Death Replay, add opt-out_death-replay = yes to your RC file."));
+        var opt_out = $("<p>").append(document.createTextNode(
+            "To opt out of Death Replay, add "));
+        opt_out.append($("<strong>").text("opt-out_death-replay = yes"));
+        opt_out.append(document.createTextNode(" to your RC file."));
+        content.append(opt_out);
         var head = $("<thead>").appendTo(table);
         var heading_row = $("<tr>").appendTo(head);
         headings.forEach(function (label, index) {
@@ -1595,7 +1602,8 @@ function (exports, $, key_conversion, chat, comm) {
                 var av = a[sort.key], bv = b[sort.key];
                 if (av == null || bv == null)
                     return av == null ? (bv == null ? 0 : 1) : -1;
-                if (sort.key === "score" || sort.key === "level") {
+                if (sort.key === "score" || sort.key === "level"
+                    || sort.key === "replayed") {
                     av = Number(av);
                     bv = Number(bv);
                 } else {
@@ -1627,6 +1635,7 @@ function (exports, $, key_conversion, chat, comm) {
                 row.append($("<td>").text(entry.level == null ? "" : entry.level));
                 row.append($("<td>").text(entry.location || "Unknown"));
                 row.append($("<td>").text(entry.detail));
+                row.append($("<td>").text(entry.replayed || 0));
                 function open_replay()
                 {
                     var replay_hash = "#play-" + encodeURIComponent(data.game_id)
