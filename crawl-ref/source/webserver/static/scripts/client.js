@@ -1495,7 +1495,7 @@ function (exports, $, key_conversion, chat, comm) {
             var dialog = $("<div>").addClass("death_replays_dialog")
                 .attr({role: "dialog", "aria-modal": "true",
                     "aria-labelledby": "death_replays_title", tabindex: "-1"})
-                .css({width: "min(1100px, 96vw)", maxHeight: "92vh", display: "flex",
+                .css({width: "min(1400px, 96vw)", maxHeight: "92vh", display: "flex",
                     flexDirection: "column", overflow: "hidden", color: "#ddd",
                     background: "#080808", border: "2px solid #94743b",
                     boxSizing: "border-box", padding: "12px"});
@@ -1565,7 +1565,7 @@ function (exports, $, key_conversion, chat, comm) {
         if (!data.entries.length)
             content.append($("<p>").text("No deaths with saved replay checkpoints yet."));
         var table = $("<table>");
-        table.css({width: "100%", borderCollapse: "collapse"});
+        table.css({width: "100%", borderCollapse: "collapse", whiteSpace: "nowrap"});
         var headings = ["Date", "Player", "Species", "Background", "Score", "XL",
             "Death location", "Death", "Replayed"];
         var sort = {key: "date", direction: -1};
