@@ -81,6 +81,24 @@ TEST_CASE("Death Replay checkpoints at 50-turn boundaries without duplicate writ
     CHECK_FALSE(death_replay_checkpoint_due(-1, -1));
 }
 
+TEST_CASE("Webtiles Death Replay selects the checkpoint closest to 40 turns before death",
+          "[death-replay]")
+{
+    vector<replay_checkpoint> checkpoints(2);
+    checkpoints[0].turn = 100;
+    checkpoints[1].turn = 150;
+
+    CHECK(select_death_replay_checkpoint(checkpoints, 190) == 1);
+    // The checkpoint 20 turns before death is eligible; the one 15 turns
+    // before death is not, even though it is closer to the death.
+    CHECK(select_death_replay_checkpoint(checkpoints, 170) == 1);
+    CHECK(select_death_replay_checkpoint(checkpoints, 165) == 0);
+    CHECK(select_death_replay_checkpoint(checkpoints, 160) == 0);
+
+    checkpoints[0].turn = 0;
+    CHECK(select_death_replay_checkpoint(checkpoints, 15) == -1);
+}
+
 TEST_CASE("Death Replay requires coordinates inside the Death Recap section", "[death-replay]")
 {
     string text = replay_morgue();

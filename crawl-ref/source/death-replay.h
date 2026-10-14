@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 #include "coord-def.h"
 #include "level-id.h"
 
@@ -27,6 +28,8 @@ struct replay_checkpoint
 
 bool parse_death_replay(const std::string &text, death_replay_data &data, std::string &error);
 bool read_replay_checkpoint(const std::string &path, replay_checkpoint &checkpoint);
+int select_death_replay_checkpoint(const std::vector<replay_checkpoint> &checkpoints,
+                                   int death_turn);
 bool death_replay_checkpoint_due(int turn, int last);
 void checkpoint_death_replay();
 void archive_death_replay(const scorefile_entry &score);
