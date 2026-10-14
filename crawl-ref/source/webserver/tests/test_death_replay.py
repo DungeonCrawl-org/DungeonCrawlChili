@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from webtiles.death_replay import (list_replays, morgue_directory,
-                                   record_replay)
+                                   record_recommendation, record_replay)
 
 
 class DeathReplayListTests(unittest.TestCase):
@@ -63,6 +63,26 @@ class DeathReplayListTests(unittest.TestCase):
             self.assertTrue(record_replay(folder, "Player", filename, entries))
             self.assertEqual(list_replays(folder)[0]["replayed"], 2)
             self.assertFalse(record_replay(folder, "Player", "../invalid.txt", entries))
+
+    def test_recommendation_count_is_separate_and_persisted(self):
+        with tempfile.TemporaryDirectory() as folder:
+            player_dir = Path(folder, "Player")
+            archive_dir = Path(folder, "death-replay")
+            player_dir.mkdir()
+            archive_dir.mkdir()
+            filename = "morgue-Player-20261013-120000.txt"
+            Path(player_dir, filename).write_text(
+                "399 Player the Fighter (level 9, -1/50 HPs)\n")
+            Path(archive_dir, filename[:-4] + ".replay-0.cs").touch()
+
+            entries = list_replays(folder)
+            self.assertEqual(entries[0]["recommended"], 0)
+            self.assertTrue(record_recommendation(folder, "Player", filename,
+                                                  entries))
+            self.assertEqual(list_replays(folder)[0]["recommended"], 1)
+            self.assertEqual(list_replays(folder)[0]["replayed"], 0)
+            self.assertFalse(record_recommendation(
+                folder, "Player", "../invalid.txt", entries))
 
 
 if __name__ == "__main__":
