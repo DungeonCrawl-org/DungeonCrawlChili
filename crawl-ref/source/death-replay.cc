@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <regex>
 #include <sstream>
@@ -138,6 +139,33 @@ bool read_replay_checkpoint(const string &path, replay_checkpoint &checkpoint)
     {
         return false;
     }
+}
+
+int select_death_replay_checkpoint(const vector<replay_checkpoint> &checkpoints,
+                                   int death_turn)
+{
+    constexpr int target_rewind = 40;
+    constexpr int minimum_rewind = 20;
+    int selected_index = -1;
+    int best_distance = std::numeric_limits<int>::max();
+    int best_rewind = -1;
+    for (size_t i = 0; i < checkpoints.size(); ++i)
+    {
+        const int rewind = death_turn - checkpoints[i].turn;
+        if (rewind < minimum_rewind)
+            continue;
+        const int distance = rewind > target_rewind
+            ? rewind - target_rewind : target_rewind - rewind;
+        // On an exact tie, prefer the earlier checkpoint for more practice.
+        if (distance < best_distance
+            || (distance == best_distance && rewind > best_rewind))
+        {
+            selected_index = static_cast<int>(i);
+            best_distance = distance;
+            best_rewind = rewind;
+        }
+    }
+    return selected_index;
 }
 
 #if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
@@ -463,7 +491,14 @@ bool prepare_death_replay(const string &path)
         return false;
     }
 #ifdef USE_TILE_WEB
-    selected = checkpoints.front();
+    const int checkpoint_index =
+        select_death_replay_checkpoint(checkpoints, data->turns);
+    if (checkpoint_index < 0)
+    {
+        _notice("No preserved checkpoint is at least 20 turns before death.");
+        return false;
+    }
+    selected = checkpoints[checkpoint_index];
     pending = std::move(data);
     return true;
 #else
