@@ -121,6 +121,19 @@ def _read_replay_counts(archive_dir):
     return {}
 
 
+def _read_recommendation_counts(archive_dir):
+    try:
+        with open(os.path.join(archive_dir, "recommendation-counts.json"),
+                  encoding="utf-8") as counts_file:
+            counts = json.load(counts_file)
+        if isinstance(counts, dict):
+            return {key: value for key, value in counts.items()
+                    if isinstance(key, str) and type(value) is int and value >= 0}
+    except (OSError, ValueError):
+        pass
+    return {}
+
+
 def record_replay(root, player, filename, entries=None):
     """Atomically increment the play count for a validated archived death."""
     root = os.path.normpath(root)
@@ -160,6 +173,43 @@ def record_replay(root, player, filename, entries=None):
         return True
 
 
+def record_recommendation(root, player, filename, entries=None):
+    """Atomically increment the recommendation count for a validated death."""
+    root = os.path.normpath(root)
+    entries = list_replays(root) if entries is None else entries
+    if not any(entry["player"] == player and entry["file"] == filename
+               for entry in entries):
+        return False
+
+    archive_dir = os.path.join(root, "death-replay")
+    os.makedirs(archive_dir, exist_ok=True)
+    key = player + "/" + filename
+    lock_path = os.path.join(archive_dir, "replay-counts.lock")
+    counts_path = os.path.join(archive_dir, "recommendation-counts.json")
+    with open(lock_path, "a", encoding="utf-8") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        counts = _read_recommendation_counts(archive_dir)
+        live_keys = {entry["player"] + "/" + entry["file"] for entry in entries}
+        counts = {old_key: value for old_key, value in counts.items()
+                  if old_key in live_keys}
+        counts[key] = counts.get(key, 0) + 1
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                    mode="w", encoding="utf-8", dir=archive_dir,
+                    prefix=".recommendation-counts-", delete=False) as temp_file:
+                temp_path = temp_file.name
+                json.dump(counts, temp_file, sort_keys=True)
+                temp_file.write("\n")
+                temp_file.flush()
+                os.fsync(temp_file.fileno())
+            os.replace(temp_path, counts_path)
+        finally:
+            if temp_path and os.path.exists(temp_path):
+                os.unlink(temp_path)
+        return True
+
+
 def list_replays(morgue_dir, username=None):
     """List checkpointed deaths for one player, or all player folders."""
     if not morgue_dir:
@@ -183,6 +233,9 @@ def list_replays(morgue_dir, username=None):
         result.extend(_list_player_replays(directory, player, archive_dir))
     result.sort(key=lambda entry: (entry["date"], entry["player"]), reverse=True)
     counts = _read_replay_counts(archive_dir)
+    recommendations = _read_recommendation_counts(archive_dir)
     for entry in result:
-        entry["replayed"] = counts.get(entry["player"] + "/" + entry["file"], 0)
+        key = entry["player"] + "/" + entry["file"]
+        entry["replayed"] = counts.get(key, 0)
+        entry["recommended"] = recommendations.get(key, 0)
     return result

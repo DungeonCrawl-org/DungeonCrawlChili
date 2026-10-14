@@ -293,6 +293,7 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
         self.lobby_timeout = None
         self.watched_game = None
         self.process = None
+        self.pending_death_replay_recommendation = None
         self.game_id = None
         self.received_pong = None
         self.save_info = dict()
@@ -328,6 +329,7 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
             "forget_login_cookie": self.forget_login_cookie,
             "play": self.start_crawl,
             "list_death_replays": self.list_death_replays,
+            "death_replay_recommendation": self.death_replay_recommendation,
             "pong": self.pong,
             "watch": self.watch,
             "chat_msg": self.post_chat_message,
@@ -763,6 +765,7 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
                           entries=entries)
 
     def start_crawl(self, game_id, death_replay=None, death_replay_player=None):
+        self.pending_death_replay_recommendation = None
         replay_root = None
         replay_entries = None
         if config.get('dgl_mode') and game_id not in config.games:
@@ -819,6 +822,9 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
                                              death_replay_player)
                 self.process.death_replay_morgue = os.path.join(
                     directory, death_replay)
+                self.process.death_replay_root = replay_root
+                self.process.death_replay_player = death_replay_player
+                self.process.death_replay_file = death_replay
         else:
             self.process = process_handler.DGLLessCrawlProcessHandler(self.logger)
 
@@ -872,6 +878,11 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
             reason = self.process.exit_reason
             message = self.process.exit_message
             dump_url = self.process.exit_dump_url
+            replay = None
+            if reason == "quit" and hasattr(self.process, "death_replay_file"):
+                replay = (self.game_id, self.process.death_replay_root,
+                          self.process.death_replay_player,
+                          self.process.death_replay_file)
         else:
             # XX under what circumstance is this reachable?
             reason = None
@@ -885,7 +896,9 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
                 # Go back to lobby
                 if reason:
                     self.send_message("game_ended", reason = reason,
-                                      message = message, dump = dump_url)
+                                      message = message, dump = dump_url,
+                                      recommend_death_replay=replay is not None)
+                self.pending_death_replay_recommendation = replay
 
                 self.invalidate_saveslot_cache(self.game_id)
 
@@ -901,6 +914,23 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
             update_global_status()
 
         self.try_cleanup()
+
+    def death_replay_recommendation(self, recommend=False):
+        pending = self.pending_death_replay_recommendation
+        self.pending_death_replay_recommendation = None
+        if not recommend or not pending:
+            return
+        game_id, root, player, filename = pending
+        if (not config.get('dgl_mode') or game_id not in config.games
+                or not self.username):
+            return
+        try:
+            from webtiles.death_replay import list_replays, record_recommendation
+            entries = list_replays(root)
+            record_recommendation(root, player, filename, entries)
+        except Exception:
+            self.logger.warning("Could not record Death Replay recommendation.",
+                                exc_info=True)
 
     def init_user(self, callback):
         # this would be more cleanly implemented with wait_for_exit, but I

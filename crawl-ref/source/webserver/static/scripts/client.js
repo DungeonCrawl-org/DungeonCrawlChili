@@ -1397,6 +1397,12 @@ function (exports, $, key_conversion, chat, comm) {
     {
         playing = false;
 
+        if (data.recommend_death_replay)
+            send_message("death_replay_recommendation", {
+                recommend: window.confirm(
+                    "Do you recommend to other players to play this Death Replay save?")
+            });
+
         exit_reason = data.reason;
         exit_message = data.message;
         exit_dump = data.dump;
@@ -1573,10 +1579,10 @@ function (exports, $, key_conversion, chat, comm) {
         var table = $("<table>");
         table.css({width: "100%", borderCollapse: "collapse", whiteSpace: "nowrap"});
         var headings = ["Date", "Player", "Species", "Background", "Score", "XL",
-            "Death location", "Death", "Replayed"];
+            "Death location", "Death", "Replayed", "Recommended"];
         var sort = {key: "date", direction: -1};
         var sort_keys = ["date", "player", "species", "background", "score", "level",
-            "location", "detail", "replayed"];
+            "location", "detail", "replayed", "recommended"];
         content.append($("<p>").text(
             "Left-click a row to load its checkpoint; right-click to open its morgue."));
         var opt_out = $("<p>").append(document.createTextNode(
@@ -1609,7 +1615,7 @@ function (exports, $, key_conversion, chat, comm) {
                 if (av == null || bv == null)
                     return av == null ? (bv == null ? 0 : 1) : -1;
                 if (sort.key === "score" || sort.key === "level"
-                    || sort.key === "replayed") {
+                    || sort.key === "replayed" || sort.key === "recommended") {
                     av = Number(av);
                     bv = Number(bv);
                 } else {
@@ -1642,6 +1648,7 @@ function (exports, $, key_conversion, chat, comm) {
                 row.append($("<td>").text(entry.location || "Unknown"));
                 row.append($("<td>").text(entry.detail));
                 row.append($("<td>").text(entry.replayed || 0));
+                row.append($("<td>").text(entry.recommended || 0));
                 function open_replay()
                 {
                     var replay_hash = "#play-" + encodeURIComponent(data.game_id)
