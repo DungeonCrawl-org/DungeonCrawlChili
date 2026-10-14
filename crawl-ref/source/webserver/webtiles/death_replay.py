@@ -128,7 +128,7 @@ def _read_recommendation_counts(archive_dir):
             counts = json.load(counts_file)
         if isinstance(counts, dict):
             return {key: value for key, value in counts.items()
-                    if isinstance(key, str) and type(value) is int and value >= 0}
+                    if isinstance(key, str) and type(value) is int}
     except (OSError, ValueError):
         pass
     return {}
@@ -173,9 +173,11 @@ def record_replay(root, player, filename, entries=None):
         return True
 
 
-def record_recommendation(root, player, filename, entries=None):
-    """Atomically increment the recommendation count for a validated death."""
+def record_recommendation(root, player, filename, entries=None, delta=1):
+    """Apply a Yes or No recommendation vote to a validated death."""
     root = os.path.normpath(root)
+    if delta not in (-1, 1):
+        return False
     entries = list_replays(root) if entries is None else entries
     if not any(entry["player"] == player and entry["file"] == filename
                for entry in entries):
@@ -192,7 +194,7 @@ def record_recommendation(root, player, filename, entries=None):
         live_keys = {entry["player"] + "/" + entry["file"] for entry in entries}
         counts = {old_key: value for old_key, value in counts.items()
                   if old_key in live_keys}
-        counts[key] = counts.get(key, 0) + 1
+        counts[key] = counts.get(key, 0) + delta
         temp_path = None
         try:
             with tempfile.NamedTemporaryFile(

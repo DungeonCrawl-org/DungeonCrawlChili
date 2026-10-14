@@ -41,4 +41,6 @@ void configure_death_replay(newgame_def &game);
 bool restore_death_replay(const newgame_def &game);
 void start_death_replay();
 bool is_death_replay();
+void set_death_replay_recommendation(bool recommend);
+int death_replay_recommendation_vote();
 bool death_replay_marker_position(coord_def &position);

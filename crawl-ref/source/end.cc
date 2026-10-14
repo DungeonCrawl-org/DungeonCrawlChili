@@ -519,8 +519,19 @@ NORETURN void end_game(scorefile_entry &se)
     }
 
 #ifdef USE_TILE_WEB
+    if (is_death_replay() && you.wizard && !non_death)
+        set_death_replay_recommendation(yesno(
+            "Do you recommend to other players to play this Death Replay save?",
+            true, 'n'));
+
     if (!death_replay_pending())
-        tiles.send_exit_reason(reason, hiscore);
+    {
+        const int recommendation = death_replay_recommendation_vote();
+        const string reported_reason = recommendation > 0
+            ? reason + "-recommended"
+            : recommendation < 0 ? reason + "-not-recommended" : reason;
+        tiles.send_exit_reason(reported_reason, hiscore);
+    }
 #endif
 
     game_ended(exit_reason);

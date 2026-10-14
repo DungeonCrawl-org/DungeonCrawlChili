@@ -24,10 +24,21 @@ static const char *const DEATH_DEPTH_KEY = "death_replay_death_depth";
 static const char *const DEATH_X_KEY = "death_replay_death_x";
 static const char *const DEATH_Y_KEY = "death_replay_death_y";
 static const int CHECKPOINT_INTERVAL = 50;
+static int recommendation_vote = 0;
 
 bool is_death_replay()
 {
     return you.props.exists(REPLAY_KEY);
+}
+
+void set_death_replay_recommendation(bool recommend)
+{
+    recommendation_vote = recommend ? 1 : -1;
+}
+
+int death_replay_recommendation_vote()
+{
+    return recommendation_vote;
 }
 
 bool death_replay_marker_position(coord_def &position)
@@ -603,6 +614,7 @@ bool restore_death_replay(const newgame_def &game)
 void start_death_replay()
 {
     ASSERT(pending);
+    recommendation_vote = 0;
     const int rewind = pending->turns - selected.turn;
     const string name = pending->name;
     const string death_level = pending->level.describe();
