@@ -2,7 +2,7 @@
 
 # Dungeon Crawl Chili
 
-Dungeon Crawl Chili is a Dungeon Crawl fork based on DCSS v0.34.
+Dungeon Crawl Chili is a Dungeon Crawl fork based on DCSS v0.35 Trunk that was launched in June 2026.
 It's a game of dungeon exploration, combat and magic, involving characters of diverse skills, worshipping deities of great power and caprice. To win, you'll need to be a master of tactics and strategy, and prevail against overwhelming odds.
 
 ## Contents
@@ -27,12 +27,13 @@ There is also an ingame list of frequently asked questions which you can access 
 
 #### Internet Play
 
-You can play Dungeon Crawl forks online, competing with other players or watching them. Click "Play Online Now!" on [the DC CHili homepage](https://www.dungeoncrawlchili.org/) to find your closest server. You can play in your browser.
+You can play Dungeon Crawl forks online, competing with other players or watching them. Click "Play Online Now!" on [the Dungeon Crawl Forks homepage](https://www.dungeoncrawlforks.org/) to find your closest server. You can play in your browser.
 
 #### Offline Play
 
 Tiles (GUI) versions of DC Chili are available to [download for Linux, Windows and OS X](https://www.dungeoncrawlchili.org/download.htm) on demand.
 It is recommended that you build/compile yourself.
+It is possible to compile in the traditional Console mode but that version isn't supported by the small DC Chili team. 
 
 ## Community
 
