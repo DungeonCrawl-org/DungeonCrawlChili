@@ -762,6 +762,7 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
                 morgue_url.rstrip("/") + "/" + entry["file"]
                 if morgue_url else "")
         self.send_message("death_replays", game_id=game_id,
+                          viewer=self.username,
                           entries=entries)
 
     def start_crawl(self, game_id, death_replay=None, death_replay_player=None):
