@@ -20,28 +20,28 @@ If you'd like to dive in immediately, we suggest one of:
 
 * Start a game and pick a tutorial (select tutorial in the game menu),
 * Read [quickstart.md](crawl-ref/docs/quickstart.md) (in the [docs/](crawl-ref/docs/) directory), or
-* For the studious, [read Crawl's full manual](crawl-ref/docs/crawl_manual.rst).
+* For the studious, [read Chili's full manual](crawl-ref/docs/crawl_manual.rst).
 
 There is also an ingame list of frequently asked questions which you can access by typing
 `?Q`.
 
 #### Internet Play
 
-You can play Dungeon Crawl forkes online, competing with other players or watching them. Click "Play Online Now!" on [the Crawl homepage](https://crawl.develz.org/) to find your closest server. You can play in your browser or over SSH.
+You can play Dungeon Crawl forks online, competing with other players or watching them. Click "Play Online Now!" on [the DC CHili homepage](https://www.dungeoncrawlchili.org/) to find your closest server. You can play in your browser.
 
 #### Offline Play
 
-Both classical ASCII and tiles (GUI) versions of Crawl are available to [download for Linux, Windows and OS X](https://crawl.develz.org/download.htm).
+Tiles (GUI) versions of DC Chili are available to [download for Linux, Windows and OS X](https://www.dungeoncrawlchili.org/download.htm) on demand.
+It is recommended that you build/compile yourself.
 
 ## Community
 
-* Our official homepage: [crawl.develz.org](https://crawl.develz.org/)
-  * Online webtiles play
+* Our official homepage: [dungeoncrawlchili.org](https://www.dungeoncrawlchili.org/)
+  * Online webtiles play (recommended)
   * Offline downloads
   * Our community forum: [tavern.dcss.io](https://tavern.dcss.io/)
-* [/r/roguelikes Discord](https://discord.gg/S5F2H32)
-* The [/r/dcss subreddit](https://www.reddit.com/r/dcss/)
-* IRC: #crawl on Libera (or #crawl-dev to chat development)
+* [/r/Dungeon Crawl discord](https://discord.gg/79uNk5HJeh)
+* The [/r/dungeoncrawl subreddit](https://www.reddit.com/r/dungeoncrawl/)
 
 ## How you can help
 
@@ -54,12 +54,12 @@ the [contributor's guide](crawl-ref/docs/develop/contribution-process.md).
 At any time, there will be bugs -- finding and reporting them is a great help.
 Many of the online servers host the regularly updated development version. Bugs
 should be reported to [our github issue
-tracker](https://github.com/crawl/crawl/issues). Thoughtful ideas on how to
+tracker](https://github.com/DungeonCrawl-org/DungeonCrawlChili/issues). Thoughtful ideas on how to
 improve interface or gameplay are welcome, but it's often best to
 [discuss](#community) changes before opening an issue or pull request.
 
 ### Map making
-Crawl creates levels by combining many hand-made (but often randomised) maps,
+Dungeon Crawl forks create levels by combining many hand-made (but often randomized) maps,
 known as *vaults*. Making them is fun and easy. It's best to start with simple
 entry vaults: see [simple.des](crawl-ref/source/dat/des/arrival/simple.des) for
 examples. You can also read [the level-design manual](crawl-ref/docs/develop/levels/introduction.txt) for more help.
