@@ -1646,7 +1646,8 @@ function (exports, $, key_conversion, chat, comm) {
                 row.append($("<td>").text(entry.score == null ? "" : entry.score));
                 row.append($("<td>").text(entry.level == null ? "" : entry.level));
                 row.append($("<td>").text(entry.location || "Unknown"));
-                row.append($("<td>").text(entry.detail));
+                row.append($("<td>").text(entry.detail).css({whiteSpace: "normal",
+                    overflowWrap: "anywhere", maxWidth: "420px"}));
                 row.append($("<td>").text(entry.replayed || 0));
                 row.append($("<td>").text(entry.recommended || 0));
                 function open_replay()
