@@ -326,10 +326,10 @@ NORETURN void end_game(scorefile_entry &se)
     delete_files();
 
     string fname = morgue_name(you.your_name, se.get_death_time());
-    if (!dump_char(fname, true, true, &se))
+    if (!is_death_replay() && !dump_char(fname, true, true, &se))
         mpr("Char dump unsuccessful! Sorry about that.");
 #ifdef USE_TILE_WEB
-    else
+    else if (!is_death_replay())
         tiles.send_dump_info("morgue", fname);
 #endif
 
@@ -423,7 +423,8 @@ NORETURN void end_game(scorefile_entry &se)
     string morgue_dir = make_stringf("\nYou can find your morgue file in the \n'%s'\n directory.",
 # endif
             morgue_directory().c_str());
-    vbox->add_child(make_shared<Text>(formatted_string::parse_string(morgue_dir)));
+    if (!is_death_replay())
+        vbox->add_child(make_shared<Text>(formatted_string::parse_string(morgue_dir)));
 #endif
 
     bool done = false;
