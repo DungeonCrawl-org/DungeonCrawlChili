@@ -70,6 +70,10 @@ for (const key of ['r', 'R']) {
 }
 replayButton.handlers.click({stopPropagation() {}});
 assert.equal(messages.at(-1).data.keycode, 114);
+const unavailablePopup = gameOver({title: 'Goodbye', body: 'Quit game',
+    postmortem_available: false, death_replay_available: false, tile: {}});
+assert.equal(unavailablePopup.nodes.length, 0,
+    'Quit games and Death Replay sessions have no post-mortem controls');
 watching = true;
 const spectator = gameOver({title: 'Goodbye', body: 'Final score',
     postmortem_available: true, death_replay_available: true, tile: {}});

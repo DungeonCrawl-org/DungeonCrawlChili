@@ -295,6 +295,8 @@ NORETURN void end_game(scorefile_entry &se)
     const bool non_death = death_type == KILLED_BY_QUITTING
                         || death_type == KILLED_BY_WINNING
                         || death_type == KILLED_BY_LEAVING;
+    const bool postmortem_available = !is_death_replay()
+                                   && death_type != KILLED_BY_QUITTING;
 
     int hiscore_index = -1;
     bool score_game = !is_death_replay();
@@ -462,13 +464,16 @@ NORETURN void end_game(scorefile_entry &se)
     }
 #endif
 #ifdef USE_TILE
-    auto analysis_button = make_shared<MenuButton>();
-    analysis_button->set_child(make_shared<Text>("Post-mortem analysis [P]"));
-    analysis_button->on_activate_event([&](const ActivateEvent&) {
-        show_postmortem_help(analysis_dump);
-        return true;
-    });
-    vbox->add_child(analysis_button);
+    if (postmortem_available)
+    {
+        auto analysis_button = make_shared<MenuButton>();
+        analysis_button->set_child(make_shared<Text>("Post-mortem analysis [P]"));
+        analysis_button->on_activate_event([&](const ActivateEvent&) {
+            show_postmortem_help(analysis_dump);
+            return true;
+        });
+        vbox->add_child(analysis_button);
+    }
 #endif
     auto popup = make_shared<ui::Popup>(std::move(vbox));
 #ifdef USE_TILE
@@ -480,7 +485,8 @@ NORETURN void end_game(scorefile_entry &se)
             return true;
         }
 #endif
-        if (event.key() == 'p' || event.key() == 'P')
+        if (postmortem_available
+            && (event.key() == 'p' || event.key() == 'P'))
         {
             show_postmortem_help(analysis_dump);
             return true;
@@ -506,7 +512,7 @@ NORETURN void end_game(scorefile_entry &se)
     tiles.json_write_int("t", death_tile.tile);
     tiles.json_write_int("tex", get_tile_texture(death_tile.tile));
     tiles.json_close_object();
-    tiles.json_write_bool("postmortem_available", true);
+    tiles.json_write_bool("postmortem_available", postmortem_available);
     tiles.json_write_bool("death_replay_available", replay_available);
     tiles.json_write_string("title", goodbye_title);
     tiles.json_write_string("body", goodbye_msg
