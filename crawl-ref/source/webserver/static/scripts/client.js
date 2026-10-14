@@ -1410,7 +1410,7 @@ function (exports, $, key_conversion, chat, comm) {
 
         var watch = location.hash.match(/^#watch-(.+)/i);
         var replay = location.hash.match(
-            /^#play-(.+)-replay\?player=([^&]*)&file=(.*)$/i);
+            /^#play-(.+)-replay\?player=([^&]*)&file=([^&]*)(?:&death_player=(.*))?$/i);
         var play = location.hash.match(/^#play-(.+)/i);
         if (watch)
         {
@@ -1423,10 +1423,16 @@ function (exports, $, key_conversion, chat, comm) {
         {
             try
             {
+                var replay_file = decodeURIComponent(replay[3]);
+                var morgue_name = replay_file.match(/^morgue-(.*)-\d{8}-\d{6}\.txt$/);
                 send_message("play", {
                     game_id: decodeURIComponent(replay[1]),
-                    death_replay: decodeURIComponent(replay[3]),
-                    death_replay_player: decodeURIComponent(replay[2])
+                    death_replay: replay_file,
+                    // Older or nonstandard replay URLs may not encode the owner
+                    // in the morgue filename, so retain the player= fallback.
+                    death_replay_player: morgue_name
+                        ? decodeURIComponent(morgue_name[1])
+                        : decodeURIComponent(replay[4] || replay[2])
                 });
             }
             catch (error)
@@ -1639,7 +1645,7 @@ function (exports, $, key_conversion, chat, comm) {
                 function open_replay()
                 {
                     var replay_hash = "#play-" + encodeURIComponent(data.game_id)
-                        + "-replay?player=" + encodeURIComponent(entry.player)
+                        + "-replay?player=" + encodeURIComponent(current_user || "")
                         + "&file=" + encodeURIComponent(entry.file);
                     current_hash = replay_hash;
                     location.hash = replay_hash;
