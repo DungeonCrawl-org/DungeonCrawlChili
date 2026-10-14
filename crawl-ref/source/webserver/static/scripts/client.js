@@ -1653,7 +1653,7 @@ function (exports, $, key_conversion, chat, comm) {
                 function open_replay()
                 {
                     var replay_hash = "#play-" + encodeURIComponent(data.game_id)
-                        + "-replay?player=" + encodeURIComponent(current_user || "")
+                        + "-replay?player=" + encodeURIComponent(data.viewer)
                         + "&file=" + encodeURIComponent(entry.file);
                     current_hash = replay_hash;
                     location.hash = replay_hash;
