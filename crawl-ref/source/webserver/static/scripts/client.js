@@ -1397,12 +1397,6 @@ function (exports, $, key_conversion, chat, comm) {
     {
         playing = false;
 
-        if (data.recommend_death_replay)
-            send_message("death_replay_recommendation", {
-                recommend: window.confirm(
-                    "Do you recommend to other players to play this Death Replay save?")
-            });
-
         exit_reason = data.reason;
         exit_message = data.message;
         exit_dump = data.dump;

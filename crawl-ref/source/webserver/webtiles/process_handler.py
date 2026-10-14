@@ -347,9 +347,14 @@ class CrawlProcessHandlerBase(object):
 
         # send game_ended message to watchers. The player is handled in cleanup
         # code in ws_handler.py.
+        reason = self.exit_reason
+        if isinstance(reason, str) and reason.endswith("-not-recommended"):
+            reason = reason[:-len("-not-recommended")]
+        elif isinstance(reason, str) and reason.endswith("-recommended"):
+            reason = reason[:-len("-recommended")]
         for watcher in list(self._receivers):
             if watcher.watched_game == self:
-                watcher.send_message("game_ended", reason = self.exit_reason,
+                watcher.send_message("game_ended", reason = reason,
                                      message = self.exit_message,
                                      dump = self.exit_dump_url)
                 # these are individually ok, but with a lot of spectators,

@@ -80,6 +80,15 @@ class DeathReplayListTests(unittest.TestCase):
             self.assertTrue(record_recommendation(folder, "Player", filename,
                                                   entries))
             self.assertEqual(list_replays(folder)[0]["recommended"], 1)
+            self.assertTrue(record_recommendation(folder, "Player", filename,
+                                                  entries, -1))
+            self.assertEqual(list_replays(folder)[0]["recommended"], 0)
+            self.assertTrue(record_recommendation(folder, "Player", filename,
+                                                  entries, -1))
+            self.assertEqual(list_replays(folder)[0]["recommended"], -1)
+            self.assertTrue(record_recommendation(folder, "Player", filename,
+                                                  entries, -1))
+            self.assertEqual(list_replays(folder)[0]["recommended"], -2)
             self.assertEqual(list_replays(folder)[0]["replayed"], 0)
             self.assertFalse(record_recommendation(
                 folder, "Player", "../invalid.txt", entries))
