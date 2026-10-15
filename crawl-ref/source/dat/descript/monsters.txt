@@ -387,12 +387,6 @@ Pooka
 A shape-shifting spirit from Irish folklore. Pooka shifts between a stout
 beast form and a fleeting spirit form as it fights.
 
-<brown>DC Chili change: Pooka is a new unique created for DC Chili and is not
-part of DCSS.</brown>
-
-<brown>DC Chili change: Pooka has a 50% chance to drop a talisman of
-Protean when killed.</brown>
-
 %%%%
 Jorgrun
 
