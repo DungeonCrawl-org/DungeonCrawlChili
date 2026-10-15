@@ -382,6 +382,18 @@ ruins to practice the dark arts.
 <brown>DC Chili change: Jessica is almost guaranteed to appear on D:2, a mostly
 forested, semi-open floor with dead trees and at least two altars.</brown>
 %%%%
+Pooka
+
+A shape-shifting spirit from Irish folklore. Pooka shifts between a stout
+beast form and a fleeting spirit form as it fights.
+
+<brown>DC Chili change: Pooka is a new unique created for DC Chili and is not
+part of DCSS.</brown>
+
+<brown>DC Chili change: Pooka has a 50% chance to drop a talisman of
+Protean when killed.</brown>
+
+%%%%
 Jorgrun
 
 A dwarven magician, particularly well-attuned to the dungeon around him. He

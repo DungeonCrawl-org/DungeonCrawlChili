@@ -171,6 +171,11 @@ WEIGHT: 5000
 veto {{ return you.uniques("Jessica") }}
 : place_unique(_G, "Jessica")
 
+NAME:   uniq_pooka
+DEPTH:  D:2
+WEIGHT: 5000
+: place_unique(_G, "Pooka")
+
 NAME:   uniq_jorgrun
 DEPTH:  D:12-, Orc, Elf, !Elf:$, Snake, !Snake:$, Shoals, !Shoals:$
 DEPTH:  Spider, !Spider:$, Swamp, !Swamp:$

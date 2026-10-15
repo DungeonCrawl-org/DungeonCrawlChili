@@ -1447,6 +1447,8 @@ weeping_skull MONS_WEEPING_SKULL
 laughing_skull MONS_LAUGHING_SKULL
 %rim 1
 %sdir mon/unique
+pooka_beast MONS_POOKA
+pooka_spirit
 murray MONS_MURRAY
 %rim 0
 nobody0 MONS_NAMELESS_REVENANT

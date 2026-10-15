@@ -6773,6 +6773,28 @@ Polyphemus triumphant
 @The_monster@ says, "You're nobody."
 ## END Polyphemus ##
 %%%%
+############ POOKA ### A shape-shifting spirit from Irish folklore
+Pooka
+
+@_Pooka_common_@
+
+w:2
+@_Pooka_rare_@
+%%%%
+_Pooka_common_
+
+@The_monster@ says @to_foe@, "A beast one moment, a spirit the next!"
+
+VISUAL:@The_monster@ shimmers and changes its shape.
+
+@The_monster@ says, "Try to keep up with me."
+%%%%
+_Pooka_rare_
+
+@The_monster@ says @to_foe@, "Which shape frightens you more?"
+
+@The_monster@ laughs, "You cannot pin down a Pooka!"
+%%%%
 ############ PRINCE RIBBIT ### Prince turned into frog
 Prince Ribbit
 

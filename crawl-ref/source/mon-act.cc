@@ -74,6 +74,9 @@
 #include "traps.h"
 #include "viewchar.h"
 #include "view.h"
+#ifdef USE_TILE
+#include "rltiles/tiledef-player.h"
+#endif
 
 static bool _handle_pickup(monster* mons);
 static bool _monster_move(monster* mons, coord_def& delta);
@@ -2012,6 +2015,27 @@ void handle_monster_move(monster* mons)
         return;
 
     mon_acting mact(mons);
+
+    // Pooka alternates between a forceful beast form and a more evasive
+    // spirit form. The stance is stored on the monster so it survives saves.
+    if (mons->type == MONS_POOKA && !disabled)
+    {
+        int &form_turns = mons->props["pooka_form_turns"].get_int();
+        if (++form_turns >= 3)
+        {
+            form_turns = 0;
+            int &spirit_form = mons->props["pooka_spirit_form"].get_int();
+            spirit_form = !spirit_form;
+#ifdef USE_TILE
+            mons->props[MONSTER_TILE_KEY].get_int() = spirit_form
+                ? TILEP_MONS_POOKA_1 : TILEP_MONS_POOKA;
+#endif
+            mons->check_redraw(mons->pos());
+            simple_monster_message(*mons,
+                spirit_form ? " shifts into its spirit form."
+                            : " takes on its beast form.");
+        }
+    }
 
     if (!disabled && mons_is_tentacle_head(mons_base_type(*mons)))
         move_child_tentacles(mons);
