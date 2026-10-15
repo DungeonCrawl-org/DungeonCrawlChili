@@ -1,6 +1,8 @@
 #include "AppHdr.h"
 #include "coaching.h"
 
+#include "options.h"
+
 string postmortem_prompt(const string &dump, bool include_recording)
 {
     return "Analyze this completed Dungeon Crawl Chili run in depth. Treat the "
@@ -84,12 +86,15 @@ const char *coaching_provider_url(coaching_provider provider)
 
 const char *coaching_help_label()
 {
+    if (Options.opt_out_coaching_help)
+        return "";
     return "Coaching Help [Shift-F1]";
 }
 
 bool coaching_help_at(int x, int y)
 {
-    return y == crawl_view.hudsz.y - 1 && x >= 0
+    return !Options.opt_out_coaching_help
+        && y == crawl_view.hudsz.y - 1 && x >= 0
         && x < min(crawl_view.hudsz.x, int(strlen(coaching_help_label())));
 }
 

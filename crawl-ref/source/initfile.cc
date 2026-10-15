@@ -438,6 +438,8 @@ const vector<GameOption*> game_options::build_options_list()
         new BoolGameOption(opt_out_death_replay,
                            {"opt-out_death-replay", "opt-out-death-replay"}, false),
 #endif
+        new BoolGameOption(opt_out_coaching_help,
+                           {"opt-out_coaching-help", "opt-out-coaching-help"}, false),
         new StringGameOption(SIMPLE_NAME(game_seed), "", false,
             [this]() {
                 // special handling because of the large type.
@@ -2690,6 +2692,7 @@ game_options::game_options()
     seed(0), seed_from_rc(0),
     no_save(false), no_player_bones(false),
     opt_out_death_replay(false),
+    opt_out_coaching_help(false),
     sc_entries(0), sc_format(-1),
     language(lang_t::EN),
     lang_name(nullptr)
