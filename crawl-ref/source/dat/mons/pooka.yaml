@@ -1,0 +1,20 @@
+name: "Pooka"
+drop_on_death: {chance: 50, item: TALISMAN_PROTEAN}
+glyph: {char: "h", colour: darkgrey}
+flags: [speaks, warm_blood, unique]
+exp: 45
+corpse_tile: faun
+will: 20
+attacks:
+ - {type: hit, damage: 6}
+hd: 2
+hp_10x: 135
+ac: 2
+ev: 11
+has_corpse: true
+shout: shout
+intelligence: human
+uses: open_doors
+size: medium
+shape: humanoid
+tile: tilep_mons_pooka

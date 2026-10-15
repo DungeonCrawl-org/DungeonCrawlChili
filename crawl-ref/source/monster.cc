@@ -3319,7 +3319,13 @@ int monster::base_evasion() const
         return _zombie_ev_modifier(type) + base_ev;
     }
 
-    const int base_ev = get_monster_data(type)->ev;
+    int base_ev = get_monster_data(type)->ev;
+
+    // Pooka's spirit form is nimble, while its beast form relies on a heavier
+    // attack.
+    if (type == MONS_POOKA && props.exists("pooka_spirit_form")
+        && props["pooka_spirit_form"].get_int())
+        base_ev += 5;
 
     // draconians combine base & class ac values.
     if (mons_is_draconian_job(type))

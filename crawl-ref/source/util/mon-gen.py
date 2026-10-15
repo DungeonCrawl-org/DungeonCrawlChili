@@ -191,6 +191,7 @@ DROP_ITEM_PREFIXES = {
     'MI_': 'OBJ_MISSILES',
     'WPN_': 'OBJ_WEAPONS',
     'BOOK_': 'OBJ_BOOKS',
+    'TALISMAN_': 'OBJ_TALISMANS',
 }
 
 def parse_death_drop(s):
