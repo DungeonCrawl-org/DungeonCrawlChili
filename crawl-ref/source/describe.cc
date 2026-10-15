@@ -7177,12 +7177,23 @@ static string _monster_death_drop_description(const monster_info &mi)
         }
     }
 
-    string note = make_stringf(
-        "<brown>DC Chili change: Uniques have a %d%% chance to drop an item "
-        "when killed. For %s, the item is ",
-        drop.chance, mi.full_name(DESC_PLAIN).c_str());
-    note += options.size() > 1 ? "either " : "";
-    note += reward + ".</brown>";
+    string note;
+    if (mi.type == MONS_POOKA)
+        note = make_stringf(
+            "<brown>DC Chili change: Pooka is a DC Chili exclusive and has a "
+            "%d%% chance to drop ", drop.chance);
+    else
+        note = make_stringf(
+            "<brown>DC Chili change: Uniques have a %d%% chance to drop an "
+            "item when killed. For %s, the item is ",
+            drop.chance, mi.full_name(DESC_PLAIN).c_str());
+    if (mi.type == MONS_POOKA)
+        note += reward + " when killed.</brown>";
+    else
+    {
+        note += options.size() > 1 ? "either " : "";
+        note += reward + ".</brown>";
+    }
     return note;
 }
 
