@@ -630,6 +630,7 @@ public:
     bool           no_save;    // don't use persistent save files
     bool           no_player_bones;   // don't save player's info in bones files
     bool           opt_out_death_replay;
+    bool           opt_out_coaching_help;
 
     // internal use only:
     int         sc_entries;      // # of score entries
