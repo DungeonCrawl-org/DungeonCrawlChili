@@ -12,6 +12,70 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             === "dcf.dungeoncrawlforks.org";
     }
 
+    function ask_death_replay_recommendation()
+    {
+        var overlay = $("<div>").addClass("death-replay-recommendation-overlay")
+            .attr("role", "dialog").attr("aria-modal", "true")
+            .css({position: "fixed", top: "0", right: "0", bottom: "0", left: "0",
+                  zIndex: "100000",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "rgba(0, 0, 0, 0.8)"});
+        var popup = $("<div>").addClass("death-replay-recommendation-popup")
+            .css({background: "#080808", color: "#ddd", border: "2px solid #b89b45",
+                  padding: "1.5em", minWidth: "min(30em, 80vw)",
+                  fontFamily: "monospace", boxShadow: "0 0 1em #000"});
+        popup.append($("<div>").text("Would you recommend this game for Death Replay?"));
+        popup.append($("<div>").text("Choose Yes or No to continue.")
+            .css({marginTop: "0.7em"}));
+
+        var blockOutsideClick = function (event) {
+            if (!overlay[0].contains(event.target)) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+            }
+        };
+        document.addEventListener("mousedown", blockOutsideClick, true);
+
+        function submit_vote(vote)
+        {
+            if (overlay.data("submitted"))
+                return;
+            overlay.data("submitted", true);
+            comm.send_message("record_death_replay_recommendation", {vote: vote});
+            document.removeEventListener("mousedown", blockOutsideClick, true);
+            overlay.remove();
+        }
+
+        [[1, "Yes"], [-1, "No"]].forEach(function (choice) {
+            var button = $("<button>").attr("type", "button").text(choice[1])
+                .css({margin: "1em 0.5em 0 0", minWidth: "5em"});
+            button.on("click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                submit_vote(choice[0]);
+            });
+            popup.append(button);
+        });
+        overlay.append(popup);
+        overlay.on("keydown keypress", function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            if (event.type !== "keydown" || event.ctrlKey || event.altKey || event.metaKey)
+                return;
+            var key = (event.key || "").toLowerCase();
+            if (key === "y")
+                submit_vote(1);
+            else if (key === "n")
+                submit_vote(-1);
+        });
+        overlay.on("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        $(document.body).append(overlay);
+        popup.find("button").first().trigger("focus");
+    }
+
     function fmt_body_txt(txt)
     {
         return txt
@@ -978,25 +1042,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             $popup.append(replay);
 
             if (is_dcf_server()) {
-                var recommendation = $("<div>").addClass("death-replay-recommendation")
-                    .css({marginTop: "0.8em"});
-                recommendation.append($("<div>").text(
-                    "Would you recommend this game for Death Replay?"));
-                [[1, "Yes"], [-1, "No"]].forEach(function (choice) {
-                    var button = $("<button>").attr("type", "button")
-                        .text(choice[1]).css({margin: "0.35em 0.5em 0 0"});
-                    button.on("click", function (event) {
-                        event.stopPropagation();
-                        if (recommendation.data("submitted"))
-                            return;
-                        recommendation.data("submitted", true);
-                        recommendation.empty().text("Thanks for your feedback.");
-                        comm.send_message("record_death_replay_recommendation",
-                                          {vote: choice[0]});
-                    });
-                    recommendation.append(button);
-                });
-                $popup.append(recommendation);
+                ask_death_replay_recommendation();
             }
         }
 
