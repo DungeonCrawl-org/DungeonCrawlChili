@@ -45,6 +45,20 @@ TEST_CASE("Death Replay parses seed, character and final position", "[death-repl
     CHECK(data.turns == 4193);
 }
 
+TEST_CASE("Death Replay parses branch-only final locations", "[death-replay]")
+{
+    string text = replay_morgue();
+    const size_t location = text.find("D:8, x=23, y=17");
+    REQUIRE(location != string::npos);
+    text.replace(location, string("D:8").size(), "Gulch");
+
+    death_replay_data data;
+    string error;
+    REQUIRE(parse_death_replay(text, data, error));
+    CHECK(data.level == level_id(BRANCH_GULCH, 1));
+    CHECK(data.position == coord_def(23, 17));
+}
+
 TEST_CASE("Death Replay rejects malformed replay metadata", "[death-replay]")
 {
     death_replay_data data;

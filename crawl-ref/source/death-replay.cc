@@ -94,7 +94,7 @@ bool parse_death_replay(const string &text, death_replay_data &data, string &err
             if (std::regex_search(line, match, std::regex("Turns: *([0-9]+)")))
                 data.turns = std::stoi(match[1]);
             if (recap && std::regex_search(line, match,
-                    std::regex("Final location: ([A-Za-z]+:[0-9]+), x=([0-9]+), y=([0-9]+)")))
+                    std::regex("Final location: ([A-Za-z]+(?::[0-9]+)?), x=([0-9]+), y=([0-9]+)")))
             {
                 data.level = level_id::parse_level_id(match[1]);
                 data.position = coord_def(std::stoi(match[2]), std::stoi(match[3]));
