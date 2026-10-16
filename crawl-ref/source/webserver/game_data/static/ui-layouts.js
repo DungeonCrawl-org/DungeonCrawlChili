@@ -6,6 +6,12 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
 
     var describe_scale = 2.0;
 
+    function is_dcf_server()
+    {
+        return window.location.hostname.toLowerCase()
+            === "dcf.dungeoncrawlforks.org";
+    }
+
     function fmt_body_txt(txt)
     {
         return txt
@@ -970,6 +976,28 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
                 comm.send_message("key", { keycode: 114 });
             });
             $popup.append(replay);
+
+            if (is_dcf_server()) {
+                var recommendation = $("<div>").addClass("death-replay-recommendation")
+                    .css({marginTop: "0.8em"});
+                recommendation.append($("<div>").text(
+                    "Would you recommend this game for Death Replay?"));
+                [[1, "Yes"], [-1, "No"]].forEach(function (choice) {
+                    var button = $("<button>").attr("type", "button")
+                        .text(choice[1]).css({margin: "0.35em 0.5em 0 0"});
+                    button.on("click", function (event) {
+                        event.stopPropagation();
+                        if (recommendation.data("submitted"))
+                            return;
+                        recommendation.data("submitted", true);
+                        recommendation.empty().text("Thanks for your feedback.");
+                        comm.send_message("record_death_replay_recommendation",
+                                          {vote: choice[0]});
+                    });
+                    recommendation.append(button);
+                });
+                $popup.append(recommendation);
+            }
         }
 
         if ((desc.postmortem_available || desc.death_replay_available) && !client.is_watching()) {
