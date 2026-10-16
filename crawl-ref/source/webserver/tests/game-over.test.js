@@ -18,13 +18,23 @@ class Element {
     }
     empty() { this.nodes = []; return this; }
     append(node) { this.nodes.push(node); return this; }
+    first() { return this.nodes[0] || new Element(); }
+    trigger() { return this; }
+    remove() { this.removed = true; return this; }
+    contains() { return false; }
     on(names, fn) { for (const name of names.split(' ')) this.handlers[name] = fn; return this; }
     off() { this.handlers = {}; return this; }
     is(tag) { return this.tag === tag; }
 }
 let gameOver, watching = false, hostname = 'dcf.dungeoncrawlforks.org';
 const messages = [];
-const document = {};
+const document = {
+    body: new Element('body'), listeners: {},
+    addEventListener(type, fn) { this.listeners[type] = fn; },
+    removeEventListener(type, fn) {
+        if (this.listeners[type] === fn) delete this.listeners[type];
+    }
+};
 const $ = value => value instanceof Element ? value : new Element(value === '<button>' ? 'button' : 'div');
 const source = fs.readFileSync(__dirname + '/../game_data/static/ui-layouts.js', 'utf8')
     .replace('register_handlers: register_ui_handlers,', 'register_handlers: register_ui_handlers, game_over: game_over,');
@@ -65,7 +75,7 @@ button.handlers.click({stopPropagation() {}});
 assert.equal(messages.at(-1).data.keycode, 112);
 const replayPopup = gameOver({title: 'Goodbye', body: 'Final score',
     postmortem_available: true, death_replay_available: true, tile: {}});
-assert.equal(replayPopup.nodes.length, 3);
+assert.equal(replayPopup.nodes.length, 2);
 const replayButton = replayPopup.nodes[0];
 for (const key of ['r', 'R']) {
     const before = messages.length;
@@ -78,11 +88,24 @@ for (const key of ['r', 'R']) {
 }
 replayButton.handlers.click({stopPropagation() {}});
 assert.equal(messages.at(-1).data.keycode, 114);
-const recommendation = replayPopup.nodes[1];
-assert.equal(recommendation.nodes.length, 3);
-recommendation.nodes[1].handlers.click({stopPropagation() {}});
+const recommendationOverlay = document.body.nodes.at(-1);
+const recommendation = recommendationOverlay.nodes[0];
+assert.equal(recommendation.nodes.length, 4);
+let stopped = false, prevented = false;
+recommendationOverlay.handlers.keydown({type: 'keydown', key: 'Escape',
+    preventDefault() { prevented = true; }, stopImmediatePropagation() { stopped = true; }});
+assert(prevented && stopped, 'The required recommendation modal blocks Escape');
+assert.equal(recommendationOverlay.removed, undefined, 'Escape cannot dismiss the modal');
+prevented = false;
+stopped = false;
+document.listeners.mousedown({target: {}, preventDefault() { prevented = true; },
+    stopImmediatePropagation() { stopped = true; }});
+assert(prevented && stopped, 'Clicks outside the modal cannot dismiss the death dialog');
+recommendation.nodes[2].handlers.click({preventDefault() {}, stopPropagation() {}});
 assert.equal(messages.at(-1).type, 'record_death_replay_recommendation');
 assert.equal(messages.at(-1).data.vote, 1);
+assert.equal(recommendationOverlay.removed, true, 'A vote closes the required modal');
+assert.equal(document.listeners.mousedown, undefined, 'Vote removes the outside-click guard');
 hostname = 'crawl.xtahua.com';
 const cxcPopup = gameOver({title: 'Goodbye', body: 'Final score',
     death_replay_available: true, tile: {}});
