@@ -3,19 +3,26 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 
 class Element {
-    constructor(tag = 'div') { this.tag = tag; this.handlers = {}; this.nodes = []; this[0] = this; }
+    constructor(tag = 'div') { this.tag = tag; this.handlers = {}; this.nodes = []; this.dataValues = {}; this[0] = this; }
     clone() { return this; }
     find() { return new Element(); }
     children() { return new Element(); }
     html() { return this; }
     attr() { return this; }
     text() { return this; }
+    addClass() { return this; }
+    css() { return this; }
+    data(key, value) {
+        if (arguments.length > 1) { this.dataValues[key] = value; return this; }
+        return this.dataValues[key];
+    }
+    empty() { this.nodes = []; return this; }
     append(node) { this.nodes.push(node); return this; }
     on(names, fn) { for (const name of names.split(' ')) this.handlers[name] = fn; return this; }
     off() { this.handlers = {}; return this; }
     is(tag) { return this.tag === tag; }
 }
-let gameOver, watching = false;
+let gameOver, watching = false, hostname = 'dcf.dungeoncrawlforks.org';
 const messages = [];
 const document = {};
 const $ = value => value instanceof Element ? value : new Element(value === '<button>' ? 'button' : 'div');
@@ -23,6 +30,7 @@ const source = fs.readFileSync(__dirname + '/../game_data/static/ui-layouts.js',
     .replace('register_handlers: register_ui_handlers,', 'register_handlers: register_ui_handlers, game_over: game_over,');
 vm.runInNewContext(source, {
     document,
+    window: {location: {get hostname() { return hostname; }}},
     define(_, factory) {
         gameOver = factory($, {
             register_handlers() {}, send_message(type, data) { messages.push({type, data}); }
@@ -57,7 +65,7 @@ button.handlers.click({stopPropagation() {}});
 assert.equal(messages.at(-1).data.keycode, 112);
 const replayPopup = gameOver({title: 'Goodbye', body: 'Final score',
     postmortem_available: true, death_replay_available: true, tile: {}});
-assert.equal(replayPopup.nodes.length, 2);
+assert.equal(replayPopup.nodes.length, 3);
 const replayButton = replayPopup.nodes[0];
 for (const key of ['r', 'R']) {
     const before = messages.length;
@@ -70,11 +78,25 @@ for (const key of ['r', 'R']) {
 }
 replayButton.handlers.click({stopPropagation() {}});
 assert.equal(messages.at(-1).data.keycode, 114);
+const recommendation = replayPopup.nodes[1];
+assert.equal(recommendation.nodes.length, 3);
+recommendation.nodes[1].handlers.click({stopPropagation() {}});
+assert.equal(messages.at(-1).type, 'record_death_replay_recommendation');
+assert.equal(messages.at(-1).data.vote, 1);
+hostname = 'crawl.xtahua.com';
+const cxcPopup = gameOver({title: 'Goodbye', body: 'Final score',
+    death_replay_available: true, tile: {}});
+assert.equal(cxcPopup.nodes.length, 1, 'CXC does not ask for DCF feedback');
+hostname = 'crawl.project357.org';
+const cpoPopup = gameOver({title: 'Goodbye', body: 'Final score',
+    death_replay_available: true, tile: {}});
+assert.equal(cpoPopup.nodes.length, 1, 'CPO does not ask for DCF feedback');
 const unavailablePopup = gameOver({title: 'Goodbye', body: 'Quit game',
     postmortem_available: false, death_replay_available: false, tile: {}});
 assert.equal(unavailablePopup.nodes.length, 0,
     'Quit games and Death Replay sessions have no post-mortem controls');
 watching = true;
+hostname = 'dcf.dungeoncrawlforks.org';
 const spectator = gameOver({title: 'Goodbye', body: 'Final score',
     postmortem_available: true, death_replay_available: true, tile: {}});
 assert.equal(spectator.nodes.length, 0, 'Spectators do not get an analysis control');
