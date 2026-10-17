@@ -882,7 +882,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
 
         if (desc.tag === "coaching_help" || desc.tag === "postmortem_help")
             coaching.install_controls($popup, desc.coaching_prompt, desc.tag === "postmortem_help",
-                desc.postmortem_full_prompt, desc.postmortem_ttyrec_url);
+                desc.postmortem_full_prompt, desc.postmortem_ttyrec_url, desc.postmortem_analysis);
 
         var s = scroller($body[0]);
         var scroll_elem = s.scrollElement;

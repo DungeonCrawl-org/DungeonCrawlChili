@@ -89,13 +89,45 @@ async function main() {
     assert.equal(standalone.fetched.length, 0);
     assert.equal(standalone.messages.length, 0, "No shared-server recording request is needed");
     assert(!standalone.handlers.postmortem_recording);
+    const service = fixture({ hostname: "dcf.dungeoncrawlforks.org" });
+    const servicePopup = new Element();
+    service.module.install_controls(servicePopup, finalMorgue, true, "Full " + finalMorgue,
+        undefined, { available: true, configured: true });
+    servicePopup.trigger("keydown", { key: "g" });
+    const analysisRequest = service.messages.at(-1);
+    assert.equal(analysisRequest.type, "request_postmortem_analysis");
+    assert.equal(analysisRequest.data.prompt, finalMorgue);
+    assert.equal(service.opened.length, 0, "In-game analysis must not open a browser");
+    service.handlers.postmortem_analysis_result({ request_id: analysisRequest.data.request_id + 1,
+        ok: true, message: "Stale result" });
+    const serviceAnswer = servicePopup.more.nodes.find(n => n.attrs["aria-label"] === "Post-Mortem Analysis result");
+    assert(!serviceAnswer.visible);
+    service.handlers.postmortem_analysis_result({ request_id: analysisRequest.data.request_id,
+        ok: true, message: "1. Cause\n\n<script>literal evidence</script>" });
+    assert(serviceAnswer.visible);
+    assert.equal(serviceAnswer.label, "1. Cause\n\n<script>literal evidence</script>");
+    assert(serviceAnswer.focused);
+    servicePopup.trigger("keydown", { key: "d" });
+    servicePopup.trigger("keydown", { key: "G" });
+    assert.equal(service.messages.at(-1).data.prompt, "Full " + finalMorgue);
+    servicePopup.trigger("keydown", { key: "g" });
+    assert.equal(service.messages.at(-1).type, "cancel_postmortem_analysis");
+    const provider = servicePopup.more.nodes.find(n => n.tag === "label" && n.nodes.some(c => c.tag === "select")).nodes[0];
+    provider.val("claude").trigger("change");
+    assert(servicePopup.more.nodes.find(n => n.label === "Cancel analysis [G]").attrs.hidden);
+    const nonDcfService = fixture({ hostname: "crawl.xtahua.com" });
+    const nonDcfServicePopup = new Element();
+    nonDcfService.module.install_controls(nonDcfServicePopup, finalMorgue, true, "", undefined,
+        { available: true, configured: true });
+    nonDcfServicePopup.trigger("keydown", { key: "g" });
+    assert.equal(nonDcfService.messages.length, 0);
     const automaticUrl = "/postmortem-ttyrec?player=RoGGa&file=2026-10-17.11%3A51%3A01.ttyrec";
     const automatic = fixture({ hostname: "dcf.dungeoncrawlforks.org",
         fetchResult: () => Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) }) });
     const automaticPopup = new Element();
     automatic.module.install_controls(automaticPopup, finalMorgue, true, "Full " + finalMorgue, automaticUrl);
     assert.deepEqual(automatic.fetched, [automaticUrl]);
-    assert.equal(automaticPopup.more.nodes.find(n => n.tag === "a").attrs.href, automaticUrl);
+    assert(!automaticPopup.more.nodes.some(n => n.tag === "a"));
     automaticPopup.trigger("keydown", { key: "c" });
     assert.equal(automatic.copied.length, 0, "Do not copy while automatic attachment is incomplete");
     automaticPopup.trigger("keydown", { key: "d" });
@@ -158,25 +190,15 @@ async function main() {
     const postPopup = new Element();
     const morgue = "Analyze this run\nBEGIN FINAL MORGUE\nHP: -2/50\nEND FINAL MORGUE\n\nRECORDING: No ttyrec supplied.\n";
     post.module.install_controls(postPopup, morgue, true);
-    const recordingLink = postPopup.more.nodes.find(n => n.tag === "a");
-    assert.equal(recordingLink.attrs.href, "https://dcf-data.dungeoncrawlforks.org/ttyrec/");
-    assert.equal(recordingLink.attrs.target, "_blank");
-    let linkStopped = false, linkPrevented = false;
-    recordingLink.trigger("click", {
-        stopPropagation() { linkStopped = true; },
-        preventDefault() { linkPrevented = true; }
-    });
-    assert(linkStopped && !linkPrevented, "Open the recording directory without closing the analysis popup");
+    assert(!postPopup.more.nodes.some(n => n.tag === "a"));
     const cxc = fixture({ hostname: "crawl.xtahua.com" });
     const cxcPopup = new Element();
     cxc.module.install_controls(cxcPopup, morgue, true);
-    assert.equal(cxcPopup.more.nodes.find(n => n.tag === "a").attrs.href,
-        "https://crawl.xtahua.com/crawl/ttyrec/");
+    assert(!cxcPopup.more.nodes.some(n => n.tag === "a"));
     const cpo = fixture({ hostname: "crawl.project357.org" });
     const cpoPopup = new Element();
     cpo.module.install_controls(cpoPopup, morgue, true);
-    assert.equal(cpoPopup.more.nodes.find(n => n.tag === "a").attrs.href,
-        "https://crawl.project357.org/ttyrec/");
+    assert(!cpoPopup.more.nodes.some(n => n.tag === "a"));
     for (const hostname of ["localhost", "dungeoncrawlforks.org.example.com"]) {
         const other = fixture({ hostname });
         const otherPopup = new Element();
