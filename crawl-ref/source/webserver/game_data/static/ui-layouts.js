@@ -1102,6 +1102,23 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
                         comm.send_message("key", { keycode: key.toLowerCase().charCodeAt(0) });
                     return;
                 }
+                if ($(event.target).is("button") && !event.ctrlKey && !event.altKey && !event.metaKey) {
+                    if (key === "ArrowUp" || key === "ArrowDown") {
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        if (event.type === "keydown") {
+                            var buttons = $popup.children("button:enabled").toArray();
+                            var current = buttons.indexOf(event.target);
+                            var next = current + (key === "ArrowDown" ? 1 : -1);
+                            buttons[(next + buttons.length) % buttons.length].focus();
+                        }
+                        return;
+                    }
+                    if (["PageUp", "PageDown", "Home", "End"].indexOf(key) !== -1) {
+                        scroller_handle_key(s, event);
+                        return;
+                    }
+                }
                 if ($(event.target).is("button") || event.key === "Tab") {
                     event.stopImmediatePropagation();
                     return;
