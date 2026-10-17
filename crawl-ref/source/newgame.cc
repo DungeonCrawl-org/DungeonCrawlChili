@@ -1173,7 +1173,7 @@ public:
             welcome.textcolour(LIGHTGREY);
             welcome.cprintf("\nOnly recommended backgrounds are shown for "
                             "this species.\nYou can still create any combo "
-                            "that is not recommended\nby choosing the "
+                            "that is not recommended by choosing the "
                             "background before the species.");
         }
 #endif
