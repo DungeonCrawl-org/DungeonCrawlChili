@@ -933,7 +933,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             var $prompt = $("<div class=header>");
             $popup.children(".header").append($canvas).append($title).after($prompt);
             $title.html(util.formatted_string_to_html(msg.title));
-            $prompt.html(util.formatted_string_to_html(msg.prompt));
+            $prompt.append($("<span>").html(util.formatted_string_to_html(msg.prompt)));
             var renderer = new cr.DungeonCellRenderer();
             util.init_canvas($canvas[0], renderer.cell_width, renderer.cell_height);
             renderer.init($canvas[0]);
@@ -942,7 +942,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             });
         }
         else
-            $popup.children(".header").html(util.formatted_string_to_html(msg.title));
+            $popup.children(".header").append($("<span>").html(util.formatted_string_to_html(msg.title)));
         var renderer = new cr.DungeonCellRenderer();
         var $descriptions = $popup.find(".descriptions");
 

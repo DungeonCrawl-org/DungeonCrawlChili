@@ -1108,14 +1108,14 @@ canvas {
 {
     margin-bottom: 15px;
     white-space: pre;
-    display: flex;
-    align-items: center;
+    display: block;
     flex: 1 0 auto;
 }
 
 .newgame-choice .header > canvas
 {
     margin-right: 10px;
+    vertical-align: middle;
 }
 
 .newgame-choice > .body {
