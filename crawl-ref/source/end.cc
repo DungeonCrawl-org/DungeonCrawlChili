@@ -467,7 +467,7 @@ NORETURN void end_game(scorefile_entry &se)
     if (postmortem_available)
     {
         auto analysis_button = make_shared<MenuButton>();
-        analysis_button->set_child(make_shared<Text>("Post-mortem analysis [P]"));
+        analysis_button->set_child(make_shared<Text>("Post-Mortem Analysis [P]"));
         analysis_button->on_activate_event([&](const ActivateEvent&) {
             show_postmortem_help(analysis_dump);
             return true;

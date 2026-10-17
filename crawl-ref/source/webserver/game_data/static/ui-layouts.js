@@ -847,7 +847,8 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             $popup.children(".header").remove();
 
         if (desc.tag === "coaching_help" || desc.tag === "postmortem_help")
-            coaching.install_controls($popup, desc.coaching_prompt, desc.tag === "postmortem_help");
+            coaching.install_controls($popup, desc.coaching_prompt, desc.tag === "postmortem_help",
+                desc.postmortem_full_prompt);
 
         var s = scroller($body[0]);
         var scroll_elem = s.scrollElement;
@@ -1048,7 +1049,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
 
         if ((desc.postmortem_available || desc.death_replay_available) && !client.is_watching()) {
             if (desc.postmortem_available) {
-                var analysis = $("<button>").attr("type", "button").text("Post-mortem analysis [P]");
+                var analysis = $("<button>").attr("type", "button").text("Post-Mortem Analysis [P]");
                 analysis.on("click", function (event) {
                     event.stopPropagation();
                     comm.send_message("key", { keycode: 112 });

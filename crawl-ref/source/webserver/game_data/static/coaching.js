@@ -61,7 +61,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             });
     });
 
-    function install_controls(popup, popup_prompt, postmortem)
+    function install_controls(popup, popup_prompt, postmortem, full_prompt)
     {
         if (client.is_watching())
             return;
@@ -123,8 +123,42 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
         }
         var copy_prompt = prompt;
         var morgue_prompt = prompt;
+        var brief_prompt = prompt;
+        var recording_excerpts = null;
+        var detailed = false;
+        var depth_button;
         var reading_recording = false;
         var file_generation = 0;
+
+        function update_context()
+        {
+            copy_prompt = morgue_prompt;
+            if (recording_excerpts !== null) {
+                var recording_start = morgue_prompt.lastIndexOf("\nRECORDING:");
+                copy_prompt = (recording_start < 0 ? morgue_prompt : morgue_prompt.slice(0, recording_start))
+                    + "\nRECORDING: ttyrec screen excerpts\nBEGIN TTYREC EXCERPTS\n"
+                    + recording_excerpts + "\nEND TTYREC EXCERPTS\n";
+            }
+            if (manual) manual.val(copy_prompt);
+        }
+
+        function change_depth()
+        {
+            if (!depth_button) return;
+            detailed = !detailed;
+            morgue_prompt = detailed ? full_prompt : brief_prompt;
+            update_context();
+            depth_button.text(detailed ? "Use one-page summary [D]" : "More complete analysis [D]");
+            status.text(detailed
+                ? "Ask AI for a more complete analysis using Copy and open below."
+                : "One-page summary selected.");
+        }
+
+        if (postmortem && typeof full_prompt === "string" && full_prompt.length) {
+            depth_button = $("<button>").attr("type", "button").text("More complete analysis [D]")
+                .on("click", function (event) { event.stopPropagation(); change_depth(); })
+                .appendTo(controls);
+        }
         if (postmortem) {
             var hostname = window.location.hostname.toLowerCase();
             var recording_url = hostname === "crawl.xtahua.com"
@@ -160,10 +194,8 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
                     return ttyrec.read ? ttyrec.read(data) : ttyrec.transcript(data);
                 }).then(function (excerpts) {
                     if (request_id !== file_generation) return;
-                    copy_prompt = morgue_prompt.slice(0, morgue_prompt.lastIndexOf("\nRECORDING:"))
-                        + "\nRECORDING: ttyrec screen excerpts\nBEGIN TTYREC EXCERPTS\n"
-                        + excerpts + "\nEND TTYREC EXCERPTS\n";
-                    manual.val(copy_prompt);
+                    recording_excerpts = excerpts;
+                    update_context();
                     reading_recording = false;
                     status.text("Recording attached locally. Sampled screen excerpts included, with finer detail at the end.");
                 }).catch (function (error) {
@@ -175,12 +207,12 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             $("<button>").attr("type", "button").text("Use morgue only")
                 .on("click", function (event) {
                     event.stopPropagation(); file_generation++; reading_recording = false;
-                    copy_prompt = morgue_prompt; manual.val(copy_prompt); recording.val("");
+                    recording_excerpts = null; update_context(); recording.val("");
                     status.text("Morgue-only analysis selected; no recording included.");
                 }).appendTo(controls);
         }
         var provider_label = $("<label>").text("AI service: ").appendTo(controls);
-        var provider_select = $("<select>").attr("aria-label", postmortem ? "Post-mortem AI service" : "Coaching AI service")
+        var provider_select = $("<select>").attr("aria-label", postmortem ? "Post-Mortem Analysis AI service" : "Coaching AI service")
             .appendTo(provider_label);
         Object.keys(providers).forEach(function (id) {
             $("<option>").attr("value", id).text(providers[id].name)
@@ -199,7 +231,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             } catch (ignored) {}
         });
         var manual = $("<textarea>").attr({
-            readonly: true, rows: 5, "aria-label": postmortem ? "Post-mortem analysis context" : "Coaching prompt and live morgue dump"
+            readonly: true, rows: 5, "aria-label": postmortem ? "Post-Mortem Analysis context" : "Coaching prompt and live morgue dump"
         }).css({ width: "95%", display: "none" }).val(copy_prompt).appendTo(controls);
 
         function fallback_copy()
@@ -268,6 +300,12 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             if ($(event.target).is("textarea"))
                 return;
             var key = (event.key || String.fromCharCode(event.which)).toLowerCase();
+            if (depth_button && !event.ctrlKey && !event.altKey && !event.metaKey && key === "d") {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                if (event.type === "keydown") change_depth();
+                return false;
+            }
             if (!event.ctrlKey && !event.altKey && !event.metaKey && (key === "b" || key === "c")) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
