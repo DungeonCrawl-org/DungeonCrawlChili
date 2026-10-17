@@ -864,8 +864,6 @@ Annihilation
 
 Armageddon
 
-Fimbulwinter
-
 Ragnarok
 
 World Downfall
@@ -875,6 +873,8 @@ World's End
 the Apocalypse
 
 the End of Times
+
+the Eschaton
 
 # the Apocalyptic Riders (except Death)
 Famine
@@ -1767,6 +1767,8 @@ Murmur
 Pendulum
 
 Sarcophage
+
+Serial Peacemaker
 
 Tormentor
 
