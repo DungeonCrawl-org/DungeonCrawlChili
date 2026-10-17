@@ -43,7 +43,7 @@ class Element {
 }
 
 function fixture({ watching = false, clipboardFails = false, legacyCopy = false, fetchFails = false,
-    storage = {}, storageFails = false, hostname = "dct.dungeoncrawlforks.org" } = {}) {
+    storage = {}, storageFails = false, hostname = "dct.dungeoncrawlforks.org", fetchResult } = {}) {
     const document = new Element("document");
     document.execCommand = () => legacyCopy;
     const launch = new Element("button");
@@ -52,7 +52,7 @@ function fixture({ watching = false, clipboardFails = false, legacyCopy = false,
         new Element(value.replace(/[<>]/g, ""));
     let module;
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../game_data/static/coaching.js"), "utf8"), {
-        document, navigator: { clipboard: { writeText(text) {
+        document, AbortController, setTimeout, clearTimeout, navigator: { clipboard: { writeText(text) {
             copied.push(text);
             return clipboardFails ? Promise.reject(new Error("Denied")) : Promise.resolve();
         } } },
@@ -60,8 +60,9 @@ function fixture({ watching = false, clipboardFails = false, legacyCopy = false,
             getItem(key) { if (storageFails) throw new Error("Disabled"); return storage[key]; },
             setItem(key, value) { if (storageFails) throw new Error("Disabled"); storage[key] = value; }
         } },
-        fetch(url) {
+        fetch(url, options) {
             fetched.push(url);
+            if (fetchResult) return fetchResult(url, options);
             return fetchFails ? Promise.reject(new Error("Unavailable")) :
                 Promise.resolve({ ok: true, text: () => Promise.resolve("Fresh live morgue: HP 12/55") });
         },
@@ -88,6 +89,45 @@ async function main() {
     assert.equal(standalone.fetched.length, 0);
     assert.equal(standalone.messages.length, 0, "No shared-server recording request is needed");
     assert(!standalone.handlers.postmortem_recording);
+    const automaticUrl = "/postmortem-ttyrec?player=RoGGa&file=2026-10-17.11%3A51%3A01.ttyrec";
+    const automatic = fixture({ hostname: "dcf.dungeoncrawlforks.org",
+        fetchResult: () => Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) }) });
+    const automaticPopup = new Element();
+    automatic.module.install_controls(automaticPopup, finalMorgue, true, "Full " + finalMorgue, automaticUrl);
+    assert.deepEqual(automatic.fetched, [automaticUrl]);
+    assert.equal(automaticPopup.more.nodes.find(n => n.tag === "a").attrs.href, automaticUrl);
+    automaticPopup.trigger("keydown", { key: "c" });
+    assert.equal(automatic.copied.length, 0, "Do not copy while automatic attachment is incomplete");
+    automaticPopup.trigger("keydown", { key: "d" });
+    await new Promise(resolve => setImmediate(resolve));
+    automaticPopup.trigger("keydown", { key: "c" });
+    assert(automatic.copied[0].startsWith("Full Final morgue"));
+    assert(automatic.copied[0].includes("BEGIN TTYREC EXCERPTS"));
+    assert(!automatic.copied[0].includes("No ttyrec supplied"));
+    automaticPopup.more.nodes.find(n => n.label === "Use morgue only").trigger("click");
+    automaticPopup.trigger("keydown", { key: "c" });
+    assert.equal(automatic.copied[1], "Full " + finalMorgue);
+    const automaticFailure = fixture({ hostname: "dcf.dungeoncrawlforks.org", fetchFails: true });
+    const failurePopup = new Element();
+    automaticFailure.module.install_controls(failurePopup, finalMorgue, true, "", automaticUrl);
+    await new Promise(resolve => setImmediate(resolve));
+    failurePopup.trigger("keydown", { key: "c" });
+    assert.equal(automaticFailure.copied[0], finalMorgue, "Automatic failure must leave morgue-only analysis usable");
+    let finishAutomatic;
+    const cancelled = fixture({ hostname: "dcf.dungeoncrawlforks.org",
+        fetchResult: () => new Promise(resolve => { finishAutomatic = resolve; }) });
+    const cancelledPopup = new Element();
+    cancelled.module.install_controls(cancelledPopup, finalMorgue, true, "", automaticUrl);
+    cancelledPopup.more.nodes.find(n => n.label === "Use morgue only").trigger("click");
+    finishAutomatic({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) });
+    await new Promise(resolve => setImmediate(resolve));
+    cancelledPopup.trigger("keydown", { key: "c" });
+    assert.equal(cancelled.copied[0], finalMorgue, "Late automatic response must respect Use morgue only");
+    for (const hostname of ["crawl.xtahua.com", "crawl.project357.org"]) {
+        const shared = fixture({ hostname });
+        shared.module.install_controls(new Element(), finalMorgue, true, "", automaticUrl);
+        assert.equal(shared.fetched.length, 0, "Do not request DCF recordings from shared servers");
+    }
     const depth = fixture();
     const depthPopup = new Element();
     const brief = "At most 200 words\nBEGIN FINAL MORGUE\nHP: -2/50\nEND FINAL MORGUE\n\nRECORDING: No ttyrec supplied.\n";

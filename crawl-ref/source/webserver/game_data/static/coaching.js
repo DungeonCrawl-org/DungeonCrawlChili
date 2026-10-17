@@ -61,7 +61,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             });
     });
 
-    function install_controls(popup, popup_prompt, postmortem, full_prompt)
+    function install_controls(popup, popup_prompt, postmortem, full_prompt, automatic_recording_url)
     {
         if (client.is_watching())
             return;
@@ -150,17 +150,19 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             update_context();
             depth_button.text(detailed ? "Use one-page summary [D]" : "More complete analysis [D]");
             status.text(detailed
-                ? "Ask AI for a more complete analysis using Copy and open below."
+                ? "Ask AI for a more complete analysis using Copy and open."
                 : "One-page summary selected.");
         }
 
         if (postmortem && typeof full_prompt === "string" && full_prompt.length) {
             depth_button = $("<button>").attr("type", "button").text("More complete analysis [D]")
-                .on("click", function (event) { event.stopPropagation(); change_depth(); })
-                .appendTo(controls);
+                .on("click", function (event) { event.stopPropagation(); change_depth(); });
         }
         if (postmortem) {
             var hostname = window.location.hostname.toLowerCase();
+            var automatic_recording = hostname === "dcf.dungeoncrawlforks.org"
+                && typeof automatic_recording_url === "string"
+                && /^\/postmortem-ttyrec\?/.test(automatic_recording_url);
             var recording_url = hostname === "crawl.xtahua.com"
                 ? "https://crawl.xtahua.com/crawl/ttyrec/"
                 : hostname === "crawl.project357.org"
@@ -168,7 +170,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
                 : /(^|\.)dungeoncrawlforks\.org$/.test(hostname)
                     ? "https://dcf-data.dungeoncrawlforks.org/ttyrec/" : null;
             if (recording_url) $("<a>").attr({
-                href: recording_url,
+                href: automatic_recording ? automatic_recording_url : recording_url,
                 target: "_blank", rel: "noopener noreferrer"
             }).text("Download a ttyrec recording")
                 .on("click", function (event) { event.stopPropagation(); })
@@ -276,11 +278,44 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             .text("Copy and open " + providers[selected_provider].name + " [B]")
             .on("click", function (event) { event.stopPropagation(); copy(true); })
             .appendTo(controls);
+        if (depth_button)
+            depth_button.appendTo(controls);
         $("<button>").attr("type", "button").text("Return [Esc]")
             .on("click", function (event) {
                 event.stopPropagation();
                 comm.send_message("key", { keycode: 27 });
             }).appendTo(controls);
+        if (automatic_recording) {
+            var automatic_request = ++file_generation;
+            var controller = new AbortController();
+            var automatic_timeout = setTimeout(function () { controller.abort(); }, 20000);
+            reading_recording = true;
+            status.text("Loading this game's ttyrec automatically...");
+            fetch(automatic_recording_url, { cache: "no-store", credentials: "same-origin",
+                signal: controller.signal })
+                .then(function (response) {
+                    if (!response.ok) throw new Error("Recording unavailable (" + response.status + ")");
+                    return response.arrayBuffer();
+                }).then(function (data) {
+                    clearTimeout(automatic_timeout);
+                    if (automatic_request !== file_generation) return;
+                    if (data.byteLength > 50 * 1024 * 1024)
+                        throw new Error("Recording exceeds 50 MiB");
+                    return ttyrec.read ? ttyrec.read(data) : ttyrec.transcript(data);
+                }).then(function (excerpts) {
+                    if (automatic_request !== file_generation) return;
+                    recording_excerpts = excerpts;
+                    update_context();
+                    reading_recording = false;
+                    status.text("This session's ttyrec is attached automatically. "
+                        + "Sampled screens include finer detail at the end.");
+                }).catch(function () {
+                    if (automatic_request !== file_generation) return;
+                    reading_recording = false;
+                    status.text("Automatic ttyrec loading failed. Morgue-only analysis is available; "
+                        + "you can also choose a recording manually.");
+                }).finally(function () { clearTimeout(automatic_timeout); });
+        }
         popup.on("keydown.coaching keypress.coaching", function (event) {
             if ($(event.target).is("button")
                 && (event.key === " " || event.key === "Spacebar"
