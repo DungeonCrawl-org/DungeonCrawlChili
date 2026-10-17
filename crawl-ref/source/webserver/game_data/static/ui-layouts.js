@@ -14,64 +14,98 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
 
     function ask_death_replay_recommendation()
     {
-        var overlay = $("<div>").addClass("death-replay-recommendation-overlay")
-            .attr("role", "dialog").attr("aria-modal", "true")
-            .css({position: "fixed", top: "0", right: "0", bottom: "0", left: "0",
-                  zIndex: "100000",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  background: "rgba(0, 0, 0, 0.8)"});
-        var popup = $("<div>").addClass("death-replay-recommendation-popup")
-            .css({background: "#080808", color: "#ddd", border: "2px solid #b89b45",
-                  padding: "1.5em", minWidth: "min(30em, 80vw)",
-                  fontFamily: "monospace", boxShadow: "0 0 1em #000"});
-        popup.append($("<div>").text("Would you recommend this game for Death Replay?"));
-        popup.append($("<div>").text("Choose Yes or No to continue.")
-            .css({marginTop: "0.7em"}));
+        if ($("#dcf-live-recommendation").length) return;
+        var overlay = $("<div>").attr({id: "dcf-live-recommendation", role: "dialog",
+            "aria-modal": "true", "aria-labelledby": "dcf-live-recommendation-title"})
+            .css({position: "fixed", inset: "0", zIndex: "100000", display: "flex",
+                alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,.8)"});
+        var popup = $("<div>").css({background: "#080808", color: "#ddd",
+            border: "2px solid #b89b45", padding: "1.5em", fontFamily: "monospace"}).appendTo(overlay);
+        $("<div>").attr("id", "dcf-live-recommendation-title")
+            .text("Would you recommend this game for Death Replay?").appendTo(popup);
+        var status = $("<div>").attr("role", "status").css({marginTop: ".7em"})
+            .text("Press Y for Yes, N for No, or I to Ignore (either case).").appendTo(popup);
+        var submitting = false;
+        var timeout;
+        var previousFocus = document.activeElement;
 
-        var blockOutsideClick = function (event) {
+        function blockOutsideClick(event) {
             if (!overlay[0].contains(event.target)) {
                 event.preventDefault();
                 event.stopImmediatePropagation();
             }
-        };
+        }
         document.addEventListener("mousedown", blockOutsideClick, true);
 
-        function submit_vote(vote)
-        {
-            if (overlay.data("submitted"))
-                return;
-            overlay.data("submitted", true);
-            comm.send_message("record_death_replay_recommendation", {vote: vote});
+        function close() {
+            clearTimeout(timeout);
             document.removeEventListener("mousedown", blockOutsideClick, true);
+            document.removeEventListener("keydown", handleKey, true);
+            document.removeEventListener("keypress", handleKey, true);
+            document.removeEventListener("keyup", handleKey, true);
             overlay.remove();
+            if (previousFocus && document.contains(previousFocus)) previousFocus.focus();
         }
 
-        [[1, "Yes"], [-1, "No"]].forEach(function (choice) {
-            var button = $("<button>").attr("type", "button").text(choice[1])
-                .css({margin: "1em 0.5em 0 0", minWidth: "5em"});
-            button.on("click", function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-                submit_vote(choice[0]);
-            });
-            popup.append(button);
+        function failed(message) {
+            clearTimeout(timeout);
+            submitting = false;
+            status.text(message || "Could not save your recommendation. Try again or choose Ignore.");
+            popup.find("button").prop("disabled", false);
+        }
+
+        comm.register_handlers({death_replay_recommendation_result: function (message) {
+            if (!document.contains(overlay[0]) || !submitting) return;
+            if (message.ok) close();
+            else failed(message.error);
+        }});
+
+        function choose(vote) {
+            if (submitting) return;
+            if (vote === 0) { close(); return; }
+            submitting = true;
+            status.text("Saving your recommendation…");
+            popup.find("button").prop("disabled", true);
+            timeout = setTimeout(function () { failed(); }, 10000);
+            try {
+                comm.send_message("record_death_replay_recommendation", {vote: vote});
+            } catch (error) { failed(); }
+        }
+
+        [[1, "Yes"], [-1, "No"], [0, "Ignore"]].forEach(function (choice) {
+            $("<button>").attr({type: "button", "aria-keyshortcuts": choice[1][0]})
+                .text(choice[1] + " [" + choice[1][0] + "]")
+                .css({margin: "1em .5em 0 0", minWidth: "5em"})
+                .on("click", function (event) {
+                    event.preventDefault(); event.stopPropagation(); choose(choice[0]);
+                }).appendTo(popup);
         });
-        overlay.append(popup);
-        overlay.on("keydown keypress", function (event) {
-            event.preventDefault();
+        // Capture before the game UI handles keys, even if its focus trap
+        // has moved focus away from this separate recommendation dialog.
+        function handleKey(event) {
             event.stopImmediatePropagation();
-            if (event.type !== "keydown" || event.ctrlKey || event.altKey || event.metaKey)
-                return;
+            if (event.type !== "keydown" || event.ctrlKey || event.altKey || event.metaKey) return;
             var key = (event.key || "").toLowerCase();
-            if (key === "y")
-                submit_vote(1);
-            else if (key === "n")
-                submit_vote(-1);
-        });
-        overlay.on("click", function (event) {
+            if (["y", "n", "i", "escape", "tab", "enter", " "].indexOf(key) === -1) return;
             event.preventDefault();
-            event.stopPropagation();
-        });
+            if (key === "y") choose(1);
+            else if (key === "n") choose(-1);
+            else if (key === "i" || key === "escape") choose(0);
+            else if ((key === "enter" || key === " ")
+                     && popup.find("button:enabled").toArray().indexOf(document.activeElement) !== -1)
+                document.activeElement.click();
+            else if (key === "tab") {
+                var buttons = popup.find("button:enabled").toArray();
+                if (buttons.length) {
+                    var next = buttons.indexOf(document.activeElement) + (event.shiftKey ? -1 : 1);
+                    buttons[(next + buttons.length) % buttons.length].focus();
+                }
+            }
+        }
+        document.addEventListener("keydown", handleKey, true);
+        document.addEventListener("keypress", handleKey, true);
+        document.addEventListener("keyup", handleKey, true);
+        overlay.on("click", function (event) { event.stopPropagation(); });
         $(document.body).append(overlay);
         popup.find("button").first().trigger("focus");
     }
@@ -848,7 +882,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
 
         if (desc.tag === "coaching_help" || desc.tag === "postmortem_help")
             coaching.install_controls($popup, desc.coaching_prompt, desc.tag === "postmortem_help",
-                desc.postmortem_full_prompt);
+                desc.postmortem_full_prompt, desc.postmortem_ttyrec_url);
 
         var s = scroller($body[0]);
         var scroll_elem = s.scrollElement;
