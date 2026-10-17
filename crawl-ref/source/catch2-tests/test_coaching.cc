@@ -75,5 +75,17 @@ TEST_CASE("Post-mortem instructions preserve evidence and known item properties"
     CHECK(web_prompt.find("No ttyrec supplied") != string::npos);
     CHECK(prompt.find("available THEN") != string::npos);
     CHECK(prompt.find("do not just repeat the message history") != string::npos);
+    CHECK(prompt.find("at most 200 words") != string::npos);
+    CHECK(prompt.find("18 short lines") != string::npos);
+    CHECK(prompt.find("1200 words") == string::npos);
+    CHECK(prompt.find("Post-Mortem Analysis") != string::npos);
+    const string full_prompt = postmortem_prompt(dump, false, true);
+    CHECK(full_prompt.find("up to 1200 words") != string::npos);
+    CHECK(full_prompt.find("at most 200 words") == string::npos);
+    CHECK(full_prompt.find("BEGIN FINAL MORGUE\n" + dump + "\nEND FINAL MORGUE") != string::npos);
+    CHECK(full_prompt.find("solely an analysis of the final morgue file") != string::npos);
+    const string full_web_prompt = postmortem_prompt(dump, true, true);
+    CHECK(full_web_prompt.find("up to 1200 words") != string::npos);
+    CHECK(full_web_prompt.find("No ttyrec supplied") != string::npos);
 }
 #endif
