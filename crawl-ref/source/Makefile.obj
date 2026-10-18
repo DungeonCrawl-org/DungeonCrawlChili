@@ -96,6 +96,7 @@ items.o \
 jobs.o \
 json.o \
 kills.o \
+lignifite.o \
 known-items.o \
 l-autofight.o \
 l-colour.o \
@@ -327,6 +328,7 @@ catch2-tests/test_player_fixture.o \
 catch2-tests/test_randbook.o \
 catch2-tests/test_stringutil.o \
 catch2-tests/test_species.o \
+catch2-tests/test_lignifite.o \
 catch2-tests/test_shopping.o \
 catch2-tests/test_tags.o \
 catch2-tests/test_tilecell.o \
@@ -343,6 +345,7 @@ util/levcomp.tab.o \
 util/levcomp.lex.o
 
 HEADER_OBJECTS = \
+lignifite.h.o \
 ability.h.o \
 ability-type.h.o \
 activity-interrupt-type.h.o \

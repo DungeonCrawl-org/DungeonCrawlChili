@@ -523,3 +523,6 @@ The Dungeon Crawl Stone Soup development team is:
     Chris West
     Samuel Wilson
     Wizard Ike
+
+* BcadrenCrawl: Boulder Brew, Bcadren and Zeldest, for the Lignifite species
+  design and its player sprite, adapted for Dungeon Crawl Chili.

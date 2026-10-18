@@ -1181,7 +1181,13 @@ public:
 
         descriptions = make_shared<Switcher>();
 
-        m_main_items = make_shared<OuterMenu>(true, 3, 20);
+        // Keep the complete species roster visible in local Tiles. Long
+        // descriptions must not squeeze the list into a scrolling viewport.
+        bool scroll_choices = true;
+#ifdef USE_TILE_LOCAL
+        scroll_choices = m_choice_type != C_SPECIES;
+#endif
+        m_main_items = make_shared<OuterMenu>(scroll_choices, 3, 20);
         m_main_items->menu_id = m_choice_type == C_JOB ?
             "background-main" : "species-main";
         m_main_items->set_margin_for_crt(m_choice_type == C_SPECIES ? 0 : 1, 0);

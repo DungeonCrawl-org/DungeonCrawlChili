@@ -6130,10 +6130,10 @@ bool parse_args(int argc, char **argv, bool rc_only)
 
             if (!rc_only)
             {
-                if (o == 2)
+                if (o == CLO_RACE)
                     Options.game.species = _str_to_species(string(next_arg));
 
-                if (o == 3)
+                if (o == CLO_CLASS)
                     Options.game.job = str_to_job(string(next_arg));
             }
             nextUsed = true;

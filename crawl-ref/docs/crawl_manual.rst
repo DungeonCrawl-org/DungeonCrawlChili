@@ -270,7 +270,8 @@ Willpower
 Size
   Different species have different sizes: Spriggans and Felids are very small;
   Kobolds are small; Oni and Trolls are large; Nagas and Gale Centaurs are large
-  with a medium torso; all other species are medium-sized. Many talismans will
+  with a medium torso; Lignifites grow from very small to giant with experience;
+  all other species are medium-sized. Many talismans will
   change your size. Size affects your evasion: the smaller your character, the
   more evasive it is. On the other hand, characters of larger than medium size
   do not suffer the usual attack penalties when standing in shallow water.
@@ -1813,6 +1814,25 @@ Gale Centaur (GC)
   their size impairs their evasion and unusual body shape reduces the benefit
   they get from heavy armour. They learn many other skills slowly, but the
   strength of their winds make them a force to be reckoned with nonetheless.
+
+Lignifites (Li)
+  Lignifites are living trees, beginning as quick but frail saplings. At XL 5,
+  10, 15, 20 and 25 they grow larger, gain a higher HP aptitude and move more
+  slowly. Their increasing size affects which weapons and armour they can use:
+  they are large at XL 15-24 and become giant at XL 25.
+  Their branches provide natural shielding, and after XL 12 their bark also
+  grants increasing armour class. These natural defences and movement traits
+  are suppressed by forms which change their anatomy or substance.
+
+  From XL 12, Plant Roots costs 3 MP and grants AC +8, an additional 1 HP per
+  turn of regeneration, and stasis. Rooted Lignifites can fight and cast spells,
+  but cannot move or change shape. Uprooting takes eight turns, and stopping
+  partway through leaves them rooted. They must plan this commitment carefully.
+
+  They resist poison, are vulnerable to fire, need no air and cannot bleed.
+  They are immune to torment and hostile draining, while explicit draining
+  costs still apply. They favour maces, staves, alchemy and earth magic, but
+  their awkward bodies reduce the protection offered by body armour.
 
 Vine Stalkers (VS)
   Limber in shape, Vine Stalkers are anthropomorphic masses of thick vines.

@@ -368,6 +368,9 @@ enum ability_type
     ABIL_WATERY_GRAVE,
     ABIL_BESTIAL_TAKEDOWN,
     ABIL_BREATHE_RUST,
+    // Appended to preserve saved ability identifiers.
+    ABIL_PLANT_ROOTS,
+    ABIL_UPROOT,
 
 #ifdef WIZARD
     ABIL_WIZ_BUILD_TERRAIN = 10000,

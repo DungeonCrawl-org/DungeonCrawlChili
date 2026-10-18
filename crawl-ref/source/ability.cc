@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "ability.h"
+#include "lignifite.h"
 
 #include <cctype>
 #include <cmath>
@@ -409,6 +410,11 @@ static vector<ability_def> &_get_ability_list()
 
         { ABIL_BAT_SWARM, "Bat Swarm",
             6, 0, 0, -1, {}, abflag::instant },
+
+        { ABIL_PLANT_ROOTS, "Plant Roots",
+            3, 0, 0, -1, {fail_basis::xl, 42, 3}, abflag::none },
+        { ABIL_UPROOT, "Uproot",
+            0, 0, 0, -1, {}, abflag::delay },
 
         { ABIL_ENKINDLE, "Enkindle",
                 0, 0, 0, -1, {}, abflag::instant },
@@ -2200,6 +2206,19 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
     case ABIL_BESTIAL_TAKEDOWN:
         return _can_movement_ability(quiet);
 
+    case ABIL_PLANT_ROOTS:
+    {
+        const string reason = lignifite_rooting_blocker();
+        if (!reason.empty())
+        {
+            if (!quiet) mpr(reason);
+            return false;
+        }
+        return true;
+    }
+    case ABIL_UPROOT:
+        return lignifite_rooted();
+
     case ABIL_INVENT_GIZMO:
     {
         if (you.experience_level < COGLIN_GIZMO_XL)
@@ -3506,6 +3525,16 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         return_to_default_form();
         break;
 
+    case ABIL_PLANT_ROOTS:
+        fail_check();
+        lignifite_plant_roots();
+        break;
+
+    case ABIL_UPROOT:
+        // Beginning the action costs a turn; seven waiting turns follow.
+        start_delay<UprootDelay>(LIGNIFITE_UPROOT_TURNS - 1);
+        break;
+
     case ABIL_INVENT_GIZMO:
         if (!coglin_invent_gizmo())
             return spret::abort;
@@ -4465,6 +4494,13 @@ bool player_has_ability(ability_type abil, bool include_unusable)
         return you.form == transformation::storm;
     case ABIL_SIPHON_ESSENCE:
         return you.form == transformation::death;
+    case ABIL_PLANT_ROOTS:
+        return you.species == SP_LIGNIFITE
+               && you.experience_level >= LIGNIFITE_ROOTS_XL
+               && !lignifite_rooted()
+               && (lignifite_natural_body() || include_unusable);
+    case ABIL_UPROOT:
+        return lignifite_rooted();
     case ABIL_INVENT_GIZMO:
         return you.species == SP_COGLIN
         && !you.props.exists(INVENT_GIZMO_USED_KEY);
@@ -4555,6 +4591,8 @@ vector<talent> your_talents(bool include_unusable, bool ignore_piety)
             ABIL_CACOPHONY,
             ABIL_BAT_SWARM,
             ABIL_ENKINDLE,
+            ABIL_PLANT_ROOTS,
+            ABIL_UPROOT,
             ABIL_SPIDER_JUMP,
             ABIL_WATERY_GRAVE,
             ABIL_BESTIAL_TAKEDOWN,
@@ -4689,9 +4727,16 @@ static int _lookup_ability_slot(const ability_type abil)
     // table will contain that placeholder. Convert the latter to
     // its corresponding ability before comparing the two, so that
     // we'll find the placeholder's index properly.
+    const bool rooting = abil == ABIL_PLANT_ROOTS || abil == ABIL_UPROOT;
     for (int slot = 0; slot < 52; slot++)
-        if (fixup_ability(you.ability_letter_table[slot]) == abil)
+    {
+        const ability_type saved = you.ability_letter_table[slot];
+        if (fixup_ability(saved) == abil
+            || (rooting && (saved == ABIL_PLANT_ROOTS || saved == ABIL_UPROOT)))
+        {
             return slot;
+        }
+    }
     return -1;
 }
 

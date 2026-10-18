@@ -1,8 +1,10 @@
 #include "AppHdr.h"
+
 #include <map>
 
 #include "mpr.h"
 #include "species.h"
+#include "lignifite.h"
 
 #include "branch.h"
 #include "item-prop.h"
@@ -318,7 +320,7 @@ namespace species
 
     bool is_plant(species_type species)
     {
-        return species == SP_VINE_STALKER;
+        return species == SP_VINE_STALKER || species == SP_LIGNIFITE;
     }
 
     bool can_swim(species_type species)
@@ -334,7 +336,9 @@ namespace species
 
     size_type size(species_type species, size_part_type psize)
     {
-        const size_type size = get_species_def(species).size;
+        const size_type size = species == SP_LIGNIFITE && you.species == SP_LIGNIFITE
+                                   ? lignifite_size(you.experience_level)
+                                   : get_species_def(species).size;
         if (psize == PSIZE_TORSO
             && bool(get_species_def(species).flags & SPF_SMALL_TORSO))
         {
@@ -529,7 +533,9 @@ namespace species
 
     int get_hp_modifier(species_type species)
     {
-        return get_species_def(species).hp_mod;
+        return species == SP_LIGNIFITE && you.species == SP_LIGNIFITE
+                   ? lignifite_hp_modifier(you.experience_level)
+                   : get_species_def(species).hp_mod;
     }
 
     int get_mp_modifier(species_type species)
@@ -657,6 +663,9 @@ void give_basic_mutations(species_type species)
 
 void give_level_mutations(species_type species, int xp_level)
 {
+    if (species == SP_LIGNIFITE)
+        lignifite_level_up(xp_level);
+
     for (const auto& lum : get_species_def(species).level_up_mutations)
         if (lum.xp_level == xp_level)
         {
@@ -699,6 +708,9 @@ void species_stat_gain(species_type species)
 void change_species_to(species_type sp)
 {
     ASSERT(sp != SP_UNKNOWN);
+
+    // A species change must never leave the new body anchored by old roots.
+    you.props.erase(LIGNIFITE_ROOTED_KEY);
 
     // Re-scale skill-points.
     for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)

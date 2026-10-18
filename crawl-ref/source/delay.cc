@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "delay.h"
+#include "lignifite.h"
 
 #include <cstdio>
 #include <cstring>
@@ -1165,4 +1166,26 @@ activity_interrupt get_activity_interrupt(const string &name)
             return activity_interrupt(i);
 
     return activity_interrupt::COUNT;
+}
+
+// Interrupted uprooting leaves the player rooted with all its benefits and costs.
+bool UprootDelay::try_interrupt(bool force)
+{
+    if (force || (!prompted && !yesno("Keep uprooting?", false, 'y', false)))
+    {
+        mpr("You stop uprooting yourself.");
+        return true;
+    }
+    prompted = true;
+    return false;
+}
+
+bool UprootDelay::invalidated()
+{
+    return !lignifite_rooted();
+}
+
+void UprootDelay::finish()
+{
+    lignifite_uproot();
 }

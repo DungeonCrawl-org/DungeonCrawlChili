@@ -150,3 +150,11 @@ Vine Stalker
 Frail symbionts, Vine Stalkers cannot regain health from potions. Their magical
 reserves absorb damage, and they pack a magic-restoring bite.
 %%%%
+
+%%%%
+Lignifite
+
+Lignifites grow from quick saplings into slow, hardy trees with natural
+armour and shielding. From level 12 they can root themselves for extra
+protection and regeneration; uprooting takes eight turns. They resist poison,
+torment and hostile draining, but are vulnerable to fire.

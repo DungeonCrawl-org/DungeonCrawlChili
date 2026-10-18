@@ -187,6 +187,8 @@ cat3 FELID_SILLY
 cat6
 cat10
 %sdir player/base
+# Keep new bases last so saved doll base indices remain stable.
+lignifite LIGNIFITE
 %end_ctg
 
 ###SHADOW
