@@ -2,8 +2,11 @@
 
 # Dungeon Crawl Chili
 
-Dungeon Crawl Chili is a Dungeon Crawl fork based on DCSS v0.35 Trunk that was launched in June 2026.
-It's a game of dungeon exploration, combat and magic, involving characters of diverse skills, worshipping deities of great power and caprice. To win, you'll need to be a master of tactics and strategy, and prevail against overwhelming odds.
+Dungeon Crawl Chili is a Dungeon Crawl fork based on DCSS v0.35 Trunk that was launched in June 2026. 
+It's main purpose is to make the early Dungeon more forgiving than DCSS so that new crawlers make it more often than not to the Lair and the Orcish Mines.
+
+It's a game of dungeon exploration, combat and magic, involving characters of diverse skills, worshiping deities of great power and caprice. 
+To win, you'll need to be a master of tactics and strategy, and prevail against overwhelming odds.
 
 ## Contents
 
