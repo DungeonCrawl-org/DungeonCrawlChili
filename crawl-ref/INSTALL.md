@@ -1,8 +1,9 @@
-# Install instructions for Dungeon Crawl Stone Soup (DCSS)
+# Install instructions for Dungeon Crawl Chili (DC Chili)
 
 ## Contents
 
-* [Getting DCSS To Run](#getting-dcss-to-run)
+* [Playing online for free](#playing-online-for-free)
+* [Getting To Run Locally](#getting-to-run-locally)
 * [Compiling](#compiling)
   * [Ubuntu / Debian](#ubuntu--debian)
   * [Fedora](#fedora)
@@ -26,10 +27,22 @@
 * [Troubleshooting](#troubleshooting)
 * [Getting Help](#getting-help)
 
-## Getting DCSS To Run
+## Playing online for free
 
-You can download prebuilt versions of DCSS from the
-[DCSS homepage](https://crawl.develz.org/download.htm).
+The easiest way to play DC Chili is to play on any of the following online WebTiles servers for free:
+- [DCF](https://dcf.dungeoncrawlforks.org/): Ontario, Canada
+- [CXC](https://crawl.xtahua.com/): Strasbourg, France
+- [CPO](https://crawl.project357.org/): Sydney, Australia
+
+Also, the advantage of playing online is that your stats are tracked automatically on:
+[Dungeon Crawl Chili Stats](https://stats.dungeoncrawlchili.org/)
+
+## Getting To Run Locally
+
+You can download prebuilt versions of DC Chili from the
+[DC Chili download webpage](https://dungeoncrawlchili.org/downloads.php).
+If a recent download is not available for your platform,
+please ask in the [Dungeon Crawl community discord server](https://discord.gg/79uNk5HJeh) for one.
 
 If you're having any trouble running these versions, try asking for help in
 [any of the community forums detailed in the README](../README.md#community).
@@ -43,7 +56,7 @@ detailed instructions.
 
 ```sh
 # Clone the repository
-git clone https://github.com/crawl/crawl.git
+git clone https://github.com/DungeonCrawl-org/DungeonCrawlChili.git
 cd crawl
 
 # Either install dependencies from your OS package manager (eg apt, yum)
@@ -51,19 +64,19 @@ apt install ...
 # or use DCSS's packaged dependencies
 git submodule update --init
 
-# Build DCSS (remove TILES=y for console mode)
+# Build DC Chili (remove TILES=y for console mode)
 cd crawl-ref/source
 make -j4 TILES=y
 
-# Play DCSS by running the compiled binary
+# Play DC Chili by running the compiled binary
 ./crawl
 ```
 
 ### Packaged Dependencies
 
-DCSS uses Lua, SDL, SQLite and several other third party packages. Generally
+DC Chili uses Lua, SDL, SQLite and several other third party packages. Generally
 you should use the versions supplied by your OS's package manager. If that's
-not possible, you can use the versions packaged with DCSS.
+not possible, you can use the versions packaged with DC Chili.
 
 To use packaged dependencies:
 
@@ -172,7 +185,7 @@ a prerequisite for building, we do not support building within the Xcode app.
        manager (e.g anaconda, macports, or homebrew), such as GNU coreutils,
        GNU make, an up-to-date python version, [ccache](#ccache), etc.
 
-2. You will also need to install DCSS's bundled dependencies:
+2. You will also need to install DC Chili's bundled dependencies:
 
     ```sh
     cd crawl
@@ -212,7 +225,7 @@ binary built on ARM won't run on x86.)
 
 ### MSYS2 (Recommended)
 
-This is the only currently recommended process for building DCSS on windows.
+This is the only currently recommended process for building DC Chili on windows.
 It is also possible to cross-compile windows builds; see the release guide
 for instructions.
 
@@ -315,7 +328,7 @@ from within the MSYS2 Shell.
    pacman -S mingw-w64-x86_64-advancecomp
    ```
 
-6. To get the DCSS source, follow the steps in the [Getting The
+6. To get the DC Chili source, follow the steps in the [Getting The
    Source](#getting-the-source) section above to clone DCSS into your MSYS2
    home directory. We recommend using the MSYS2-installed version of git for
    these steps. In brief:
@@ -327,7 +340,7 @@ from within the MSYS2 Shell.
     3. Run `cd crawl/crawl-ref/source`.
     4. Run `git submodule update --init`.
 
-7. Build DCSS by simply running:
+7. Build DC Chili by simply running:
 
     ```sh
     # for the console build:
@@ -372,7 +385,7 @@ These instructions have been successfully tested with Ubuntu only.
    website](https://docs.microsoft.com/en-us/windows/wsl/install-win10) at to
    set up the Windows Subsystem for Linux.
 
-2. Follow the [Ubuntu instructions](#ubuntu--debian) to build DCSS.
+2. Follow the [Ubuntu instructions](#ubuntu--debian) to build DC Chili.
 
 3. Console and Webtiles will work without any further configuration. To get SDL
    tiles to work, you need an X server running on Windows; Xming is an option
@@ -459,7 +472,7 @@ gradle. See [docs/develop/android.txt](docs/develop/android.txt) for details.
 
 ## Advanced
 
-DCSS looks for several data files when starting up. They include:
+DC Chili looks for several data files when starting up. They include:
 
 * Special level and vault layout (`dat/*.des`) files.
 * Core Lua code (`dat/dlua/*.lua`).
@@ -468,19 +481,19 @@ DCSS looks for several data files when starting up. They include:
 
 All these files are in the source tree under `source/dat`.
 
-DCSS will also look for documentation files when players invoke the help
+DC Chili will also look for documentation files when players invoke the help
 system. These files are available under the docs directory.
 
-Your built DCSS binary must be able to find these files, or it will not start.
+Your built DC Chili binary must be able to find these files, or it will not start.
 
-If DCSS is built without an explicit `DATA_DIR_PATH` (this is the most common
+If DC Chili is built without an explicit `DATA_DIR_PATH` (this is the most common
 setup), it will search for its data files under the current directory, and if
 it can't find them there, one level above the current directory. In short, it
 uses these search paths: `.`, `./dat`, `./docs`, `..`, `../dat`, `../docs`.
 
 ### ccache
 
-If you're recompiling DCSS many times (eg while developing features), `ccache`
+If you're recompiling many times (eg while developing features), `ccache`
 can significantly speed up this process. It is generally easy to install and
 set up.
 
@@ -492,7 +505,7 @@ On macOS, run `brew install ccache` and follow the instructions to update your
 
 ### Installing For All Users
 
-You might want to install DCSS if you want to allow all users on your machine
+You might want to install DC Chili if you want to allow all users on your machine
 to play it.
 
 Use `make install prefix=/usr/local` to build and install DCSS.
@@ -523,7 +536,7 @@ the generated executable file.
 
 ### .des level compiler
 
-DCSS uses a level compiler to read the level design (.des) files in the
+DC Chili uses a level compiler to read the level design (.des) files in the
 `source/dat` directory.
 
 If you're using one of standard makefile, the steps described in this section
@@ -550,7 +563,7 @@ Code coverage requires some more package to be installed. See
 
 ### Lua
 
-The Lua source is included with DCSS. It will be used if you don't have Lua
+The Lua source is included with DC Chili. It will be used if you don't have Lua
 headers installed. Note that we don't provide security support for Lua, and
 thus if you run a public server or a kiosk, it is strongly recommended to use
 system Lua which does receive security updates from whatever distribution you
@@ -559,7 +572,7 @@ use.
 ### PCRE
 
 PCRE 8.12, with a custom build system but otherwise unchanged, is included with
-DCSS. It is enabled by default on Windows; otherwise, unless you build with
+DC Chili. It is enabled by default on Windows; otherwise, unless you build with
 `BUILD_PCRE=y` (to use the contrib) or `USE_PCRE=y` (to use a development
 package from your manager), the system POSIX regex will be used.
 
@@ -573,7 +586,7 @@ LC_ALL=en_US.UTF-8`.
 
 On Windows, the console behaves differently for TrueType and legacy (bitmap)
 fonts. The latter (mostly) work only on certain language editions of Windows,
-such as English, and even there, they work adequately only for DCSS's default
+such as English, and even there, they work adequately only for DC Chili's default
 settings. For anything more, please select one of TrueType fonts. If, like one
 of our players, you are deeply attached to the looks of bitmap fonts, you can
 [download a corrected version of the Terminal
