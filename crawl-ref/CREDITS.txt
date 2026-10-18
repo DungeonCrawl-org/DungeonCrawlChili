@@ -1,4 +1,3 @@
-Dungeon Crawl Chili is a fork of DCSS.
 For a list of DCSS credits, see: 
   https://github.com/crawl/crawl/blob/master/crawl-ref/CREDITS.txt
 
@@ -8,3 +7,5 @@ Here are the founding members for DC Chili:
  * MrSquiggles: Developer
  * Red Eye: Developer and Graphics Artist
  * kuniqs: Tester
+
+* For the Lignifite species design and its player sprite: Bcadren and Zeldest

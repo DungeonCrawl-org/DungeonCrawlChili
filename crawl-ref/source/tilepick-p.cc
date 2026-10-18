@@ -573,6 +573,8 @@ tileidx_t tilep_species_to_base_tile(int sp, int level)
         return TILEP_BASE_COGLIN;
     case SP_POLTERGEIST:
         return TILEP_BASE_POLTERGEIST;
+    case SP_LIGNIFITE:
+        return TILEP_BASE_LIGNIFITE;
     case SP_SILENT_SPECTRE:
         return TILEP_BASE_SILENT_SPECTRE;
     case SP_REVENANT:
@@ -958,7 +960,12 @@ void tilep_calc_flags(const dolls_data &doll, int flag[])
     if (doll.parts[TILEP_PART_HELM] >= TILEP_HELM_FHELM_OFS)
         flag[TILEP_PART_BEARD] = TILEP_FLAG_HIDE;
 
-    if (is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_BASE_NAGA)
+    if (is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_BASE_LIGNIFITE))
+    {
+        flag[TILEP_PART_BOOTS] = flag[TILEP_PART_LEG] = TILEP_FLAG_HIDE;
+        flag[TILEP_PART_HAIR] = flag[TILEP_PART_BEARD] = TILEP_FLAG_HIDE;
+    }
+    else if (is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_BASE_NAGA)
         || is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_BASE_GALE_CENTAUR)
         || is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_TRAN_WEREWOLF_NAGA)
         || is_player_tile(doll.parts[TILEP_PART_BASE], TILEP_TRAN_WEREWOLF_GALE_CENTAUR))

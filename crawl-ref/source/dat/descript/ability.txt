@@ -1126,3 +1126,22 @@ always perform a Howl afterward.
 
 Can only target an enemy who is afraid, and who has at least one occupiable tile
 adjacent to them.
+
+%%%%
+Plant Roots ability
+
+Plants your roots in solid ground, granting AC +8, an additional 1 HP/turn of
+regeneration, and stasis. You cannot move or change shape while rooted, and
+stasis prevents teleportation, blinking, haste, slow and paralysis.
+
+This ability requires XL 12 and costs 3 MP. You must have a natural tree body
+and cannot plant roots while airborne or standing in water or lava.
+
+You can still fight and cast spells while rooted. Uprooting takes eight turns,
+so planting roots is a commitment rather than a quick escape.
+%%%%
+Uproot ability
+
+Spends eight turns extracting your roots so you can move again. Your rooting
+bonuses and stasis remain active until you finish. If you stop partway through,
+you remain rooted; another attempt must start over.

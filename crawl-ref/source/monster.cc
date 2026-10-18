@@ -3325,7 +3325,9 @@ int monster::base_evasion() const
     // attack.
     if (type == MONS_POOKA && props.exists("pooka_spirit_form")
         && props["pooka_spirit_form"].get_int())
+    {
         base_ev += 5;
+    }
 
     // draconians combine base & class ac values.
     if (mons_is_draconian_job(type))

@@ -1,0 +1,71 @@
+enum: SP_LIGNIFITE
+monster: MONS_SHAMBLING_MANGROVE
+name: Lignifite
+short_name: Li
+adjective: Lignin
+genus: Tree
+difficulty: Advanced
+difficulty_priority: 30
+species_flags:
+  - no_hair
+  - no_blood
+  - no_bones
+aptitudes:
+  xp: -1
+  hp: -1
+  mp_mod: 1
+  wl: 4
+  short_blades: -1
+  long_blades: -2
+  axes: -3
+  maces_and_flails: 1
+  staves: 1
+  ranged weapons: -2
+  armour: -2
+  dodging: -1
+  hexes: -1
+  necromancy: -2
+  translocations: -2
+  shapeshifting: -2
+  fire_magic: -2
+  ice_magic: -1
+  earth_magic: 1
+  alchemy: 2
+  invocations: 1
+  evocations: -1
+size: little
+str: 13
+int: 9
+dex: 3
+levelup_stat_frequency: 4
+levelup_stats:
+  - str
+  - int
+mutations:
+  1:
+    MUT_POISON_RESISTANCE: 1
+    MUT_TORMENT_RESISTANCE: 2
+    MUT_DEFORMED: 1
+    MUT_HEAT_VULNERABILITY: 1
+fake_mutations:
+  - long: You grow larger, sturdier and slower at XL 5, 10, 15, 20 and 25.
+    short: growing tree
+  - long: Your bark and shielding branches grow stronger with experience.
+    short: bark and branches
+  - long: At XL 12 you can root yourself for AC +8, regeneration and stasis. Uprooting takes eight turns.
+    short: rooting at XL 12
+  - long: You are a living plant, immune to hostile draining and able to breathe without air.
+    short: living plant
+recommended_jobs:
+  - fighter
+  - monk
+  - berserker
+  - alchemist
+  - summoner
+  - earth elementalist
+recommended_weapons:
+  - maces and flails
+  - polearms
+  - staves
+child_name: Sapling
+orc_name: Orcwood

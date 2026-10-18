@@ -4358,6 +4358,10 @@ tileidx_t tileidx_ability(const ability_type ability)
         return TILEG_ABILITY_CACOPHONY;
     case ABIL_BAT_SWARM:
         return TILEG_ABILITY_BAT_SWARM;
+    case ABIL_PLANT_ROOTS:
+        return TILEG_ABILITY_DIG;
+    case ABIL_UPROOT:
+        return TILEG_ABILITY_SHAFT_SELF;
     case ABIL_ENKINDLE:
         return TILEG_ABILITY_ENKINDLE;
     case ABIL_WATERY_GRAVE:
@@ -4945,6 +4949,8 @@ static tileidx_t _tileidx_player_species_base(const species_type species)
             return TILEG_SP_COGLIN;
         case SP_POLTERGEIST:
             return TILEG_SP_POLTERGEIST;
+        case SP_LIGNIFITE:
+            return TILEG_SP_LIGNIFITE;
         case SP_SILENT_SPECTRE:
             return TILEG_SP_SILENT_SPECTRE;
         case SP_REVENANT:

@@ -82,5 +82,6 @@ enum species_type
     SP_REVENANT,
     SP_GALE_CENTAUR,
         SP_SILENT_SPECTRE,
+    SP_LIGNIFITE,
 
     // Auto-generated enums start here

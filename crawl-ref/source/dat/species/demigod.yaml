@@ -3,7 +3,7 @@ monster: MONS_DEMIGOD
 name: Demigod
 short_name: Dg
 adjective: Divine
-difficulty: Advanced
+difficulty: Intermediate
 difficulty_priority: 80
 aptitudes:
   xp: -2

@@ -2523,9 +2523,11 @@ void process_command(command_type cmd, command_type prev_cmd)
         {
 #ifdef USE_TILE_WEB
             if (is_death_replay())
+            {
                 set_death_replay_recommendation(yesno(
                     "Do you recommend to other players to play this Death Replay save?",
                     true, 'n'));
+            }
 #endif
             player_die(KILLED_BY_QUITTING);
         }

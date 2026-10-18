@@ -1,6 +1,7 @@
 #include "AppHdr.h"
 
 #include "status.h"
+#include "lignifite.h"
 
 #include "ability.h"
 #include "art-enum.h" // bearserk
@@ -229,6 +230,14 @@ bool fill_status_info(int status, status_info& inf)
     // completing or overriding the defaults set above.
     switch (status)
     {
+    case STATUS_ROOTED:
+        if (!lignifite_rooted()) break;
+        inf.light_colour = LIGHTGREEN;
+        inf.light_text = "Rooted";
+        inf.short_text = "rooted";
+        inf.long_text = "Your roots grant AC +8, regeneration and stasis, but you cannot move. Uprooting takes eight turns.";
+        break;
+
     case STATUS_STAT_ZERO:
     {
         if (!you.attribute[ATTR_STAT_ZERO])

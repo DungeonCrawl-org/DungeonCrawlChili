@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "transform.h"
+#include "lignifite.h"
 
 #include <cstdio>
 #include <cstring>
@@ -2036,6 +2037,12 @@ string cant_transform_reason(transformation which_trans,
 bool check_transform_into(transformation which_trans, bool involuntary,
                           const item_def* talisman)
 {
+    if (lignifite_rooted() && which_trans != you.form)
+    {
+        mpr("You must uproot yourself before changing shape.");
+        return false;
+    }
+
 
     if (!involuntary && talisman && you.active_talisman()
             && !check_warning_inscriptions(*you.active_talisman(), OPER_REMOVE))

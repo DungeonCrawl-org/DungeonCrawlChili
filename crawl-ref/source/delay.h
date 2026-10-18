@@ -626,6 +626,17 @@ public:
     }
 };
 
+class UprootDelay : public Delay
+{
+    bool prompted = false;
+    void finish() override;
+    bool invalidated() override;
+public:
+    explicit UprootDelay(int dur) : Delay(dur) { }
+    bool try_interrupt(bool force) override;
+    const char* name() const override { return "uproot"; }
+};
+
 class ShaftSelfDelay : public Delay
 {
     void start() override;

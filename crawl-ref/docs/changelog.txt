@@ -3,6 +3,8 @@ Stone Soup 0.35 (through 0.35-a0-1245-e467b9c7cb )
 
 Highlights
 ----------
+* A new species: Lignifites, growing treefolk adapted from BcadrenCrawl.
+  They grow larger, tougher and slower, and can root themselves from XL 12.
 * A new species: Gale Centaurs, customisable descendants of the Four Winds.
 * Two new shapeshifting backgrounds: Mystics and Stalkers.
 * A new portal: Gulch.

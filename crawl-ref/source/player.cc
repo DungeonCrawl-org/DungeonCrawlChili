@@ -4,9 +4,11 @@
 **/
 
 #include "AppHdr.h"
+
 #include "death-recap.h"
 
 #include "player.h"
+#include "lignifite.h"
 
 #include <algorithm>
 #include <cctype>
@@ -1390,6 +1392,8 @@ static int _player_bonus_regen()
 
     // Fast heal mutation.
     rr += you.get_mutation_level(MUT_REGENERATION) * REGEN_PIP;
+    if (lignifite_rooted())
+        rr += 100;
 
     rr += get_form()->regen_bonus();
 
@@ -2094,7 +2098,9 @@ int player_movement_speed(bool check_terrain, bool include_temp, int scale)
     mv += you.wearing_ego(OBJ_ARMOUR, SPARM_PONDEROUSNESS);
 
     // Mutations: -2, -3, -4, unless innate and shapechanged.
-    if (int fast = you.get_mutation_level(MUT_FAST))
+    const int growth = lignifite_natural_body()
+                       ? lignifite_growth_stage(you.experience_level) : 3;
+    if (int fast = max(you.get_mutation_level(MUT_FAST), max(0, 3 - growth)))
         mv -= fast + 1;
 
     // Move to scaled calculation.
@@ -2109,7 +2115,7 @@ int player_movement_speed(bool check_terrain, bool include_temp, int scale)
         mv += 2 * scale + min(div_rand_round(piety * scale, 20), 8 * scale);
     }
 
-    if (int slow = you.get_mutation_level(MUT_SLOW)
+    if (int slow = you.get_mutation_level(MUT_SLOW) + max(0, growth - 3)
                    + you.has_mutation(MUT_FROG_LEGS)
                    + you.has_mutation(MUT_CONSTRICTING_TAIL) * 2)
     {
@@ -2520,6 +2526,9 @@ int player_shield_class(int scale, bool random, bool include_temp)
     const item_def *shield_item = you.shield();
     if (shield_item)
         shield += _sh_from_shield(*shield_item);
+
+    if (lignifite_natural_body())
+        shield += lignifite_branch_sh(you.experience_level) * 200;
 
     // mutations
     // +4, +6, +8 (displayed values)
@@ -3899,7 +3908,7 @@ bool player::faith(bool items) const
 /// Does the player have permastasis?
 bool player::stasis() const
 {
-    return species == SP_FORMICID;
+    return species == SP_FORMICID || lignifite_rooted();
 }
 
 bool player::can_burrow() const
@@ -6699,6 +6708,9 @@ int player::racial_ac(bool include_temp) const
     if (species == SP_NAGA && !suppress)
         return 100 * experience_level / 3; // max 9
 
+    if (species == SP_LIGNIFITE && !suppress)
+        return 100 * lignifite_bark_ac(experience_level);
+
     return 0;
 }
 
@@ -6870,6 +6882,9 @@ int player::armour_class() const
 int player::armour_class_scaled(int scale) const
 {
     int AC = base_ac(100);
+
+    if (lignifite_rooted())
+        AC += 800;
 
     if (duration[DUR_ICY_ARMOUR])
     {
@@ -7399,7 +7414,8 @@ bool player::res_polar_vortex() const
 
 bool player::res_petrify(bool include_temp) const
 {
-    return get_mutation_level(MUT_STONE_BODY)
+    return (include_temp && lignifite_rooted())
+           || get_mutation_level(MUT_STONE_BODY)
            || cur_form(include_temp)->res_petrify()
            || is_insubstantial();
 }
@@ -8301,7 +8317,7 @@ bool player::can_drink(bool include_temp) const
 
 bool player::is_stationary() const
 {
-    return form == transformation::tree;
+    return form == transformation::tree || lignifite_rooted();
 }
 
 bool player::cannot_move() const

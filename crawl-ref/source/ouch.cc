@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+
 #include "death-recap.h"
 
 #include "ouch.h"
@@ -498,6 +499,13 @@ bool drain_player(int power, bool announce_full, bool ignore_protection, bool qu
 {
     if (crawl_state.disables[DIS_AFFLICTIONS])
         return false;
+
+    if (you.species == SP_LIGNIFITE && !ignore_protection)
+    {
+        if (announce_full && !quiet)
+            canned_msg(MSG_YOU_RESIST);
+        return false;
+    }
 
     const int protection = ignore_protection ? 0 : player_prot_life();
 
