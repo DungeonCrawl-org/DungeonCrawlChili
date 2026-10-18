@@ -8221,6 +8221,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_UFETUBI_SWARM:
         sumcount2 = random_range(3, 4);
+
         for (sumcount = 0; sumcount < sumcount2; ++sumcount)
         {
             mgen_data mg(MONS_UFETUBUS, SAME_ATTITUDE(mons), mons->pos(),
@@ -8246,6 +8247,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         if (!foe)
             return;
         sumcount2 = 2 + random2(mons->spell_hd(spell_cast) / 4 + 1);
+
         duration  = min(2 + mons->spell_hd(spell_cast) / 5, 6);
         for (int i = 0; i < sumcount2; ++i)
         {
@@ -8430,9 +8432,8 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     case SPELL_SUMMON_HOLIES: // Holy monsters.
         sumcount2 = 1 + random2(2); // sequence point
         sumcount2 += random2(mons->spell_hd(spell_cast) / 4 + 1);
-
-        // Spell has a summon cap of 4
-        sumcount2 = min(sumcount2, 4);
+        // Account for the summon cap.
+        sumcount2 = clamp_to_unsummoned_limit(sumcount2, mons, spell_cast);
 
         duration  = min(2 + mons->spell_hd(spell_cast) / 5, 6);
         for (int i = 0; i < sumcount2; ++i)
