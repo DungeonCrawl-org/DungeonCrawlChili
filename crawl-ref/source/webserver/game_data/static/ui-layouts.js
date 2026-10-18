@@ -854,7 +854,11 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
     {
         var $popup = $(".templates > .formatted-scroller").clone();
         var $body = $popup.children(".body");
-        var body_html = util.formatted_string_to_html(desc.text);
+        var description = desc.tag === "postmortem_help"
+            ? "Request a one-page analysis. Select More complete analysis below for a deeper review. "
+                + "Attached ttyrec excerpts are sampled, with finer detail at the end."
+            : desc.text;
+        var body_html = util.formatted_string_to_html(description);
         if (desc.highlight !== "")
         {
             var rexp = '[^\n]*('+desc.highlight+')[^\n]*\n?';
@@ -882,7 +886,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
 
         if (desc.tag === "coaching_help" || desc.tag === "postmortem_help")
             coaching.install_controls($popup, desc.coaching_prompt, desc.tag === "postmortem_help",
-                desc.postmortem_full_prompt, desc.postmortem_ttyrec_url, desc.postmortem_analysis);
+                desc.postmortem_full_prompt, desc.postmortem_ttyrec_url);
 
         var s = scroller($body[0]);
         var scroll_elem = s.scrollElement;

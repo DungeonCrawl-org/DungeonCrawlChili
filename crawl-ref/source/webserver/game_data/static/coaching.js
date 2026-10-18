@@ -7,8 +7,6 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
     var loading = false;
     var load_error = "";
     var generation = 0;
-    var next_analysis_request = 0;
-    var receive_analysis = null;
     var providers = {
         chatgpt: { name: "ChatGPT", url: "https://chatgpt.com/" },
         claude: { name: "Claude", url: "https://claude.ai/" },
@@ -22,9 +20,6 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             selected_provider = saved_provider;
     } catch (ignored) {}
     comm.register_handlers({
-        postmortem_analysis_result: function (message) {
-            if (!client.is_watching() && receive_analysis) receive_analysis(message);
-        },
         coaching_context: function (message) {
             prompt = typeof message.prompt === "string" ? message.prompt : "";
             if (active_popup)
@@ -55,7 +50,6 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
         loading = false;
         load_error = "";
         generation++;
-        receive_analysis = null;
     });
     $(document).on("game_init.coaching", function () {
         $("#coaching-help").prop("disabled", client.is_watching())
@@ -67,10 +61,25 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             });
     });
 
-    function install_controls(popup, popup_prompt, postmortem, full_prompt, automatic_recording_url, analysis_service)
+    function install_controls(popup, popup_prompt, postmortem, full_prompt, automatic_recording_url)
     {
         if (client.is_watching())
             return;
+        if (postmortem) {
+            // Apply the current format to prompts from games already running.
+            var number_lessons = function (text) {
+                if (typeof text !== "string") return text;
+                var evidence = text.indexOf("\n\nBEGIN FINAL MORGUE\n");
+                if (evidence < 0) return text;
+                return text.slice(0, evidence).replace(
+                    "line followed by a blank line. Do not use tools, browse or play the ",
+                    "line followed by a blank line. Within the lessons section, label the "
+                    + "three lessons a), b), c); do not continue the numbered section list. "
+                    + "Do not use tools, browse or play the ") + text.slice(evidence);
+            };
+            popup_prompt = number_lessons(popup_prompt);
+            full_prompt = number_lessons(full_prompt);
+        }
         if (typeof popup_prompt === "string" && popup_prompt.length) {
             prompt = popup_prompt;
             // Discard any older morgue request still in flight.
@@ -79,7 +88,6 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             load_error = "";
         }
         active_popup = popup;
-        receive_analysis = null;
         popup.off(".coaching");
         var controls = popup.children(".more").empty();
         var status = $("<div>").attr("role", "status").appendTo(controls);
@@ -135,9 +143,6 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
         var detailed = false;
         var depth_button;
         var reading_recording = false;
-        var file_generation = 0;
-        var advice_button;
-        var analysis_request = null;
 
         function update_context()
         {
@@ -159,7 +164,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             update_context();
             depth_button.text(detailed ? "Use one-page summary [D]" : "More complete analysis [D]");
             status.text(detailed
-                ? "More complete analysis selected. Request in-game analysis or use Copy and open."
+                ? "More complete analysis selected. Use Copy and open to request it."
                 : "One-page summary selected.");
         }
 
@@ -172,43 +177,8 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             var automatic_recording = hostname === "dcf.dungeoncrawlforks.org"
                 && typeof automatic_recording_url === "string"
                 && /^\/postmortem-ttyrec\?/.test(automatic_recording_url);
-            var recording_label = $("<label>").text("Optional ttyrec (uncompressed .ttyrec, up to 50 MiB): ").appendTo(controls);
-            recording_label.on("click", function (event) { event.stopPropagation(); });
-            var recording = $("<input>").attr({ type: "file", "aria-label": "Post-mortem ttyrec recording" }).appendTo(recording_label);
-            recording.on("cancel", function (event) {
-                event.stopPropagation();
-                copy_button[0].focus();
-            });
-            recording.on("change", function (event) {
-                event.stopPropagation();
-                copy_button[0].focus();
-                var file = this.files && this.files[0];
-                if (!file) return;
-                var request_id = ++file_generation;
-                if (file.size > 50*1024*1024) { reading_recording = false; status.text("Recording exceeds 50 MiB; current context retained."); return; }
-                reading_recording = true;
-                status.text("Reading recording locally...");
-                file.arrayBuffer().then(function (data) {
-                    if (request_id !== file_generation) return;
-                    return ttyrec.read ? ttyrec.read(data) : ttyrec.transcript(data);
-                }).then(function (excerpts) {
-                    if (request_id !== file_generation) return;
-                    recording_excerpts = excerpts;
-                    update_context();
-                    reading_recording = false;
-                    status.text("Recording attached locally. Sampled screen excerpts included, with finer detail at the end.");
-                }).catch (function (error) {
-                    if (request_id !== file_generation) return;
-                    reading_recording = false;
-                    status.text("Could not read recording: " + error.message + " Current context retained. Decompress .gz/.bz2 files first.");
-                });
-            });
-            $("<button>").attr("type", "button").text("Use morgue only")
-                .on("click", function (event) {
-                    event.stopPropagation(); file_generation++; reading_recording = false;
-                    recording_excerpts = null; update_context(); recording.val("");
-                    status.text("Morgue-only analysis selected; no recording included.");
-                }).appendTo(controls);
+            var recording_status = $("<div>").attr("role", "status")
+                .text("Included: final morgue.").appendTo(controls);
         }
         var provider_label = $("<label>").text("AI service: ").appendTo(controls);
         var provider_select = $("<select>").attr("aria-label", postmortem ? "Post-Mortem Analysis AI service" : "Coaching AI service")
@@ -224,7 +194,6 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
                 return;
             selected_provider = id;
             open_button.text("Copy and open " + providers[id].name + " [B]");
-            if (advice_button) advice_button.prop("hidden", id !== "chatgpt");
             status.text("");
             try {
                 window.localStorage.setItem("coaching-provider", id);
@@ -272,63 +241,22 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
         var copy_button = $("<button>").attr("type", "button").text(postmortem ? "Copy analysis context [C]" : "Copy dump [C]")
             .on("click", function (event) { event.stopPropagation(); copy(false); })
             .appendTo(controls);
-        var in_game_analysis = postmortem && window.location.hostname.toLowerCase() === "dcf.dungeoncrawlforks.org"
-            && analysis_service && analysis_service.available === true;
-        function ask_analysis()
-        {
-            if (!in_game_analysis || selected_provider !== "chatgpt") return;
-            if (analysis_request !== null) {
-                comm.send_message("cancel_postmortem_analysis", { request_id: analysis_request });
-                return;
-            }
-            if (reading_recording) { status.text("Wait for the recording to finish loading."); return; }
-            analysis_request = ++next_analysis_request;
-            advice_button.text("Cancel analysis [G]");
-            answer.hide();
-            status.text("Requesting in-game analysis from DCF's AI account...");
-            comm.send_message("request_postmortem_analysis", { request_id: analysis_request, prompt: copy_prompt });
-        }
-        if (in_game_analysis) {
-            advice_button = $("<button>").attr("type", "button").text("Get in-game analysis [G]")
-                .prop("hidden", selected_provider !== "chatgpt")
-                .on("click", function (event) { event.stopPropagation(); ask_analysis(); }).appendTo(controls);
-            if (!analysis_service.configured)
-                $("<div>").text("In-game analysis is waiting for DCF's API account setup.").appendTo(controls);
-        }
         var open_button = $("<button>").attr("type", "button")
             .text("Copy and open " + providers[selected_provider].name + " [B]")
             .on("click", function (event) { event.stopPropagation(); copy(true); })
             .appendTo(controls);
         if (depth_button)
             depth_button.appendTo(controls);
-        var answer = $("<pre>").attr({ tabindex: "0", "aria-label": "Post-Mortem Analysis result" })
-            .css({ whiteSpace: "pre-wrap", maxHeight: "40vh", overflowY: "auto", textAlign: "left" })
-            .hide().appendTo(controls);
-        if (in_game_analysis) receive_analysis = function (message) {
-            if (analysis_request === null || message.request_id !== analysis_request) return;
-            analysis_request = null;
-            advice_button.text("Get in-game analysis [G]");
-            if (message.ok && typeof message.message === "string" && message.message.length <= 24000) {
-                answer.text(message.message).show();
-                status.text("Post-Mortem Analysis is ready.");
-                answer[0].focus();
-            } else {
-                status.text(typeof message.message === "string" ? message.message : "Analysis failed. Try again or use the browser.");
-            }
-        };
         $("<button>").attr("type", "button").text("Return [Esc]")
             .on("click", function (event) {
                 event.stopPropagation();
-                if (analysis_request !== null)
-                    comm.send_message("cancel_postmortem_analysis", { request_id: analysis_request });
                 comm.send_message("key", { keycode: 27 });
             }).appendTo(controls);
         if (automatic_recording) {
-            var automatic_request = ++file_generation;
             var controller = new AbortController();
             var automatic_timeout = setTimeout(function () { controller.abort(); }, 20000);
             reading_recording = true;
-            status.text("Loading this game's ttyrec automatically...");
+            recording_status.text("Included: final morgue. Loading session ttyrec...");
             fetch(automatic_recording_url, { cache: "no-store", credentials: "same-origin",
                 signal: controller.signal })
                 .then(function (response) {
@@ -336,30 +264,20 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
                     return response.arrayBuffer();
                 }).then(function (data) {
                     clearTimeout(automatic_timeout);
-                    if (automatic_request !== file_generation) return;
                     if (data.byteLength > 50 * 1024 * 1024)
                         throw new Error("Recording exceeds 50 MiB");
                     return ttyrec.read ? ttyrec.read(data) : ttyrec.transcript(data);
                 }).then(function (excerpts) {
-                    if (automatic_request !== file_generation) return;
                     recording_excerpts = excerpts;
                     update_context();
                     reading_recording = false;
-                    status.text("This session's ttyrec is attached automatically. "
-                        + "Sampled screens include finer detail at the end.");
+                    recording_status.text("Included: final morgue and session ttyrec (attached automatically).");
                 }).catch(function () {
-                    if (automatic_request !== file_generation) return;
                     reading_recording = false;
-                    status.text("Automatic ttyrec loading failed. Morgue-only analysis is available; "
-                        + "you can also choose a recording manually.");
+                    recording_status.text("Included: final morgue. Session ttyrec unavailable.");
                 }).finally(function () { clearTimeout(automatic_timeout); });
         }
         popup.on("keydown.coaching keypress.coaching", function (event) {
-            if (event.target === answer[0]
-                && ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].indexOf(event.key) !== -1) {
-                event.stopImmediatePropagation();
-                return;
-            }
             if ($(event.target).is("button")
                 && (event.key === " " || event.key === "Spacebar"
                     || event.key === "Enter" || event.which === 32 || event.which === 13)) {
@@ -378,11 +296,6 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             if ($(event.target).is("textarea"))
                 return;
             var key = (event.key || String.fromCharCode(event.which)).toLowerCase();
-            if (in_game_analysis && !event.ctrlKey && !event.altKey && !event.metaKey && key === "g") {
-                event.preventDefault(); event.stopImmediatePropagation();
-                if (event.type === "keydown") ask_analysis();
-                return false;
-            }
             if (depth_button && !event.ctrlKey && !event.altKey && !event.metaKey && key === "d") {
                 event.preventDefault();
                 event.stopImmediatePropagation();
