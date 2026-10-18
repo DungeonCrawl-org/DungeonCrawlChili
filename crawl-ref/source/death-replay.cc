@@ -223,7 +223,9 @@ static void _prune_replay_archive(const string &archive_dir)
         string stem;
         if (_checkpoint_stem(filename, stem)
             && std::find(deaths.begin(), deaths.end(), stem) == deaths.end())
+        {
             deaths.push_back(stem);
+        }
     }
     // Player names precede timestamps in morgue filenames, so sort by the
     // timestamp suffix to retain the newest deaths across the whole server.
@@ -276,7 +278,9 @@ bool start_queued_death_replay(const string &player_name)
             || !starts_with(filename, prefix)
             || filename.substr(date_start, 1) != "-"
             || filename.substr(filename.size() - 4) != ".txt")
+        {
             return false;
+        }
         const string archive_player = filename.substr(prefix.size(),
                                                        date_start - prefix.size());
         const string date = filename.substr(date_start + 1, 15);
@@ -284,7 +288,9 @@ bool start_queued_death_replay(const string &player_name)
             || !std::all_of(date.begin(), date.end(), [](char c) {
                 return c == '-' || (c >= '0' && c <= '9');
             }))
+        {
             return false;
+        }
         return prepare_death_replay(file);
     }
     const string prefix = "morgue-" + player_name + "-";

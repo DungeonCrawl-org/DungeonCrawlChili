@@ -147,6 +147,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/lang-fake.cc \
     $(CRAWL_PATH)/lev-pand.cc \
     $(CRAWL_PATH)/libutil.cc \
+    $(CRAWL_PATH)/lignifite.cc \
     $(CRAWL_PATH)/loading-screen.cc \
     $(CRAWL_PATH)/lookup-help.cc \
     $(CRAWL_PATH)/los.cc \

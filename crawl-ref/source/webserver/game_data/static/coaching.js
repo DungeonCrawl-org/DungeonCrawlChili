@@ -272,7 +272,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
                     update_context();
                     reading_recording = false;
                     recording_status.text("Included: final morgue and session ttyrec (attached automatically).");
-                }).catch(function () {
+                }).catch (function () {
                     reading_recording = false;
                     recording_status.text("Included: final morgue. Session ttyrec unavailable.");
                 }).finally(function () { clearTimeout(automatic_timeout); });

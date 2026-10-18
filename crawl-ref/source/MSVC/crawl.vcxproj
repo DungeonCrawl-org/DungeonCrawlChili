@@ -461,6 +461,7 @@ python.exe util/gen-all.py</Command>
     <ClCompile Include="..\prompt.cc" />
     <ClCompile Include="..\libgui.cc" />
     <ClCompile Include="..\libutil.cc" />
+    <ClCompile Include="..\lignifite.cc" />
     <ClCompile Include="..\libw32c.cc">
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
@@ -809,6 +810,7 @@ python.exe util/gen-all.py</Command>
     <ClInclude Include="..\libconsole.h" />
     <ClInclude Include="..\libunix.h" />
     <ClInclude Include="..\libutil.h" />
+    <ClInclude Include="..\lignifite.h" />
     <ClInclude Include="..\libw32c.h" />
     <ClInclude Include="..\loading-screen.h" />
     <ClInclude Include="..\lookup-help.h" />

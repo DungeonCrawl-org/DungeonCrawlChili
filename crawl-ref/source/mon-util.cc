@@ -2115,8 +2115,10 @@ mon_attack_def mons_attack_spec(const monster& m, int attk_number,
     }
 
     if (mon.type == MONS_POOKA && attk_number == 0)
+    {
         attk.damage = mon.props.exists("pooka_spirit_form")
                       && mon.props["pooka_spirit_form"].get_int() ? 3 : 7;
+    }
 
     // Vampires get a bite aux in addition to normal attacks.
     if (mon.has_ench(ENCH_VAMPIRE_THRALL)

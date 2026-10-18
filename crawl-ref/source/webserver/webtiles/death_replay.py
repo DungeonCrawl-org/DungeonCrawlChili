@@ -1,9 +1,9 @@
 """Find archived death checkpoints for the Webtiles lobby."""
 
-import os
-import re
 import fcntl
 import json
+import os
+import re
 import tempfile
 
 _SPECIES_NAMES = sorted((

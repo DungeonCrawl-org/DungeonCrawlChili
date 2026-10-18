@@ -439,7 +439,9 @@ NORETURN void end_game(scorefile_entry &se)
     string replay_morgue_dir = morgue_directory();
     while (replay_morgue_dir.size() > 1
             && (replay_morgue_dir.back() == '/' || replay_morgue_dir.back() == '\\'))
+    {
         replay_morgue_dir.pop_back();
+    }
     const string replay_archive = catpath(
         catpath(get_parent_directory(replay_morgue_dir), "death-replay"),
         replay_name);
@@ -526,9 +528,11 @@ NORETURN void end_game(scorefile_entry &se)
 
 #ifdef USE_TILE_WEB
     if (is_death_replay() && you.wizard && !non_death)
+    {
         set_death_replay_recommendation(yesno(
             "Do you recommend to other players to play this Death Replay save?",
             true, 'n'));
+    }
 
     if (!death_replay_pending())
     {
