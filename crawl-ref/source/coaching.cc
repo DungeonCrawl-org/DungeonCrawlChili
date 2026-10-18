@@ -38,7 +38,9 @@ string postmortem_prompt(const string &dump, bool include_recording, bool detail
               "asking for additional files. ")
         + "Title the report Post-Mortem Analysis. "
           "Use short numbered section titles, each on its own "
-          "line followed by a blank line. Do not use tools, browse or play the "
+          "line followed by a blank line. Within the lessons section, label the "
+          "three lessons a), b), c); do not continue the numbered section list. "
+          "Do not use tools, browse or play the "
           "game. Give plain text.\n\n"
           "BEGIN FINAL MORGUE\n" + dump + "\nEND FINAL MORGUE\n"
         + (include_recording ? "\nRECORDING: No ttyrec supplied.\n" : "");

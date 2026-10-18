@@ -78,6 +78,23 @@ function fixture({ watching = false, clipboardFails = false, legacyCopy = false,
 }
 
 async function main() {
+    const numbering = fixture();
+    const numberingPopup = new Element();
+    const oldFormat = "Use short numbered section titles, each on its own "
+        + "line followed by a blank line. Do not use tools, browse or play the game. ";
+    const evidence = "\n\nBEGIN FINAL MORGUE\nNotes: " + oldFormat + "\nEND FINAL MORGUE\n";
+    numbering.module.install_controls(numberingPopup, oldFormat + evidence, true, "Detailed: " + oldFormat + evidence);
+    numberingPopup.trigger("keydown", { key: "c" });
+    assert(numbering.copied[0].includes("three lessons a), b), c)"));
+    assert(numbering.copied[0].endsWith(evidence), "Formatting changes must leave evidence untouched");
+    numberingPopup.trigger("keydown", { key: "d" });
+    numberingPopup.trigger("keydown", { key: "c" });
+    assert(numbering.copied[1].startsWith("Detailed: "));
+    assert(numbering.copied[1].includes("three lessons a), b), c)"));
+    const formatted = numbering.copied[1];
+    numbering.module.install_controls(numberingPopup, formatted, true);
+    numberingPopup.trigger("keydown", { key: "c" });
+    assert.equal(numbering.copied[2], formatted, "Already updated prompts must stay unchanged");
     // Analysis must work immediately on a shared server with no custom recording handler.
     const standalone = fixture({ fetchFails: true });
     const standalonePopup = new Element();
@@ -89,38 +106,20 @@ async function main() {
     assert.equal(standalone.fetched.length, 0);
     assert.equal(standalone.messages.length, 0, "No shared-server recording request is needed");
     assert(!standalone.handlers.postmortem_recording);
-    const service = fixture({ hostname: "dcf.dungeoncrawlforks.org" });
-    const servicePopup = new Element();
-    service.module.install_controls(servicePopup, finalMorgue, true, "Full " + finalMorgue,
-        undefined, { available: true, configured: true });
-    servicePopup.trigger("keydown", { key: "g" });
-    const analysisRequest = service.messages.at(-1);
-    assert.equal(analysisRequest.type, "request_postmortem_analysis");
-    assert.equal(analysisRequest.data.prompt, finalMorgue);
-    assert.equal(service.opened.length, 0, "In-game analysis must not open a browser");
-    service.handlers.postmortem_analysis_result({ request_id: analysisRequest.data.request_id + 1,
-        ok: true, message: "Stale result" });
-    const serviceAnswer = servicePopup.more.nodes.find(n => n.attrs["aria-label"] === "Post-Mortem Analysis result");
-    assert(!serviceAnswer.visible);
-    service.handlers.postmortem_analysis_result({ request_id: analysisRequest.data.request_id,
-        ok: true, message: "1. Cause\n\n<script>literal evidence</script>" });
-    assert(serviceAnswer.visible);
-    assert.equal(serviceAnswer.label, "1. Cause\n\n<script>literal evidence</script>");
-    assert(serviceAnswer.focused);
-    servicePopup.trigger("keydown", { key: "d" });
-    servicePopup.trigger("keydown", { key: "G" });
-    assert.equal(service.messages.at(-1).data.prompt, "Full " + finalMorgue);
-    servicePopup.trigger("keydown", { key: "g" });
-    assert.equal(service.messages.at(-1).type, "cancel_postmortem_analysis");
-    const provider = servicePopup.more.nodes.find(n => n.tag === "label" && n.nodes.some(c => c.tag === "select")).nodes[0];
-    provider.val("claude").trigger("change");
-    assert(servicePopup.more.nodes.find(n => n.label === "Cancel analysis [G]").attrs.hidden);
-    const nonDcfService = fixture({ hostname: "crawl.xtahua.com" });
-    const nonDcfServicePopup = new Element();
-    nonDcfService.module.install_controls(nonDcfServicePopup, finalMorgue, true, "", undefined,
-        { available: true, configured: true });
-    nonDcfServicePopup.trigger("keydown", { key: "g" });
-    assert.equal(nonDcfService.messages.length, 0);
+    // Old servers may still advertise the removed service. Ignore it entirely.
+    for (const configured of [false, true]) {
+        const service = fixture({ hostname: "dcf.dungeoncrawlforks.org" });
+        const servicePopup = new Element();
+        service.module.install_controls(servicePopup, finalMorgue, true, "Full " + finalMorgue,
+            undefined, { available: true, configured });
+        servicePopup.trigger("keydown", { key: "g" });
+        servicePopup.trigger("keydown", { key: "G" });
+        assert.equal(service.messages.length, 0, "G must not request in-game analysis");
+        assert(!service.handlers.postmortem_analysis_result);
+        assert(!servicePopup.more.nodes.some(n => /in-game|API account|Remove ttyrec/i.test(n.label || "")));
+        servicePopup.trigger("keydown", { key: "c" });
+        assert.equal(service.copied[0], finalMorgue);
+    }
     const automaticUrl = "/postmortem-ttyrec?player=RoGGa&file=2026-10-17.11%3A51%3A01.ttyrec";
     const automatic = fixture({ hostname: "dcf.dungeoncrawlforks.org",
         fetchResult: () => Promise.resolve({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) }) });
@@ -128,6 +127,8 @@ async function main() {
     automatic.module.install_controls(automaticPopup, finalMorgue, true, "Full " + finalMorgue, automaticUrl);
     assert.deepEqual(automatic.fetched, [automaticUrl]);
     assert(!automaticPopup.more.nodes.some(n => n.tag === "a"));
+    assert(!automaticPopup.more.nodes.some(n => n.nodes.some(c => c.tag === "input")));
+    assert(!automaticPopup.more.nodes.some(n => n.label === "Remove ttyrec from analysis"));
     automaticPopup.trigger("keydown", { key: "c" });
     assert.equal(automatic.copied.length, 0, "Do not copy while automatic attachment is incomplete");
     automaticPopup.trigger("keydown", { key: "d" });
@@ -136,25 +137,22 @@ async function main() {
     assert(automatic.copied[0].startsWith("Full Final morgue"));
     assert(automatic.copied[0].includes("BEGIN TTYREC EXCERPTS"));
     assert(!automatic.copied[0].includes("No ttyrec supplied"));
-    automaticPopup.more.nodes.find(n => n.label === "Use morgue only").trigger("click");
+    automaticPopup.trigger("keydown", { key: "d" });
     automaticPopup.trigger("keydown", { key: "c" });
-    assert.equal(automatic.copied[1], "Full " + finalMorgue);
+    assert(automatic.copied.at(-1).startsWith("Final morgue"));
+    assert(automatic.copied.at(-1).includes("BEGIN TTYREC EXCERPTS"), "Depth changes preserve the recording");
+    automaticPopup.trigger("keydown", { key: "d" });
+    automaticPopup.trigger("keydown", { key: "c" });
+    assert(automatic.copied.at(-1).startsWith("Full Final morgue"));
+    assert(automatic.copied.at(-1).includes("BEGIN TTYREC EXCERPTS"));
+    assert(!automaticPopup.more.nodes.some(n => /Remove ttyrec/.test(n.label || "")));
     const automaticFailure = fixture({ hostname: "dcf.dungeoncrawlforks.org", fetchFails: true });
     const failurePopup = new Element();
     automaticFailure.module.install_controls(failurePopup, finalMorgue, true, "", automaticUrl);
     await new Promise(resolve => setImmediate(resolve));
     failurePopup.trigger("keydown", { key: "c" });
     assert.equal(automaticFailure.copied[0], finalMorgue, "Automatic failure must leave morgue-only analysis usable");
-    let finishAutomatic;
-    const cancelled = fixture({ hostname: "dcf.dungeoncrawlforks.org",
-        fetchResult: () => new Promise(resolve => { finishAutomatic = resolve; }) });
-    const cancelledPopup = new Element();
-    cancelled.module.install_controls(cancelledPopup, finalMorgue, true, "", automaticUrl);
-    cancelledPopup.more.nodes.find(n => n.label === "Use morgue only").trigger("click");
-    finishAutomatic({ ok: true, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) });
-    await new Promise(resolve => setImmediate(resolve));
-    cancelledPopup.trigger("keydown", { key: "c" });
-    assert.equal(cancelled.copied[0], finalMorgue, "Late automatic response must respect Use morgue only");
+    assert(failurePopup.more.nodes.some(n => n.label === "Included: final morgue. Session ttyrec unavailable."));
     for (const hostname of ["crawl.xtahua.com", "crawl.project357.org"]) {
         const shared = fixture({ hostname });
         shared.module.install_controls(new Element(), finalMorgue, true, "", automaticUrl);
@@ -170,19 +168,6 @@ async function main() {
     depthPopup.more.nodes.find(n => n.label === "More complete analysis [D]").trigger("click");
     depthPopup.trigger("keydown", { key: "c" });
     assert.equal(depth.copied.at(-1), full, "Full analysis retains the complete morgue");
-    const depthUpload = depthPopup.more.nodes.find(n => n.tag === "label" && n.nodes.some(c => c.tag === "input")).nodes[0];
-    depthUpload.files = [{ size: 50, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) }];
-    depthUpload.trigger("change");
-    await new Promise(resolve => setImmediate(resolve));
-    depthPopup.trigger("keydown", { key: "D" });
-    depthPopup.trigger("keydown", { key: "c" });
-    assert(depth.copied.at(-1).startsWith("At most 200 words"));
-    assert(depth.copied.at(-1).includes("BEGIN TTYREC EXCERPTS"), "Switching depth preserves attached recording");
-    depthPopup.trigger("keydown", { key: "d" });
-    depthPopup.trigger("keydown", { key: "c" });
-    assert(depth.copied.at(-1).startsWith("In depth, up to 1200 words"));
-    assert(depth.copied.at(-1).includes("BEGIN TTYREC EXCERPTS"));
-    depthPopup.more.nodes.find(n => n.label === "Use morgue only").trigger("click");
     depthPopup.trigger("keydown", { key: "b" });
     assert.equal(depth.copied.at(-1), full);
     assert.equal(depth.opened.at(-1)[0], "https://chatgpt.com/");
@@ -204,36 +189,11 @@ async function main() {
         const otherPopup = new Element();
         other.module.install_controls(otherPopup, morgue, true);
         assert(!otherPopup.more.nodes.some(n => n.tag === "a"), "Do not link another server's recordings");
-        assert(otherPopup.more.nodes.some(n => n.nodes.some(c => c.tag === "input")),
-            "Keep manual recording uploads available");
+        assert(!otherPopup.more.nodes.some(n => n.nodes.some(c => c.tag === "input")),
+            "Manual recording uploads have been removed");
     }
-    const upload = postPopup.more.nodes.find(n => n.tag === "label" && n.nodes.some(c => c.tag === "input")).nodes[0];
-    const uploadLabel = postPopup.more.nodes.find(n => n.nodes.includes(upload));
-    let pickerClickStopped = false;
-    uploadLabel.trigger("click", {stopPropagation() { pickerClickStopped = true; }});
-    assert(pickerClickStopped, "Opening the picker must not reach the popup click-to-close handler");
-    const postCopyButton = postPopup.more.nodes.find(n => n.label === "Copy analysis context [C]");
-    upload.trigger("cancel");
-    assert(postCopyButton.focused, "Cancelling the picker restores focus for popup shortcuts");
-    postCopyButton.focused = false;
-    upload.files = [{ size: 50, arrayBuffer: () => Promise.resolve(new ArrayBuffer(12)) }];
-    upload.trigger("change");
-    assert(postCopyButton.focused, "Selecting a file restores popup shortcut focus");
-    postPopup.trigger("keydown", { key: "b" });
-    assert.equal(post.opened.length, 0, "Do not copy incomplete context while loading");
-    await new Promise(resolve => setImmediate(resolve));
     postPopup.trigger("keydown", { key: "c" });
-    assert(post.copied[0].includes("BEGIN TTYREC EXCERPTS"));
-    assert(post.copied[0].includes("HP: -2/50"));
-    assert(!post.copied[0].includes("No ttyrec supplied"));
-    upload.files = [{ size: 20, arrayBuffer: () => Promise.reject(new Error("Truncated")) }];
-    upload.trigger("change");
-    await new Promise(resolve => setImmediate(resolve));
-    postPopup.trigger("keydown", { key: "c" });
-    assert.equal(post.copied[0], post.copied[1], "Failed upload retains previous context");
-    postPopup.more.nodes.find(n => n.label === "Use morgue only").trigger("click");
-    postPopup.trigger("keydown", { key: "c" });
-    assert.equal(post.copied[2], morgue);
+    assert.equal(post.copied[0], morgue);
     const player = fixture();
     player.document.trigger("game_init");
     player.launch.trigger("click");
