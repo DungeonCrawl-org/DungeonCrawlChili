@@ -11,7 +11,7 @@ _SPECIES_NAMES = sorted((
     "Deep Dwarf", "Deep Elf", "Demigod", "Demonspawn", "Djinni",
     "Felid", "Formicid", "Gale Centaur", "Gargoyle", "Ghoul", "Gnoll",
     "Green Draconian", "Grey Draconian", "Halfling", "Hill Orc", "High Elf",
-    "Human", "Kobold", "Lava Orc", "Mayflytaur", "Merfolk", "Meteoran",
+    "Human", "Kobold", "Lava Orc", "Lignifite", "Mayflytaur", "Merfolk", "Meteoran",
     "Minotaur", "Mottled Draconian", "Mountain Dwarf", "Mummy", "Naga",
     "Octopode", "Oni", "Pale Draconian", "Poltergeist", "Purple Draconian",
     "Red Draconian", "Revenant", "Silent Spectre", "Sludge Elf", "Spriggan",
