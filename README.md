@@ -41,10 +41,9 @@ It is possible to compile in the traditional Console mode but that version isn't
 ## Community
 
 * Our official homepage: [dungeoncrawlchili.org](https://www.dungeoncrawlchili.org/)
-  * Online webtiles play (recommended)
+  * Online WebTiles play (recommended)
   * Offline downloads
-  * Our community forum: [tavern.dcss.io](https://tavern.dcss.io/)
-* [/r/Dungeon Crawl discord](https://discord.gg/79uNk5HJeh)
+* [Dungeon Crawl discord](https://discord.gg/79uNk5HJeh)
 * The [/r/dungeoncrawl subreddit](https://www.reddit.com/r/dungeoncrawl/)
 
 ## How you can help
@@ -98,9 +97,9 @@ Please be sure to read [docs/develop/coding_conventions.md](crawl-ref/docs/devel
 
 ## License and history information
 
-Crawl is licensed as GPLv2+. See [LICENSE](LICENSE) for the full text.
+DC Chili is licensed as GPLv2+. See [LICENSE](LICENSE) for the full text.
 
-Crawl is a descendant of Linley's Dungeon Crawl. The final alpha of Linley's Dungeon Crawl (v4.1) was released by Brent Ross in 2005. Since 2006, the Dungeon Crawl Stone Soup team has continued development. [CREDITS.txt](crawl-ref/CREDITS.txt) contains a full list of contributors.
+DC Chili is a descendant of Linley's Dungeon Crawl and the first fork DCSS. The final alpha of Linley's Dungeon Crawl (v4.1) was released by Brent Ross in 2005. Since 2006, the Dungeon Crawl Stone Soup team has continued development. [CREDITS.txt](crawl-ref/CREDITS.txt) contains a full list of contributors.
 
 Crawl uses the following open source packages; thanks to their developers:
 
