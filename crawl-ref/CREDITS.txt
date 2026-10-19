@@ -9,5 +9,5 @@ Here are the founding members for DC Chili:
  * kuniqs: Tester
 
 * For the Silent Sceptre and Lignifite species design and its player sprite: Bcadren and Zeldest
-* For the Fairy species and its player sprite: Bhauth
-* For the Archaeologist background and dusty tome sprite: BCrawl contributors
+* For the Fairy species and its player sprite: Realz and Bhauth
+* For the Archaeologist background and dusty tome sprite: Bhauth
