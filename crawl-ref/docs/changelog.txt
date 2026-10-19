@@ -3,6 +3,8 @@ Stone Soup 0.35 (through 0.35-a0-1245-e467b9c7cb )
 
 Highlights
 ----------
+* A new background: Archaeologist, imported from BCrawl. They start with
+  exploration equipment and decipher a dusty tome into acquirement at XL 5.
 * A new species: Fairies, imported from BCrawl. Small flying spellcasters with
   cheaper spells, shimmering defensive scales and no body armour.
 * A new species: Lignifites, growing treefolk adapted from BcadrenCrawl.

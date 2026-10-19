@@ -3,9 +3,15 @@
 #include "jobs.h"
 
 #include "errors.h"
+#include "invent.h"
+#include "item-name.h"
 #include "item-prop.h"
+#include "item-status-flag-type.h"
+#include "items.h"
 #include "libutil.h"
 #include "mapdef.h"
+#include "makeitem.h"
+#include "message.h"
 #include "ng-setup.h"
 #include "playable.h"
 #include "player.h"
@@ -15,6 +21,64 @@
 
 #include "job-def.h"
 #include "job-data.h"
+
+// Decode the original starting item, rather than creating a new reward on
+// every level gain. A dropped tome can still be decoded when picked up later.
+bool archaeologist_decode_tome(item_def& tome, bool quiet)
+{
+    if (you.char_class != JOB_ARCHAEOLOGIST
+        || (you.experience_level < 5 && you.max_level < 5)
+        || !tome.is_type(OBJ_MISCELLANY, MISC_DUSTY_TOME))
+    {
+        return false;
+    }
+
+    tome.base_type = OBJ_SCROLLS;
+    tome.sub_type = SCR_ACQUIREMENT;
+    tome.flags |= ISFLAG_IDENTIFIED;
+    item_colour(tome);
+    item_set_appearance(tome);
+    identify_item_type(OBJ_SCROLLS, SCR_ACQUIREMENT);
+    if (in_inventory(tome))
+    {
+        // Scrolls and evokers use separate letter assignments. Reinsert the
+        // converted item to avoid a duplicate read hotkey and merge any
+        // existing acquirement scrolls. This invalidates the tome reference.
+        item_def scroll = tome;
+        dec_inv_item_quantity(tome.link, tome.quantity);
+        if (!move_item_to_inv(scroll, true))
+            die("Unable to place the deciphered tome in inventory.");
+    }
+    you.wield_change = true;
+
+    if (!quiet)
+    {
+        mpr("You decipher the dusty tome's arcane formula. "
+            "It becomes a scroll of acquirement!");
+    }
+    return true;
+}
+
+void archaeologist_level_change()
+{
+    if (you.char_class != JOB_ARCHAEOLOGIST
+        || (you.experience_level < 5 && you.max_level < 5))
+    {
+        return;
+    }
+
+    bool decoded = false;
+    for (item_def& item : you.inv)
+        decoded |= archaeologist_decode_tome(item);
+
+    const string ready_key = "archaeologist_tome_ready";
+    if (!decoded && !you.props.exists(ready_key))
+    {
+        mpr("You can now decipher your dusty tome, "
+            "if you can find where you left it.");
+    }
+    you.props[ready_key] = true;
+}
 
 static const job_def& _job_def(job_type job)
 {

@@ -51,6 +51,7 @@
 #include "invent.h"
 #include "item-prop.h"
 #include "items.h"
+#include "jobs.h"
 #include "item-use.h"
 #include "kills.h"
 #include "level-state-type.h"
@@ -3545,6 +3546,8 @@ void level_change(bool skip_attribute_increase)
 
         learned_something_new(HINT_NEW_LEVEL);
     }
+
+    archaeologist_level_change();
 
     while (you.experience >= exp_needed(you.max_level + 1))
     {

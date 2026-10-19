@@ -1,0 +1,33 @@
+enum: JOB_ARCHAEOLOGIST
+name: "Archaeologist"
+short_name: Ac
+category: Adventurer
+category_priority: 60
+str: 3
+int: 6
+dex: 3
+equipment:
+  - "whip"
+  - "robe plus:1"
+  - "hat plus:1"
+  - "pair of boots plus:1"
+  # Curare darts replace BCrawl's blowgun and curare needles.
+  - "dart ego:curare q:6"
+  - "scroll of revelation"
+  - "dusty tome"
+recommended_species:
+  - gale centaur
+  - lignifite
+  - formicid
+  - minotaur
+  - naga
+  - vine stalker
+  - gargoyle
+  - mountain dwarf
+  - human
+skills:
+  fighting: 1
+  dodging: 3
+  stealth: 3
+  weapon: 1
+create_enum: false

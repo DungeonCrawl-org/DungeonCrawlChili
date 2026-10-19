@@ -1060,6 +1060,7 @@ static string misc_type_name(int type)
     case MISC_CONDENSER_VANE:            return "condenser vane";
     case MISC_GRAVITAMBOURINE:           return "Gell's gravitambourine";
     case MISC_SHOP_VOUCHER:              return "shop voucher";
+    case MISC_DUSTY_TOME:                return "dusty tome";
 
     default:
         return "buggy miscellaneous item";
@@ -3425,6 +3426,9 @@ bool is_useless_item(const item_def &item, bool temp, bool ident)
     }
 
     case OBJ_MISCELLANY:
+        if (item.sub_type == MISC_DUSTY_TOME)
+            return you.char_class != JOB_ARCHAEOLOGIST;
+
         if (is_xp_evoker(item) && !in_inventory(item)
             && evoker_plus(item.sub_type) >= MAX_EVOKER_ENCHANT)
         {

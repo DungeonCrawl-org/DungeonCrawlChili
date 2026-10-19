@@ -57,6 +57,7 @@ fake_mutations:
   - long: You are a living plant, immune to hostile draining and able to breathe without air.
     short: living plant
 recommended_jobs:
+  - archaeologist
   - fighter
   - monk
   - berserker

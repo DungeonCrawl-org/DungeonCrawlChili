@@ -43,6 +43,7 @@ mutations:
   8:
     MUT_FANGS: 1
 recommended_jobs:
+  - archaeologist
   - fighter
   - brigand
   - berserker

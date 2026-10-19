@@ -1013,6 +1013,9 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident,
     if (!item)
         return "";
 
+    if (item->is_type(OBJ_MISCELLANY, MISC_DUSTY_TOME))
+        return "The dusty tome is deciphered automatically at experience level 5.";
+
     // historically allowed under confusion/berserk, but why?
     if (item->is_type(OBJ_MISCELLANY, MISC_ZIGGURAT))
     {
