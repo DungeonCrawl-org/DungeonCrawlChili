@@ -8,5 +8,5 @@ Here are the founding members for DC Chili:
  * Red Eye: Developer and Graphics Artist
  * kuniqs: Tester
 
-* For the Lignifite species design and its player sprite: Bcadren and Zeldest
-* For the Fairy species and its player sprite: the BCrawl contributors
+* For the Silent Sceptre and Lignifite species design and its player sprite: Bcadren and Zeldest
+* For the Fairy species and its player sprite: Bhauth
