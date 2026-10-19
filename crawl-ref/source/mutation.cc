@@ -811,6 +811,14 @@ static vector<pair<string, string>> _get_fakemuts()
             !lignifite_natural_body()));
     }
 
+    if (you.species == SP_FAIRY)
+    {
+        const int sh = 3 + you.experience_level / 3;
+        result.push_back(_annotate_form_based({"scales SH +" + to_string(sh),
+            make_stringf("Your shimmering scales block incoming attacks. (SH +%d)", sh)},
+            form_changes_anatomy() || form_changes_substance()));
+    }
+
     if (you.racial_ac(false) > 0)
     {
         const int ac = you.racial_ac(false) / 100;
@@ -822,6 +830,7 @@ static vector<pair<string, string>> _get_fakemuts()
         string ac_str = make_stringf("Your %s. (AC +%d)", you.species == SP_NAGA
                                         ? "serpentine skin is tough"
                                         : you.species == SP_LIGNIFITE ? "bark is tough"
+                                        : you.species == SP_FAIRY ? "shimmering scales are hard"
                                         : scale_clause.c_str(),
                                         ac);
         result.push_back(_annotate_form_based({"AC +" + to_string(ac), ac_str},

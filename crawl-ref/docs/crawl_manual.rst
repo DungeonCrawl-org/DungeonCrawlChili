@@ -1647,6 +1647,20 @@ Deep Elves (DE)
    melee combat and physical defence, although they are capable at using bows
    and other ranged weapons.
 
+Fairies (Fr)
+  Fairies are small, frail spellcasters imported from BCrawl. They have -10%
+  HP, strong magic aptitudes, and spells cost 1 less MP before Brilliance is
+  applied. Level-one spells are free. Their natural flight is permanent and
+  improves evasion by 10% (at least 1 EV), but bright wings reduce stealth.
+
+  Their shimmering scales grant AC and SH that grow from 3 to 12 with
+  experience, without requiring a shield. Flight and natural defences are
+  suppressed by transformations that replace their anatomy or substance.
+  Their delicate wings prevent body armour; they can use shields, jewellery,
+  and other armour that fits their small size. They have normal movement speed.
+
+  DC Chili change: this species was imported from BCrawl.
+
 Barachim (Ba)
   Barachim are an amphibious humanoid species, spawned at the dawn of time as
   servants for the gods. Inevitably, they rebelled and fled into the mortal

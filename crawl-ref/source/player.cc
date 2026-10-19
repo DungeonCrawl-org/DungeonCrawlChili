@@ -2358,6 +2358,12 @@ static int _player_apply_evasion_multipliers(int prescaled_ev, const int scale)
         return prescaled_ev + ev_bonus;
     }
 
+    if (you.species == SP_FAIRY && you.airborne()
+        && !form_changes_anatomy() && !form_changes_substance())
+    {
+        return prescaled_ev + max(scale, prescaled_ev / 10);
+    }
+
     return prescaled_ev;
 }
 
@@ -2529,6 +2535,13 @@ int player_shield_class(int scale, bool random, bool include_temp)
 
     if (lignifite_natural_body())
         shield += lignifite_branch_sh(you.experience_level) * 200;
+
+    // SH uses twice the displayed scale. Fairy scales block without a shield.
+    if (you.species == SP_FAIRY
+        && !form_changes_anatomy() && !form_changes_substance())
+    {
+        shield += 600 + 200 * you.experience_level / 3;
+    }
 
     // mutations
     // +4, +6, +8 (displayed values)
@@ -3638,6 +3651,12 @@ int player_stealth()
     stealth += STEALTH_PIP * you.scan_artefacts(ARTP_STEALTH);
     stealth += STEALTH_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_STEALTH);
     stealth += STEALTH_PIP * you.wearing_jewellery(RING_STEALTH);
+
+    if (you.species == SP_FAIRY
+        && !form_changes_anatomy() && !form_changes_substance())
+    {
+        stealth -= STEALTH_PIP;
+    }
 
     if (you.duration[DUR_STEALTH])
         stealth += STEALTH_PIP * 2;
@@ -6711,6 +6730,9 @@ int player::racial_ac(bool include_temp) const
     if (species == SP_LIGNIFITE && !suppress)
         return 100 * lignifite_bark_ac(experience_level);
 
+    if (species == SP_FAIRY && !suppress)
+        return 300 + 100 * experience_level / 3;
+
     return 0;
 }
 
@@ -7587,7 +7609,8 @@ bool player::no_tele(bool blinking, bool include_temp) const
 
 bool player::racial_permanent_flight() const
 {
-    return has_mutation(MUT_TENGU_FLIGHT)
+    return species == SP_FAIRY && !form_changes_anatomy() && !form_changes_substance()
+        || has_mutation(MUT_TENGU_FLIGHT)
         || get_mutation_level(MUT_BIG_WINGS)
         || has_mutation(MUT_FLOAT);
 }

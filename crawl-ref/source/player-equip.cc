@@ -115,6 +115,8 @@ int count = 0;
         return 0;
 
     case SLOT_BODY_ARMOUR:
+        if (you.species == SP_FAIRY)
+            NO_SLOT("Your wings are too delicate to wear body armour.")
         if (you.has_mutation(MUT_FORMLESS))
             NO_SLOT("You can't haunt something so large.")
         if (species::is_draconian(you.species))

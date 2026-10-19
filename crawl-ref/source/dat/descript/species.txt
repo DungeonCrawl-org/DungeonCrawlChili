@@ -34,6 +34,15 @@ Draconian
 Draconians are versatile hybrids. They mature when reaching level 7 and develop
 a colour.
 %%%%
+Fairy
+
+Fairies are small, frail spellcasters with permanent flight and shimmering
+scales that shield them from attacks. Their spells cost 1 less MP, making
+level-one spells free. Their bright wings hinder stealth and prevent body
+armour, but they can use shields and other equipment that fits.
+
+<brown>DC Chili change: this species was imported from BCrawl.</brown>
+%%%%
 Formicid
 
 Formicids are humanoid ants adept at digging. Their limbs are exceptionally
@@ -133,7 +142,7 @@ Silent Spectre
 Silent Spectres are incorporeal undead whose aura of silence prevents nearby
 creatures from casting spells or reading scrolls.
 
-DC Chili change: Silent Spectre was added from the BCadren Crawl fork.
+<brown>DC Chili change: this species was imported from BCadren Crawl.</brown>
 %%%%
 Spriggan
 
@@ -158,3 +167,5 @@ Lignifites grow from quick saplings into slow, hardy trees with natural
 armour and shielding. From level 12 they can root themselves for extra
 protection and regeneration; uprooting takes eight turns. They resist poison,
 torment and hostile draining, but are vulnerable to fire.
+
+<brown>DC Chili change: this species was imported from BCadren Crawl.</brown>

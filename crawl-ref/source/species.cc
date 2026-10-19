@@ -666,6 +666,13 @@ void give_level_mutations(species_type species, int xp_level)
     if (species == SP_LIGNIFITE)
         lignifite_level_up(xp_level);
 
+    if (species == SP_FAIRY)
+    {
+        you.redraw_armour_class = true;
+        if (xp_level % 3 == 0)
+            mprf(MSGCH_INTRINSIC_GAIN, "Your shimmering scales grow stronger.");
+    }
+
     for (const auto& lum : get_species_def(species).level_up_mutations)
         if (lum.xp_level == xp_level)
         {

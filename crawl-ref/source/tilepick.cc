@@ -4951,6 +4951,8 @@ static tileidx_t _tileidx_player_species_base(const species_type species)
             return TILEG_SP_POLTERGEIST;
         case SP_LIGNIFITE:
             return TILEG_SP_LIGNIFITE;
+        case SP_FAIRY:
+            return TILEG_SP_FAIRY;
         case SP_SILENT_SPECTRE:
             return TILEG_SP_SILENT_SPECTRE;
         case SP_REVENANT:
