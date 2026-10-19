@@ -1010,7 +1010,8 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
                 // at least remove empty spans because of the above issue:
                 $button.find("span:empty").remove();
                 $button.attr("style", "grid-row:"+(button.y+1)+"; grid-column:"+(button.x+1)+";");
-                $descriptions.append("<span class='pane'> " + button.description + "</span>");
+                $descriptions.append($("<span class='pane'>").html(
+                    util.formatted_string_to_html(button.description)));
                 $button.attr("data-description-index", $descriptions.children().length - 1);
                 $button.attr("data-hotkey", ui.key_value_from_utf8(button.hotkey));
                 $button.addClass("hlc-" + button.highlight_colour);

@@ -575,6 +575,8 @@ tileidx_t tilep_species_to_base_tile(int sp, int level)
         return TILEP_BASE_POLTERGEIST;
     case SP_LIGNIFITE:
         return TILEP_BASE_LIGNIFITE;
+    case SP_FAIRY:
+        return TILEP_BASE_FAIRY;
     case SP_SILENT_SPECTRE:
         return TILEP_BASE_SILENT_SPECTRE;
     case SP_REVENANT:
@@ -643,6 +645,9 @@ void tilep_race_default(int sp, int level, dolls_data *doll)
 #endif
         case SP_DEEP_ELF:
             hair = TILEP_HAIR_ELF_WHITE;
+            break;
+        case SP_FAIRY:
+            hair = beard = 0;
             break;
         case SP_TROLL:
             hair = TILEP_HAIR_TROLL;

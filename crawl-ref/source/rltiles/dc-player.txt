@@ -189,6 +189,7 @@ cat10
 %sdir player/base
 # Keep new bases last so saved doll base indices remain stable.
 lignifite LIGNIFITE
+fairy FAIRY
 %end_ctg
 
 ###SHADOW

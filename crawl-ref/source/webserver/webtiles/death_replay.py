@@ -9,7 +9,7 @@ import tempfile
 _SPECIES_NAMES = sorted((
     "Armataur", "Barachi", "Black Draconian", "Coglin", "Centaur",
     "Deep Dwarf", "Deep Elf", "Demigod", "Demonspawn", "Djinni",
-    "Felid", "Formicid", "Gale Centaur", "Gargoyle", "Ghoul", "Gnoll",
+    "Fairy", "Felid", "Formicid", "Gale Centaur", "Gargoyle", "Ghoul", "Gnoll",
     "Green Draconian", "Grey Draconian", "Halfling", "Hill Orc", "High Elf",
     "Human", "Kobold", "Lava Orc", "Lignifite", "Mayflytaur", "Merfolk", "Meteoran",
     "Minotaur", "Mottled Draconian", "Mountain Dwarf", "Mummy", "Naga",
