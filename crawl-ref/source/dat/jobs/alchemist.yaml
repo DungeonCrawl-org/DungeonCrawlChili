@@ -12,6 +12,7 @@ spells:
   - SPELL_OLGREBS_TOXIC_RADIANCE
   - SPELL_STICKY_FLAME
 equipment:
+  - "dagger"
   - "robe"
   - "potion of magic"
 recommended_species:

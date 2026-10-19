@@ -12,6 +12,7 @@ spells:
   - SPELL_OZOCUBUS_ARMOUR
   - SPELL_SUMMON_ICE_BEAST
 equipment:
+  - "dagger"
   - "robe"
   - "potion of magic"
 recommended_species:

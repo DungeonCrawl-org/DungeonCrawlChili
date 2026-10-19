@@ -12,6 +12,7 @@ spells:
   - SPELL_SWIFTNESS
   - SPELL_AIRSTRIKE
 equipment:
+  - "dagger"
   - "robe"
   - "potion of magic"
 recommended_species:
