@@ -1465,7 +1465,14 @@ void UINewGameMenu::_render()
 
 SizeReq UINewGameMenu::_get_preferred_size(Direction dim, int prosp_width)
 {
-    return m_vbox->get_preferred_size(dim, prosp_width);
+    SizeReq size = m_vbox->get_preferred_size(dim, prosp_width);
+#ifdef USE_TILE_LOCAL
+    // A wider background picker leaves room for all three columns and their
+    // descriptions. Only the natural width grows; small windows can shrink.
+    if (m_choice_type == C_JOB && dim == HORZ)
+        size.nat = max(size.nat, 960);
+#endif
+    return size;
 }
 
 void UINewGameMenu::_allocate_region()

@@ -10,6 +10,8 @@
 
 using std::vector;
 
+struct item_def;
+
 const char *get_job_abbrev(job_type which_job);
 job_type get_job_by_abbrev(const char *abbrev);
 const char *get_job_name(job_type which_job);
@@ -21,6 +23,8 @@ bool job_has_weapon_choice(job_type job);
 bool job_gets_good_weapons(job_type job);
 void give_job_equipment(job_type job);
 void give_job_skills(job_type job);
+bool archaeologist_decode_tome(item_def& tome, bool quiet = false);
+void archaeologist_level_change();
 vector<spell_type> get_job_spells(job_type job);
 
 void job_stat_init(job_type job);

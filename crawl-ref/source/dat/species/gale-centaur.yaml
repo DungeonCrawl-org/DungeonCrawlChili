@@ -53,6 +53,7 @@ mutations:
   5:
     MUT_STAMPEDE: 1
 recommended_jobs:
+  - archaeologist
   - gladiator
   - brigand
   - stalker

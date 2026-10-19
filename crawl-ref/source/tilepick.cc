@@ -3578,6 +3578,9 @@ static tileidx_t _tileidx_misc(const item_def &item)
 
     case MISC_SHOP_VOUCHER:
         return TILE_MISC_SHOP_VOUCHER;
+
+    case MISC_DUSTY_TOME:
+        return TILE_MISC_DUSTY_TOME;
     }
 
     return TILE_ERROR;
@@ -4872,6 +4875,8 @@ static tileidx_t _tileidx_player_job_base(const job_type job)
             return TILEG_JOB_ARTIFICER;
         case JOB_DELVER:
             return TILEG_JOB_DELVER;
+        case JOB_ARCHAEOLOGIST:
+            return TILEG_JOB_ARCHAEOLOGIST;
         case JOB_HEXSLINGER:
             return TILEG_JOB_HEXSLINGER;
         case JOB_REAVER:

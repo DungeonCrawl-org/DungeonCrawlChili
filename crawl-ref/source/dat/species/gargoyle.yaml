@@ -51,6 +51,7 @@ mutations:
   14:
     MUT_BIG_WINGS: 1
 recommended_jobs:
+  - archaeologist
   - fighter
   - gladiator
   - monk

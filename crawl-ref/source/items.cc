@@ -48,6 +48,7 @@
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "item-use.h"
+#include "jobs.h"
 #include "libutil.h"
 #include "macro.h"
 #include "makeitem.h"
@@ -1761,6 +1762,8 @@ static bool _put_item_in_inv(item_def& it, int quant_got, bool quiet, bool& put_
     // sanity
     if (quant_got > it.quantity || quant_got <= 0)
         quant_got = it.quantity;
+
+    archaeologist_decode_tome(it, quiet);
 
     // attempt to put the item into your inventory.
     int inv_slot;

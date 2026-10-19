@@ -2126,6 +2126,12 @@ Delvers
   tools, and are well advised to use them to travel to earlier dungeon floors as
   quickly as possible.
 
+Archaeologists
+  Imported from BCrawl, Archaeologists begin with a whip, a +1 robe, a +1 hat,
+  +1 boots, six curare darts, a scroll of revelation, and a dusty tome. Their
+  training favours Dodging and Stealth. At experience level 5, the tome becomes
+  a scroll of acquirement; a tome left behind can be decoded on pickup later.
+
 Metamorph backgrounds
 =====================
 

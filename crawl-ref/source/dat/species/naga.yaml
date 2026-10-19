@@ -37,6 +37,7 @@ mutations:
   13:
     MUT_CONSTRICTING_TAIL: 1
 recommended_jobs:
+  - archaeologist
   - berserker
   - shapeshifter
   - enchanter

@@ -1028,6 +1028,8 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         }
 
         var $main = $popup.find(".main-items");
+        if (msg["main-items"].menu_id === "background-main")
+            $popup.addClass("background-choice");
         build_item_grid(msg["main-items"], $main, true);
         build_item_grid(msg["sub-items"], $popup.find(".sub-items"));
         scroller($main.parent()[0]);

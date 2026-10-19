@@ -4,6 +4,14 @@ Air Elementalist
 Air Elementalists have learned the Shock spell. Their electrical magic can harm
 groups of foes, while their air spells assist in fighting or fleeing enemies.
 %%%%
+Archaeologist
+
+Archaeologists seek forgotten treasures with a whip, enchanted clothing,
+curare darts and a scroll of revelation. At experience level 5, they decipher
+their dusty tome, turning it into a scroll of acquirement.
+
+<brown>DC Chili change: This background was imported from BCrawl.</brown>
+%%%%
 Artificer
 
 Artificers start with a few magic wands and a club. They'll need to find better

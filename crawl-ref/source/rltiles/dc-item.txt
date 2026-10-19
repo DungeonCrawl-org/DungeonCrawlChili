@@ -1626,3 +1626,6 @@ rune_elven UNCOLLECTED_RUNE_ELVEN
 %sdir gui/commands
 page_next ITEM_PAGE_NEXT
 page_previous ITEM_PAGE_PREVIOUS
+
+%sdir item/misc
+misc_dusty_tome MISC_DUSTY_TOME
