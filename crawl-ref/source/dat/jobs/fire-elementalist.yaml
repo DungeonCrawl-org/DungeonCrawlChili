@@ -13,6 +13,7 @@ spells:
   - SPELL_INNER_FLAME
   - SPELL_FLAME_WAVE
 equipment:
+  - "dagger"
   - "robe"
   - "potion of magic"
 recommended_species:
