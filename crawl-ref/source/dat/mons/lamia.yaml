@@ -1,0 +1,37 @@
+name: Lamia
+glyph:
+  char: N
+  colour: magenta
+flags:
+- unique
+- warm_blood
+- speaks
+- see_invis
+- female
+resists:
+  poison: 1
+exp: 3000
+species: naga
+will: invuln
+attacks:
+- type: hit
+  damage: 40
+- type: constrict
+  flavour: plain
+  damage: 12
+hd: 18
+hp_10x: 2000
+ac: 6
+ev: 10
+spells: lamia
+has_corpse: true
+shout: shout
+intelligence: human
+speed: 8
+energy:
+  attack: 8
+  spell: 8
+  missile: 8
+uses: weapons_armour
+size: large
+shape: naga

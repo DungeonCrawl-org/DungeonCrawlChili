@@ -1,0 +1,26 @@
+name: Michael
+glyph:
+  char: '@'
+  colour: lightgray
+flags:
+- unique
+- warm_blood
+- speaks
+- male
+exp: 200
+species: human
+will: 30
+attacks:
+- type: hit
+  damage: 9
+hd: 6
+hp_10x: 500
+ac: 0
+ev: 10
+has_corpse: true
+shout: shout
+intelligence: human
+uses: weapons_armour
+size: medium
+shape: humanoid
+spells: michael

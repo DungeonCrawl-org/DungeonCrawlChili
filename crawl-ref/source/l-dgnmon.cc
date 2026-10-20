@@ -230,6 +230,13 @@ static int _dgn_monster_spec(lua_State *ls)
 
 LUARET1(_dgn_max_monsters, integer, MAX_MONSTERS)
 
+static int dgn_place_retired_unique(lua_State *ls)
+{
+    lua_pushboolean(ls, place_necropolis_retired_unique(luaL_checkinteger(ls, 1))
+                       != nullptr);
+    return 1;
+}
+
 LUAFN(dgn_dismiss_monsters)
 {
     PLUARET(integer,
@@ -246,6 +253,7 @@ const struct luaL_Reg dgn_mons_dlib[] =
 { "monster_spec", _dgn_monster_spec },
 { "max_monsters", _dgn_max_monsters },
 { "dismiss_monsters", dgn_dismiss_monsters },
+{ "place_retired_unique", dgn_place_retired_unique },
 
 { nullptr, nullptr }
 };

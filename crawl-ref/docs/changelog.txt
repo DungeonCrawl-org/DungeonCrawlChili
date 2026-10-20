@@ -3,6 +3,9 @@ Stone Soup 0.35 (through 0.35-a0-1245-e467b9c7cb )
 
 Highlights
 ----------
+* Nine retired uniques return exclusively in the Necropolis: Michael, Duane,
+  Francis, Norbert, Terpsichore, Jozef, Pan, Lamia and Maud. One awake unique
+  roams each Necropolis, chosen to suit the entrance's difficulty.
 * A new background: Archaeologist, imported from BCrawl. They start with
   exploration equipment and decipher a dusty tome into acquirement at XL 5.
 * A new species: Fairies, imported from BCrawl. Small flying spellcasters with

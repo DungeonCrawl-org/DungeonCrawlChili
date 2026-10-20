@@ -1,0 +1,30 @@
+name: Terpsichore
+glyph:
+  char: W
+  colour: lightmagenta
+flags:
+- unique
+- speaks
+- see_invis
+- female
+- flies
+- insubstantial
+resists:
+  cold: 2
+exp: 1900
+species: phantom
+holiness:
+- undead
+will: 100
+attacks:
+- type: hit
+  damage: 30
+hd: 18
+hp_10x: 1400
+ac: 7
+ev: 25
+spells: terpsichore
+intelligence: human
+uses: open_doors
+size: medium
+shape: humanoid

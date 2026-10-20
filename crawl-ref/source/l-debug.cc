@@ -129,6 +129,8 @@ LUAFN(debug_generate_level)
     return 0;
 }
 
+LUAWRAP(debug_run_map_epilogues, run_map_epilogues())
+
 LUAFN(debug_reveal_mimics)
 {
     UNUSED(ls);
@@ -499,6 +501,7 @@ const struct luaL_Reg debug_dlib[] =
 { "reset_player_data", debug_reset_player_data },
 { "builder_ignore_depth", debug_builder_ignore_depth },
 { "generate_level", debug_generate_level },
+{ "run_map_epilogues", debug_run_map_epilogues },
 { "reveal_mimics", debug_reveal_mimics },
 { "los_changed", debug_los_changed },
 { "dump_map", debug_dump_map },
