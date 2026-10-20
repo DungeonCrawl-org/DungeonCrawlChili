@@ -29,9 +29,17 @@ class Element {
     children() { return this.more || (this.more = new Element()); }
     empty() { this.nodes = []; return this; }
     show() { this.visible = true; return this; }
-    hide() { this.visible = false; return this; }
+    hide() {
+        this.visible = false;
+        if (this.ownerDocument?.activeElement === this)
+            this.ownerDocument.activeElement = this.ownerDocument;
+        return this;
+    }
     select() { this.selected = true; }
-    focus() { this.focused = true; }
+    focus() {
+        this.focused = true;
+        if (this.ownerDocument) this.ownerDocument.activeElement = this;
+    }
     setSelectionRange(start, end) { this.selection = [start, end]; }
     blur() {}
     is(selector) { return this.tag === selector; }
@@ -48,8 +56,12 @@ function fixture({ watching = false, clipboardFails = false, legacyCopy = false,
     document.execCommand = () => legacyCopy;
     const launch = new Element("button");
     const messages = [], copied = [], opened = [], handlers = {}, immediate = {}, fetched = [];
-    const $ = value => value instanceof Element ? value : value === "#coaching-help" ? launch :
-        new Element(value.replace(/[<>]/g, ""));
+    const $ = value => {
+        const element = value instanceof Element ? value : value === "#coaching-help" ? launch :
+            new Element(value.replace(/[<>]/g, ""));
+        element.ownerDocument = document;
+        return element;
+    };
     let module;
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, "../game_data/static/coaching.js"), "utf8"), {
         document, AbortController, setTimeout, clearTimeout, navigator: { clipboard: { writeText(text) {
@@ -238,8 +250,38 @@ async function main() {
         assert.equal(choices.opened.length, openedBeforeCopy);
     }
     const copiedBeforeSelect = choices.copied.length;
-    choicesPopup.trigger("keydown", { key: "c", target: selector });
+    for (const key of ["ArrowUp", "ArrowDown", "Enter", " "])
+        choicesPopup.trigger("keydown", { key, target: selector });
     assert.equal(choices.copied.length, copiedBeforeSelect, "Native dropdown keys must not copy or open a tab");
+    for (const legacyCopy of [false, true]) {
+        const focused = fixture({ legacyCopy });
+        const focusedPopup = new Element();
+        focused.module.install_controls(focusedPopup, brief, true, full);
+        const dropdown = focusedPopup.more.nodes.find(node => node.tag === "label").nodes[0];
+        dropdown.focus();
+        for (const key of ["b", "B"]) {
+            const before = focused.opened.length;
+            focusedPopup.trigger("keydown", { key, target: dropdown });
+            focusedPopup.trigger("keypress", { key, target: dropdown });
+            await Promise.resolve();
+            assert.equal(focused.opened.length, before + 1, "B opens exactly one tab from a focused dropdown");
+            assert.equal(focused.document.activeElement, dropdown, "Copy restores dropdown focus");
+        }
+        focusedPopup.trigger("keydown", { key: "D", target: dropdown });
+        assert(focusedPopup.more.nodes.some(node => node.label === "Use one-page summary [D]"));
+        focusedPopup.trigger("keydown", { key: "C", target: dropdown });
+        await Promise.resolve();
+        assert.equal(focused.document.activeElement, dropdown);
+        if (!legacyCopy) assert.equal(focused.copied.at(-1), full);
+        const copyButton = focusedPopup.more.nodes.find(node => node.label === "Copy analysis context [C]");
+        copyButton.focus();
+        copyButton.trigger("click");
+        await Promise.resolve();
+        assert.equal(focused.document.activeElement, copyButton, "Copy does not leave keyboard focus on the hidden textarea");
+        const beforeModifiedKey = focused.opened.length;
+        focusedPopup.trigger("keydown", { key: "b", ctrlKey: true, target: dropdown });
+        assert.equal(focused.opened.length, beforeModifiedKey, "Keep modified browser shortcuts intact");
+    }
     const focusedButton = choicesPopup.more.nodes.find(node => node.label === "Copy and open Copilot [B]");
     for (const type of ["keydown", "keypress"]) {
         for (const [key, which] of [[" ", 32], ["Enter", 13]]) {
