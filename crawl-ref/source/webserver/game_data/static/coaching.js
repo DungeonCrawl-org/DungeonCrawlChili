@@ -203,7 +203,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
             readonly: true, rows: 5, "aria-label": postmortem ? "Post-Mortem Analysis context" : "Coaching prompt and live morgue dump"
         }).css({ width: "95%", display: "none" }).val(copy_prompt).appendTo(controls);
 
-        function fallback_copy()
+        function fallback_copy(restore_focus)
         {
             manual.show()[0].focus();
             manual[0].select();
@@ -213,6 +213,7 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
                     status.text("Copied. Paste into " + providers[selected_provider].name
                         + " to ask for advice.");
                     manual.hide();
+                    if (restore_focus) restore_focus.focus();
                     return true;
                 }
             } catch (ignored) {}
@@ -223,16 +224,18 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
         function copy(open_browser)
         {
             if (reading_recording) { status.text("Wait for the recording to finish loading."); return; }
+            var restore_focus = document.activeElement;
             // Start copying while the game tab still has focus. Open the new
             // tab synchronously in this same gesture to avoid popup blockers.
             // Synchronous selection/copy preserves the real keyboard/click
             // gesture in Safari and avoids losing focus to the new tab.
-            if (!fallback_copy() && navigator.clipboard && navigator.clipboard.writeText) {
+            if (!fallback_copy(restore_focus) && navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(copy_prompt).then(function () {
                     status.text("Copied. Paste into " + providers[selected_provider].name
                         + " to ask for advice.");
                     manual.hide();
-                }, fallback_copy);
+                    if (restore_focus) restore_focus.focus();
+                }, function () { fallback_copy(restore_focus); });
             }
             if (open_browser)
                 window.open(providers[selected_provider].url, "_blank", "noopener,noreferrer");
@@ -287,15 +290,18 @@ define(["jquery", "comm", "client", "./ttyrec"], function ($, comm, client, ttyr
                 event.stopImmediatePropagation();
                 return;
             }
-            if ($(event.target).is("select") || $(event.target).is("input")) {
+            var key = (event.key || String.fromCharCode(event.which)).toLowerCase();
+            var shortcut = !event.ctrlKey && !event.altKey && !event.metaKey
+                && (key === "b" || key === "c" || (depth_button && key === "d"));
+            if (($(event.target).is("select") && !shortcut) || $(event.target).is("input")) {
                 // Leave native dropdown navigation to the browser, without
-                // forwarding its keystrokes to the game or copy shortcuts.
+                // forwarding its keystrokes to the game. The advertised popup
+                // shortcuts also work while the closed dropdown has focus.
                 event.stopImmediatePropagation();
                 return;
             }
             if ($(event.target).is("textarea"))
                 return;
-            var key = (event.key || String.fromCharCode(event.which)).toLowerCase();
             if (depth_button && !event.ctrlKey && !event.altKey && !event.metaKey && key === "d") {
                 event.preventDefault();
                 event.stopImmediatePropagation();
