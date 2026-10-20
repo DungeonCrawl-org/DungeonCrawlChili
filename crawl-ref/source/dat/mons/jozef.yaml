@@ -1,0 +1,26 @@
+name: Jozef
+glyph:
+  char: '@'
+  colour: lightmagenta
+flags:
+- unique
+- warm_blood
+- speaks
+- male
+exp: 850
+species: human
+will: 60
+attacks:
+- type: hit
+  damage: 18
+hd: 11
+hp_10x: 900
+ac: 0
+ev: 9
+has_corpse: true
+shout: shout
+intelligence: human
+uses: weapons_armour
+size: medium
+shape: humanoid
+spells: jozef

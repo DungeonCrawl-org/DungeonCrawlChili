@@ -1,0 +1,29 @@
+name: Pan
+glyph:
+  char: c
+  colour: lightmagenta
+flags:
+- unique
+- warm_blood
+- speaks
+- male
+- archer
+- prefer_ranged
+exp: 3000
+species: satyr
+will: 80
+attacks:
+- type: hit
+  damage: 35
+hd: 18
+hp_10x: 2400
+ac: 3
+ev: 25
+spells: pan
+has_corpse: true
+shout: shout
+intelligence: human
+uses: weapons_armour
+size: medium
+shape: humanoid_tailed
+tile: satyr

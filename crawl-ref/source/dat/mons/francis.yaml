@@ -1,0 +1,27 @@
+name: Francis
+glyph:
+  char: '@'
+  colour: yellow
+flags:
+- unique
+- warm_blood
+- speaks
+- male
+- see_invis
+exp: 1500
+species: human
+will: 75
+attacks:
+- type: hit
+  damage: 19
+hd: 14
+hp_10x: 1100
+ac: 0
+ev: 10
+has_corpse: true
+shout: shout
+intelligence: human
+uses: weapons_armour
+size: medium
+shape: humanoid
+spells: francis

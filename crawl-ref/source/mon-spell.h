@@ -1996,6 +1996,67 @@ static const mon_spellbook mspell_list[] =
     },
 
     // ---------------------
+    // Retired uniques, restored exclusively to the Necropolis.
+    { MST_MICHAEL,
+      {
+        { SPELL_MAGIC_DART, 30, MON_SPELL_WIZARD },
+        { SPELL_SCORCH, 20, MON_SPELL_WIZARD },
+        { SPELL_HASTE, 15, MON_SPELL_WIZARD },
+        { SPELL_INVISIBILITY, 10, MON_SPELL_WIZARD },
+      }
+    },
+    { MST_DUANE,
+      {
+        { SPELL_MAGIC_DART, 30, MON_SPELL_WIZARD },
+        { SPELL_SLOW, 20, MON_SPELL_WIZARD },
+        { SPELL_HASTE, 20, MON_SPELL_WIZARD },
+        { SPELL_BLINK, 20, MON_SPELL_WIZARD },
+      }
+    },
+    { MST_FRANCIS,
+      {
+        { SPELL_PAIN, 20, MON_SPELL_WIZARD },
+        { SPELL_SUMMON_DEMON, 25, MON_SPELL_WIZARD },
+        { SPELL_SMITING, 15, MON_SPELL_WIZARD },
+        { SPELL_ANIMATE_DEAD, 10, MON_SPELL_WIZARD },
+        { SPELL_MINOR_HEALING, 10, MON_SPELL_WIZARD | MON_SPELL_EMERGENCY },
+      }
+    },
+    { MST_TERPSICHORE,
+      {
+        { SPELL_SHEZAS_DANCE, 35, MON_SPELL_WIZARD },
+        { SPELL_HASTE, 15, MON_SPELL_WIZARD },
+        { SPELL_CORONA, 10, MON_SPELL_WIZARD },
+        { SPELL_BLINK, 15, MON_SPELL_WIZARD },
+        { SPELL_DEFLECT_MISSILES, 10, MON_SPELL_WIZARD },
+      }
+    },
+    { MST_JOZEF,
+      {
+        { SPELL_VENOM_BOLT, 30, MON_SPELL_WIZARD },
+        { SPELL_SLOW, 20, MON_SPELL_WIZARD },
+        { SPELL_TELEPORT_OTHER, 15, MON_SPELL_WIZARD },
+        { SPELL_MINOR_HEALING, 15, MON_SPELL_WIZARD | MON_SPELL_EMERGENCY },
+      }
+    },
+    { MST_PAN,
+      {
+        { SPELL_MASS_CONFUSION, 25, MON_SPELL_WIZARD },
+        { SPELL_ENGLACIATION, 20, MON_SPELL_WIZARD },
+        { SPELL_SLEEP, 20, MON_SPELL_WIZARD },
+        { SPELL_BLINK, 15, MON_SPELL_WIZARD },
+      }
+    },
+    { MST_LAMIA,
+      {
+        { SPELL_IOOD, 25, MON_SPELL_WIZARD },
+        { SPELL_MESMERISE, 15, MON_SPELL_WIZARD },
+        { SPELL_HASTE, 15, MON_SPELL_WIZARD },
+        { SPELL_POISON_ARROW, 25, MON_SPELL_WIZARD },
+        { SPELL_BLINK, 10, MON_SPELL_WIZARD | MON_SPELL_EMERGENCY },
+      }
+    },
+
     // Uniques' spellbooks
     // ---------------------
 

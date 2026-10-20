@@ -1,0 +1,25 @@
+name: Norbert
+glyph:
+  char: '@'
+  colour: brown
+flags:
+- unique
+- warm_blood
+- speaks
+- male
+exp: 800
+species: human
+will: 60
+attacks:
+- type: hit
+  damage: 25
+hd: 10
+hp_10x: 1050
+ac: 0
+ev: 10
+has_corpse: true
+shout: shout
+intelligence: human
+uses: weapons_armour
+size: medium
+shape: humanoid

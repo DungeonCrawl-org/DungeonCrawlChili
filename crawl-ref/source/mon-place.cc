@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <set>
 
 #include "abyss.h"
 #include "areas.h"
@@ -63,6 +64,124 @@
 band_type active_monster_band = BAND_NO_BAND;
 
 static vector<int> vault_mon_types;
+
+vector<monster_type> necropolis_retired_unique_pool(int tier)
+{
+    switch (tier)
+    {
+    case 0:
+        return { MONS_MICHAEL };
+    case 1:
+        return { MONS_MICHAEL, MONS_NORBERT, MONS_JOZEF };
+    case 2:
+        return { MONS_NORBERT, MONS_JOZEF, MONS_MAUD, MONS_FRANCIS };
+    case 3:
+        return { MONS_DUANE, MONS_FRANCIS, MONS_MAUD, MONS_TERPSICHORE };
+    default:
+        return { MONS_DUANE, MONS_FRANCIS, MONS_MAUD, MONS_TERPSICHORE,
+                 MONS_PAN, MONS_LAMIA };
+    }
+}
+
+monster* place_necropolis_retired_unique(int tier)
+{
+    const string placed_key = "necropolis_retired_unique";
+    if (!player_in_branch(BRANCH_NECROPOLIS)
+        || env.properties.exists(placed_key))
+    {
+        return nullptr;
+    }
+
+    vector<monster_type> pool = necropolis_retired_unique_pool(tier);
+    erase_if(pool, [](monster_type type) {
+        return you.unique_creatures[type];
+    });
+    if (pool.empty())
+        return nullptr;
+
+    vector<coord_def> exits;
+    for (rectangle_iterator ri(1); ri; ++ri)
+        if (env.grid(*ri) == DNGN_EXIT_NECROPOLIS)
+            exits.push_back(*ri);
+    if (exits.empty())
+        return nullptr;
+
+    // Flood only open corridors from the exits. In particular, never cross
+    // closed or runed doors into a sealed ghost vault or its treasure.
+    set<coord_def> visited(exits.begin(), exits.end());
+    vector<coord_def> connected = exits;
+    for (size_t i = 0; i < connected.size(); ++i)
+    {
+        for (adjacent_iterator ai(connected[i]); ai; ++ai)
+        {
+            if (!in_bounds(*ai) || visited.count(*ai))
+                continue;
+            const auto feat = env.grid(*ai);
+            if (feat != DNGN_FLOOR && feat != DNGN_OPEN_DOOR
+                && feat != DNGN_EXIT_NECROPOLIS)
+            {
+                continue;
+            }
+            visited.insert(*ai);
+            connected.push_back(*ai);
+        }
+    }
+
+    vector<coord_def> positions;
+    for (int distance : { LOS_RADIUS + 1, 4 })
+    {
+        for (const coord_def& pos : connected)
+        {
+            if (env.grid(pos) != DNGN_FLOOR || monster_at(pos)
+                || pos == you.pos())
+            {
+                continue;
+            }
+            bool near_exit = false;
+            for (const coord_def& exit : exits)
+                near_exit |= grid_distance(pos, exit) < distance;
+            if (!near_exit)
+                positions.push_back(pos);
+        }
+        if (!positions.empty())
+            break;
+    }
+    if (positions.empty())
+        return nullptr;
+
+    const auto type = *random_iterator(pool);
+    const auto pos = *random_iterator(positions);
+    monster* mon = mons_place(mgen_data(type, BEH_WANDER, pos, MHITNOT,
+                                       MG_FORCE_PLACE));
+    if (!mon)
+        return nullptr;
+    mon->foe = MHITNOT;
+    env.properties[placed_key] = static_cast<int>(type);
+
+    // Pan's archers are ordinary companions, not additional retired uniques.
+    if (type == MONS_PAN)
+    {
+        vector<coord_def> escort_positions;
+        for (const coord_def& candidate : connected)
+            if (env.grid(candidate) == DNGN_FLOOR
+                && !monster_at(candidate) && candidate != you.pos()
+                && grid_distance(candidate, pos) <= 3)
+            {
+                escort_positions.push_back(candidate);
+            }
+        shuffle_array(escort_positions);
+        for (int i = 0; i < 2; ++i)
+        {
+            if (escort_positions.empty())
+                break;
+            const coord_def escort_pos = escort_positions.back();
+            escort_positions.pop_back();
+            mons_place(mgen_data(MONS_FAUN, BEH_WANDER, escort_pos, MHITNOT,
+                                 MG_FORCE_PLACE));
+        }
+    }
+    return mon;
+}
 static vector<int> vault_mon_bases;
 static vector<level_id> vault_mon_places;
 static vector<int> vault_mon_weights;
@@ -1375,11 +1494,13 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
 
     if (mg.is_summoned())
     {
-        // Dancing weapons created by Tukima's Dance shouldn't mark their
-        // inventory as summoned so that they can drop themselves to the floor
-        // upon death.
+        // Borrowed real weapons (Tukima's Dance or Terpsichore) must fall back
+        // to the floor on death/expiry, rather than vanish as summoned gear.
+        const bool borrowed_weapon = mg.cls == MONS_DANCING_WEAPON
+                                     && mg.props.exists(TUKIMA_WEAPON);
         mon->mark_summoned(mg.summon_type, mg.summon_duration,
-                           mg.summon_type != SPELL_TUKIMAS_DANCE);
+                           !borrowed_weapon
+                           && mg.summon_type != SPELL_TUKIMAS_DANCE);
         _inherit_kmap(*mon, mg.summoner);
 
         if (mg.summon_type > 0 && mg.summoner)

@@ -4376,3 +4376,78 @@ You hear the echoes of planets behind the deafening roar of stars as it
 approaches. It is the jaws of the abyss. It brings forth crawling chaos from
 within. It is the last sight you will ever see.
 %%%%
+Michael
+
+A human magician with a modest collection of spells and an enduring desire to
+find the Orb. Even retirement could not persuade him to abandon the Dungeon.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Duane
+
+A large-eared mercenary whose simple magic belies his experience. He has found
+a quiet place to wait between contracts, though he is still ready for a fight.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Francis
+
+An aged wizard who supplements his own dark magic with demonic assistance. Do
+not confuse him with Frances; he has heard that mistake quite enough.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Norbert
+
+A veteran warrior carrying a heavy shield and a serviceable weapon. He may lack
+theatrical flourishes, but there is nothing uncertain about his blows.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Terpsichore
+
+A phantom whose dance draws nearby discarded weapons into the air to fight
+alongside her. She commands at most two dancing weapons at a time, and can
+conjure one if none are available. Real weapons fall back to the ground when
+their animation ends.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Jozef
+
+A mercenary who weakens opponents with poison and slowing magic before closing
+in with a weapon or firing his sling. He still knows a few tricks for keeping
+himself alive.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Pan
+
+The lord of the satyrs, accompanied by faun archers. His music confuses, chills
+and lulls opponents to sleep while his companions take aim.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Lamia
+
+A beautiful and murderous naga sorceress, as dangerous with her coils as with
+her powerful spells. Her long retirement has done nothing to temper her
+appetite.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>
+
+%%%%
+Maud
+
+A mysterious warrior princess from a distant kingdom, still seeking the
+legendary sword Entarex. She carries rare, enchanted weaponry and has little
+patience for interruptions.
+
+<brown>DC Chili change: This retired unique was restored and can only be found in the Necropolis.</brown>

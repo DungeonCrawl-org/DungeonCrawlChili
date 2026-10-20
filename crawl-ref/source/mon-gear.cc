@@ -567,6 +567,17 @@ int make_mons_weapon(monster_type type, int level, bool melee_only)
             { { { WPN_QUARTERSTAFF, 1 } },
             { 1, 2, 4 },
             { { SPWPN_CHAOS, 1 } } } },
+        { MONS_MICHAEL, { { { WPN_DAGGER, 1 } } } },
+        { MONS_DUANE, { { { WPN_LONG_SWORD, 1 }, { WPN_SCIMITAR, 1 } } } },
+        { MONS_FRANCIS, { NAGA_WEAPONS } },
+        { MONS_NORBERT, { { { WPN_LONG_SWORD, 1 }, { WPN_WAR_AXE, 1 } } } },
+        { MONS_JOZEF, { { { WPN_LONG_SWORD, 1 }, { WPN_GREAT_MACE, 1 } } } },
+        { MONS_MAUD, { { { WPN_DEMON_BLADE, 2 }, { WPN_DEMON_WHIP, 2 },
+                         { WPN_DEMON_TRIDENT, 2 }, { WPN_GREAT_SWORD, 1 },
+                         { WPN_BROAD_AXE, 1 } }, { 1, 1, 5 },
+                       HELL_KNIGHT_BRANDS } },
+        { MONS_LAMIA, { NAGA_WEAPONS } },
+        { MONS_PAN, { { { WPN_QUARTERSTAFF, 1 } } } },
         { MONS_JOSEPH, { { { WPN_QUARTERSTAFF, 1 } } } },
         { MONS_SPRIGGAN_DRUID, { { { WPN_QUARTERSTAFF, 1 } }, {}, {
                 { SPWPN_SPECTRAL, 1 },
@@ -1126,6 +1137,8 @@ int make_mons_weapon(monster_type type, int level, bool melee_only)
         } } },
         { MONS_FAUN, { { { WPN_SLING, 1 } } } },
         { MONS_SATYR, { { { WPN_LONGBOW, 1 } } } },
+        { MONS_PAN, { { { WPN_LONGBOW, 1 } }, { 1, 2, 5 } } },
+        { MONS_JOZEF, { { { WPN_SLING, 1 } } } },
         { MONS_CHERUB,
             { { { WPN_SLING,                    1 },
                 { WPN_SHORTBOW,                 1 },
@@ -1845,6 +1858,7 @@ static void _give_shield(monster* mon, int level)
     break;
 
     case MONS_DAEVA:
+    case MONS_NORBERT:
     case MONS_MENNAS:
         make_item_for_monster(mon, OBJ_ARMOUR, ARM_TOWER_SHIELD,
                               level * 2 + 1, 1);
@@ -2094,6 +2108,7 @@ int make_mons_armour(monster_type type, int level)
         break;
 
     case MONS_GRUM:
+    case MONS_PAN:
     case MONS_ROBIN:
     case MONS_SPRIGGAN_BERSERKER:
     case MONS_IRONBOUND_THUNDERHULK:
@@ -2104,6 +2119,9 @@ int make_mons_armour(monster_type type, int level)
         break;
 
     case MONS_ASTERION:
+    case MONS_DUANE:
+    case MONS_JOZEF:
+    case MONS_NORBERT:
     case MONS_EDMUND:
     case MONS_FRANCES:
     case MONS_RUPERT:
@@ -2133,6 +2151,7 @@ int make_mons_armour(monster_type type, int level)
     case MONS_ORC_KNIGHT:
     case MONS_ORC_WARRIOR:
     case MONS_HELL_KNIGHT:
+    case MONS_MAUD:
     case MONS_LOUISE:
     case MONS_VAMPIRE_KNIGHT:
     case MONS_JORY:
@@ -2209,6 +2228,9 @@ int make_mons_armour(monster_type type, int level)
     // Deliberate fall-through
     case MONS_NAGA_RITUALIST:
     case MONS_NAGARAJA:
+    case MONS_MICHAEL:
+    case MONS_FRANCIS:
+    case MONS_LAMIA:
         item.base_type = OBJ_ARMOUR;
         item.sub_type  = ARM_ROBE;
         break;

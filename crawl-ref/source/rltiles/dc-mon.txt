@@ -1661,3 +1661,13 @@ prune MONS_PRUNE
 jack_o_lantern MONS_JACK_O_LANTERN
 gastronaut MONS_GASTRONAUT
 crawling_zombie_skyshark MONS_SKYSHARK_CRAWLING
+
+# Restored retired uniques (append to keep existing player tile offsets).
+%sdir mon/player
+%rim 1
+michael MONS_MICHAEL
+duane MONS_DUANE
+francis MONS_FRANCIS
+norbert MONS_NORBERT
+terpsichore MONS_TERPSICHORE
+jozef MONS_JOZEF

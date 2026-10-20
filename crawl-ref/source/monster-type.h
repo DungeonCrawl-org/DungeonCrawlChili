@@ -1474,6 +1474,19 @@ enum monster_type                      // env.mons[].type
     // Appended to preserve existing monster IDs in save files.
     MONS_POOKA,
 
+    // Retired uniques restored for the Necropolis. Keep saved IDs stable.
+    MONS_MICHAEL,
+    MONS_DUANE,
+    MONS_FRANCIS,
+    MONS_NORBERT,
+    MONS_TERPSICHORE,
+    MONS_JOZEF,
+#if TAG_MAJOR_VERSION > 34
+    MONS_PAN,
+    MONS_LAMIA,
+    MONS_MAUD,
+#endif
+
     NUM_MONSTERS,               // used for polymorph
 
     // MONS_NO_MONSTER can get put in savefiles, so it shouldn't change

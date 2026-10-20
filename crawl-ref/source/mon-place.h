@@ -40,6 +40,9 @@ monster* create_monster(mgen_data mg, bool fail_msg = true);
  * *********************************************************************** */
 monster* mons_place(mgen_data mg);
 
+vector<monster_type> necropolis_retired_unique_pool(int tier);
+monster* place_necropolis_retired_unique(int tier);
+
 bool needs_resolution(monster_type mon_type);
 
 monster_type resolve_monster_type(monster_type mon_type,

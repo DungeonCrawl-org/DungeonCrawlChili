@@ -5757,8 +5757,56 @@ static void _mons_shadow_turret(monster& mons, mon_spell_slot slot, bolt&)
     create_monster(mg);
 }
 
+int terpsichore_animate_weapons(monster& caster)
+{
+    int remaining = max(0, 2 - count_summons(&caster, SPELL_SHEZAS_DANCE));
+    int animated = 0;
+    vector<int> weapons;
+    for (radius_iterator ri(caster.pos(), LOS_NO_TRANS); ri; ++ri)
+        for (stack_iterator si(*ri); si; ++si)
+            if (is_melee_weapon(*si))
+                weapons.push_back(si->index());
+
+    shuffle_array(weapons);
+    for (int index : weapons)
+    {
+        if (!remaining)
+            break;
+        item_def& item = env.item[index];
+        mgen_data mg(MONS_DANCING_WEAPON, SAME_ATTITUDE(&caster), item.pos,
+                     caster.foe);
+        // As with Tukima's Dance, this is a real weapon, which must survive
+        // the animation ending. Never turn player-dropped equipment to dust.
+        mg.set_summoned(&caster, SPELL_SHEZAS_DANCE, summ_dur(3), false);
+        mg.set_range(0, 1);
+        mg.props[TUKIMA_WEAPON] = item;
+        mg.props[TUKIMA_POWER] = 60;
+        if (create_monster(mg, false))
+        {
+            destroy_item(index);
+            ++animated;
+            --remaining;
+        }
+    }
+
+    // An empty room should not make her harmless. She can conjure a single
+    // ordinary dancing weapon when there are none to animate or command.
+    if (!animated && remaining == 2)
+    {
+        mon_spell_slot slot(SPELL_SHEZAS_DANCE, 35, MON_SPELL_WIZARD);
+        if (_summon(caster, MONS_DANCING_WEAPON, summ_dur(3), slot))
+            ++animated;
+    }
+    return animated;
+}
+
 static void _mons_summon_dancing_weapons(monster &mons, mon_spell_slot slot, bolt&)
 {
+    if (mons.type == MONS_TERPSICHORE)
+    {
+        terpsichore_animate_weapons(mons);
+        return;
+    }
     // TODO: scale by power?
     const int count = random_range(2, 4);
     for (int i = 0; i < count; i++)

@@ -291,6 +291,17 @@ function necropolis_portal_setup(e)
   e.tags("no_monster_gen no_pool_fixup")
   e.kfeat("<> = exit_necropolis")
 
+  -- One awake retired unique roams the public garden, outside the ghost
+  -- vaults. Match its original combat strength to the portal's entry tier.
+  local difficulty = dgn.persist.necropolis_difficulty
+  local tiers = { pre_temple_d = 0, pre_lair_d = 1, lair = 1, orc = 1,
+                  post_lair_d = 2, snake = 3, swamp = 3, shoals = 3,
+                  spider = 3, vaults_elf = 4, depths_crypt = 4 }
+  local tier = tiers[difficulty] or 4
+  dgn.hook_environment(dgn.map_environment(), "post_epilogue", function()
+    dgn.place_retired_unique(tier)
+  end)
+
   -- Not actually used outside of summoning;
   -- see the generic_spawns function above.
   if dgn.persist.necropolis_difficulty == "pre_temple_d" then
