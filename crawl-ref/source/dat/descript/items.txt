@@ -1145,6 +1145,11 @@ pearl dragon scales
 The nacreous scales of a pearl dragon. It grants its wearer resistance to
 negative energies.
 %%%%
+pestle
+
+An enormous enchanted pestle carried by Baba Yaga. Made for grinding ingredients
+in a mortar, it serves equally well as a great mace.
+%%%%
 phantom mirror
 
 A hand mirror which can create a reflection of a nearby creature, clouding
