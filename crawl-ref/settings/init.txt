@@ -8,8 +8,6 @@
 #
 # Death Replay is enabled by default. Set this to yes to opt out:
 # opt-out_death-replay = yes
-# Set this to yes to hide the Coaching Help hint (Shift-F1 still works):
-# opt-out_coaching-help = yes
 #
 # Crawl uses the first file of the following list as its option file:
 #  * init.txt in the -rcdir directory (if specified)

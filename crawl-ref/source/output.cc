@@ -4,7 +4,6 @@
 **/
 
 #include "AppHdr.h"
-#include "coaching.h"
 
 #include "output.h"
 
@@ -1329,11 +1328,7 @@ static void _print_status_lights(int y)
     last_number_of_lights = lights.size();
 
     size_t line_cur = y;
-    const size_t line_end = crawl_view.hudsz.y+1
-#ifdef USE_TILE_LOCAL
-        - 1 // Reserve the last row for Coaching Help.
-#endif
-        ;
+    const size_t line_end = crawl_view.hudsz.y+1;
 
     CGOTOXY(1, line_cur, GOTO_STAT);
 #ifdef ASSERTS
@@ -1639,13 +1634,6 @@ void print_stats()
 
     if (you.redraw_status_lights)
         _print_status_lights(12 - rows_hidden);
-
-#ifdef USE_TILE_LOCAL
-    CGOTOXY(1, crawl_view.hudsz.y, GOTO_STAT);
-    textcolour(LIGHTCYAN);
-    CPRINTF("%s", chop_string(coaching_help_label(), crawl_view.hudsz.x).c_str());
-    clear_to_end_of_line();
-#endif
 
 #ifndef USE_TILE_LOCAL
     assert_valid_cursor_pos();

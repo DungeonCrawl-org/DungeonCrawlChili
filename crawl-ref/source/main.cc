@@ -2102,7 +2102,7 @@ public:
             MEL_ITEM, '~', CMD_MACRO_MENU));
         add_entry(new CmdMenuEntry("Help and manual",
             MEL_ITEM, '?', CMD_DISPLAY_COMMANDS));
-#ifdef USE_TILE
+#ifdef USE_TILE_WEB
         add_entry(new CmdMenuEntry("Coaching Help [Shift-F1]",
             MEL_ITEM, 'C', CMD_COACHING_HELP));
 #endif

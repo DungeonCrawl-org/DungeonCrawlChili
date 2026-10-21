@@ -295,8 +295,10 @@ NORETURN void end_game(scorefile_entry &se)
     const bool non_death = death_type == KILLED_BY_QUITTING
                         || death_type == KILLED_BY_WINNING
                         || death_type == KILLED_BY_LEAVING;
+#ifdef USE_TILE_WEB
     const bool postmortem_available = !is_death_replay()
                                    && death_type != KILLED_BY_QUITTING;
+#endif
 
     int hiscore_index = -1;
     bool score_game = !is_death_replay();
@@ -335,7 +337,7 @@ NORETURN void end_game(scorefile_entry &se)
         tiles.send_dump_info("morgue", fname);
 #endif
 
-#ifdef USE_TILE
+#ifdef USE_TILE_WEB
     const string analysis_dump = final_character_dump(se);
 #endif
     const game_exit exit_reason = _kill_method_to_exit(death_type);
@@ -465,7 +467,7 @@ NORETURN void end_game(scorefile_entry &se)
         vbox->add_child(replay_button);
     }
 #endif
-#ifdef USE_TILE
+#ifdef USE_TILE_WEB
     if (postmortem_available)
     {
         auto analysis_button = make_shared<MenuButton>();
@@ -478,7 +480,7 @@ NORETURN void end_game(scorefile_entry &se)
     }
 #endif
     auto popup = make_shared<ui::Popup>(std::move(vbox));
-#ifdef USE_TILE
+#if defined(USE_TILE_WEB) || (defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY))
     popup->on_hotkey_event([&](const KeyEvent &event) {
 #if defined(USE_TILE) && defined(CRAWL_HAS_DEATH_REPLAY)
         if (replay_available && (event.key() == 'r' || event.key() == 'R'))
@@ -487,12 +489,14 @@ NORETURN void end_game(scorefile_entry &se)
             return true;
         }
 #endif
+#ifdef USE_TILE_WEB
         if (postmortem_available
             && (event.key() == 'p' || event.key() == 'P'))
         {
             show_postmortem_help(analysis_dump);
             return true;
         }
+#endif
         return false;
     });
 #endif
