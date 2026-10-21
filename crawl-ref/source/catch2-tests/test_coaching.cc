@@ -3,26 +3,17 @@
 
 #include "cio.h"
 #include "command-type.h"
+#include "coaching.h"
 #include "macro.h"
 
 #ifdef USE_TILE_LOCAL
 #include <SDL.h>
 #include "windowmanager-sdl.h"
-#include "coaching.h"
-#include "unwind.h"
-#include "viewgeom.h"
-
-TEST_CASE("Coaching link hit area stays within its HUD row", "[coaching]")
+TEST_CASE("Local Tiles no longer binds the AI coaching shortcut", "[coaching]")
 {
-    unwind_var<coord_def> size(crawl_view.hudsz, coord_def(40, 14));
-    CHECK(coaching_help_at(0, 13));
-    CHECK(coaching_help_at(22, 13));
-    CHECK_FALSE(coaching_help_at(0, 12));
-    CHECK_FALSE(coaching_help_at(-1, 13));
-    CHECK_FALSE(coaching_help_at(24, 13));
-    crawl_view.hudsz.x = 10;
-    CHECK(coaching_help_at(9, 13));
-    CHECK_FALSE(coaching_help_at(10, 13));
+    init_keybindings();
+    CHECK(key_to_command(CK_SHIFT_F1, KMC_DEFAULT) == CMD_NO_CMD);
+    CHECK(key_to_command(CK_F1, KMC_DEFAULT) == CMD_GAME_MENU);
 }
 
 TEST_CASE("SDL distinguishes Shift-F1 from the F1 game menu", "[coaching]")
@@ -47,7 +38,7 @@ TEST_CASE("SDL distinguishes Shift-F1 from the F1 game menu", "[coaching]")
 
 #endif
 
-#ifdef USE_TILE
+#ifdef USE_TILE_WEB
 TEST_CASE("Coaching shortcut is distinct and leaves existing keys intact", "[coaching]")
 {
     init_keybindings();
@@ -60,7 +51,7 @@ TEST_CASE("Coaching shortcut is distinct and leaves existing keys intact", "[coa
 }
 #endif
 
-#ifdef USE_TILE
+#ifdef USE_TILE_WEB
 TEST_CASE("Post-mortem instructions preserve evidence and known item properties", "[coaching]")
 {
     const string dump = "HP: -3/50\nNotes: <data>\n";
