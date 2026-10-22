@@ -117,8 +117,7 @@ and clouds away from him and filling the air with freezing vapour. His visible
 wind-up gives you time to seek cover behind solid walls. His frozen body is
 immune to cold, but vulnerable to fire.
 
-<brown>DC Chili change: Boreas is a new Unique found in Cocytus:1-5. He has a
-50% chance to drop a scroll of fog when killed.</brown>
+<brown>DC Chili change: Boreas is a new Unique found in Cocytus:1-5.</brown>
 
 %%%%
 Boris
