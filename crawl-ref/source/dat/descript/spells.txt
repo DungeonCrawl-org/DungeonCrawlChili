@@ -233,6 +233,14 @@ Bombard spell
 Blasts an iron ball toward a target. The force of the blast often sends the
 caster staggering backwards.
 %%%%
+Boreal Gale spell
+
+After gathering the wind, unleashes a freezing gale in a cone up to five paces
+long. The gale drives creatures and clouds away from the caster and carries
+fresh clouds of freezing vapour along with it. Collisions with obstacles can
+cause additional damage. Solid walls shelter creatures from the wind.
+
+%%%%
 Borgnjor's Revivification spell
 
 Instantly heals any and all wounds suffered by the caster, but also permanently

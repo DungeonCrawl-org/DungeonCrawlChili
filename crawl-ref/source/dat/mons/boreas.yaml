@@ -1,0 +1,21 @@
+name: "Boreas"
+glyph: {char: "C", colour: lightcyan}
+flags: [flies, see_invis, speaks, unique, male]
+resists: {cold: 3, elec: 1, poison: 3, fire: -1}
+exp: 3200
+holiness: [nonliving]
+will: 160
+attacks:
+ - {type: hit, flavour: cold, damage: 32}
+hd: 20
+hp_10x: 3000
+ac: 14
+ev: 18
+spells: boreas
+shout: shout
+intelligence: human
+speed: 10
+uses: open_doors
+size: large
+shape: humanoid_winged
+drop_on_death: {chance: 50, item: SCR_FOG}

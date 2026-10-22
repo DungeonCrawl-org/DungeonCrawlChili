@@ -280,6 +280,10 @@ Vhi's Electrolunge cast
 
 @The_monster@ charges forward with an electric crackle.
 %%%%
+Boreal Gale cast
+
+@The_monster@ unleashes the north wind!
+%%%%
 Wind Blast cast
 
 @The_monster@ conjures a fierce blast of wind!

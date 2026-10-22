@@ -1487,6 +1487,9 @@ enum monster_type                      // env.mons[].type
     MONS_MAUD,
 #endif
 
+    // Append new monsters to preserve saved monster IDs.
+    MONS_BOREAS,
+
     NUM_MONSTERS,               // used for polymorph
 
     // MONS_NO_MONSTER can get put in savefiles, so it shouldn't change

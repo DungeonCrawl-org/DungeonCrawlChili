@@ -3,6 +3,8 @@ Stone Soup 0.35 (through 0.35-a0-1245-e467b9c7cb )
 
 Highlights
 ----------
+* A new Unique, Boreas the North Wind, roams Cocytus:1-5. His charged Boreal
+  Gale pushes creatures and freezing clouds away from him; walls provide cover.
 * AI Coaching Help and Post-Mortem Analysis are now WebTiles-only features.
   Local Tiles no longer provides their menus, shortcuts or AI account access.
 * Nine retired uniques return exclusively in the Necropolis: Michael, Duane,

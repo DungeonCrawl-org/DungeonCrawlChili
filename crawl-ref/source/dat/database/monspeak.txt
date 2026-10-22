@@ -7780,6 +7780,22 @@ Zenata triumphant
 ##########################################
 ################## Spell-charging ##########################
 %%%%
+Boreas
+
+@The_monster@ bellows, "The north wind bends to no lord!"
+
+@The_monster@ says, "Your last breath will freeze upon your lips."
+
+@The_monster@ spreads his wings, scattering shards of frost.
+%%%%
+Boreas charge
+
+@The_monster@ draws back his wings as an icy gale gathers around him!
+%%%%
+Boreas triumphant
+
+@The_monster@ says, "All warmth fades."
+%%%%
 orb spider charge
 
 @The_monster@ spins a strand of pure energy.

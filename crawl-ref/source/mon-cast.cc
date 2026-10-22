@@ -2833,6 +2833,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
     case SPELL_AWAKEN_VINES:
     case SPELL_CAGE_OF_BRAMBLES:
     case SPELL_WIND_BLAST:
+    case SPELL_BOREAL_GALE:
     case SPELL_SUMMON_VERMIN:
     case SPELL_CALL_OGRE_AND_MULE:
     case SPELL_POLAR_VORTEX:
@@ -7073,7 +7074,12 @@ static bool _spell_charged(monster *mons)
     if (ench.ench == ENCH_NONE || ench.degree < max_mons_charge(mons->type))
     {
         if (ench.ench == ENCH_NONE)
-            mons->add_ench(mon_enchant(ENCH_SPELL_CHARGED, mons, INFINITE_DURATION));
+        {
+            // Boreas warns for one action; keep orb spiders' longer wind-up.
+            const int initial_charge = mons->type == MONS_BOREAS ? 1 : 0;
+            mons->add_ench(mon_enchant(ENCH_SPELL_CHARGED, mons,
+                                      INFINITE_DURATION, initial_charge));
+        }
         else
         {
             ench.degree++;
@@ -8682,6 +8688,23 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         _cage_of_brambles(mons);
         return;
 
+    case SPELL_BOREAL_GALE:
+    {
+        if (!foe || !cell_see_cell(mons->pos(), foe->pos(), LOS_SOLID))
+            return;
+
+        // Start the freezing vapour near Boreas so the wind carries it
+        // towards the foe, along with any clouds already in the cone.
+        targeter_cone cone(mons, 3);
+        cone.set_aim(foe->pos());
+        for (const auto &cell : cone.zapped)
+            if (cell.second > 0)
+                place_cloud(CLOUD_COLD, cell.first, random_range(3, 5), mons);
+
+        wind_blast(mons, min(splpow, 120), foe->pos());
+        return;
+    }
+
     case SPELL_WIND_BLAST:
     {
         // Wind blast is stopped by FFT_SOLID features.
@@ -9909,6 +9932,34 @@ ai_action::goodness monster_spell_goodness(monster* mon, spell_type spell)
     case SPELL_WATERSTRIKE:
         ASSERT(foe);
         return ai_action::good_or_impossible(feat_is_water(env.grid(foe->pos())));
+
+    case SPELL_BOREAL_GALE:
+    {
+        ASSERT(foe);
+        const int range = spell_range(spell, mon);
+        if (grid_distance(mon->pos(), foe->pos()) > range
+            || !mon->can_see(*foe)
+            || !cell_see_cell(mon->pos(), foe->pos(), LOS_SOLID))
+        {
+            return ai_action::impossible();
+        }
+
+        targeter_cone cone(mon, range);
+        cone.set_aim(foe->pos());
+        bool hits_foe = false;
+        for (const auto &cell : cone.zapped)
+        {
+            if (cell.second <= 0)
+                continue;
+            const actor* victim = actor_at(cell.first);
+            if (!victim)
+                continue;
+            if (mons_aligned(mon, victim))
+                return ai_action::bad();
+            hits_foe |= victim == foe;
+        }
+        return ai_action::good_or_impossible(hits_foe);
+    }
 
     // Don't use unless our foe is close to us and there are no allies already
     // between the two of us. (Otherwise, we will probably hurt those allies

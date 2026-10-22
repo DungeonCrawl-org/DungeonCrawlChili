@@ -456,6 +456,10 @@ DEPTH:  Depths, Vaults:2-, Crypt
 # Uniques which appear in neither the Dungeon nor the Depths:
 ################################################################################
 
+NAME:   uniq_boreas
+DEPTH:  Coc:1-5
+: place_unique(_G, "Boreas")
+
 NAME:   uniq_aizul
 DEPTH:  Elf, Swamp, Snake, Shoals, Spider, Vaults:1-2
 WEIGHT: 50 (Snake), 10

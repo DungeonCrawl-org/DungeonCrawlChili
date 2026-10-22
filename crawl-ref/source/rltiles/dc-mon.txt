@@ -1671,3 +1671,16 @@ francis MONS_FRANCIS
 norbert MONS_NORBERT
 terpsichore MONS_TERPSICHORE
 jozef MONS_JOZEF
+
+# Boreas: a winged figure framed by the north wind, in a winter palette.
+%sdir .
+%rim 0
+%start
+%compose mon/nonliving/air_elemental
+%hue 0 180
+%hue 30 190
+%hue 40 190
+%hue 50 190
+%compose mon/holy/angel
+%resetcol
+%finish MONS_BOREAS
