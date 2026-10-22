@@ -17,6 +17,13 @@
 #include "spl-util.h"
 #include "test_player_fixture.h"
 
+#ifdef USE_TILE
+#include "mon-info.h"
+#include "rltiles/tiledef-player.h"
+#include "tilemcache.h"
+#include "tilepick.h"
+#endif
+
 struct BoreasFixture : MockPlayerYouTestsFixture
 {
     monster* boreas;
@@ -86,6 +93,22 @@ TEST_CASE_METHOD(BoreasFixture, "Boreas has a live, cold-immune Unique definitio
     CHECK(max_mons_charge(MONS_ORB_SPIDER) == 1);
     CHECK(spell_range(SPELL_BOREAL_GALE, boreas) == 5);
 }
+
+#ifdef USE_TILE
+TEST_CASE_METHOD(BoreasFixture, "Boreas renders his sprite without a monster cache entry",
+                 "[boreas][tiles]")
+{
+    const monster_info info(boreas);
+    const tileidx_t tile = tileidx_monster(info).tile();
+    CHECK(tile == TILEP_MONS_BOREAS);
+    CHECK(get_mon_base_tile(MONS_BOREAS) == tile);
+    // Both the description and dungeon renderers treat indices at or above
+    // MCACHE_START as dynamic cache entries, falling back to a silhouette.
+    CHECK(tile < TILEP_MCACHE_START);
+    CHECK(mcache.register_monster(info) == 0);
+    CHECK(get_tile_texture(tile) == TEX_PLAYER);
+}
+#endif
 
 TEST_CASE_METHOD(BoreasFixture, "Boreal Gale warns before pushing foes and freezing clouds",
                  "[boreas]")
