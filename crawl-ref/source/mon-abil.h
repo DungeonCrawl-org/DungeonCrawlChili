@@ -22,11 +22,24 @@
 #define SLYMDRA_FAKE_HEADS_KEY "slymdra_fake_heads"
 #define SLYMDRA_SLIMES_EATEN_KEY "slymdra_slimes_eaten"
 
+#define CERBERUS_HEAD_KEY "cerberus_head"
+#define CERBERUS_READY_KEY "cerberus_ready"
+
+enum cerberus_head_type
+{
+    CERBERUS_BITE,
+    CERBERUS_BREATH,
+    CERBERUS_HOWL,
+    NUM_CERBERUS_HEADS
+};
+
 class actor;
 class monster;
 struct bolt;
 
 bool mon_special_ability(monster* mons);
+bool cerberus_action(monster& mon);
+void cerberus_grave_howl(monster& mon);
 
 void draconian_change_colour(monster* drac);
 

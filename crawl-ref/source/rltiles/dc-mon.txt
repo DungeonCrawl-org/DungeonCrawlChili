@@ -1643,6 +1643,7 @@ mule MONS_MULE
 %sdir mon/unique
 %rim 0
 boreas MONS_BOREAS
+cerberus MONS_CERBERUS
 
 %sdir misc
 %rim 1

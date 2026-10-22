@@ -29,6 +29,7 @@
 #include "english.h"
 #include "env.h"
 #include "fineff.h"
+#include "fight.h"
 #include "fprop.h"
 #include "god-abil.h"
 #include "item-prop.h"
@@ -49,6 +50,7 @@
 #include "notes.h"
 #include "ouch.h"
 #include "random.h"
+#include "shout.h"
 #include "religion.h"
 #include "spl-damage.h"
 #include "spl-summoning.h"
@@ -1134,6 +1136,120 @@ static bool _slymdra_split_or_merge(monster* mons)
     }
 
     return false;
+}
+
+// The howl rallies existing allies; it never summons or changes allegiance.
+void cerberus_grave_howl(monster& mon)
+{
+    actor* foe = mon.get_foe();
+    if (!foe || !foe->alive() || mons_aligned(&mon, foe)
+        || mon.is_silenced() || is_sanctuary(mon.pos()))
+    {
+        return;
+    }
+
+    simple_monster_message(mon, " lets out a sepulchral howl!");
+    noisy(20, mon.pos(), mon.mid);
+    for (monster_near_iterator mi(&mon, LOS_NO_TRANS); mi; ++mi)
+    {
+        if (*mi == &mon || !(mi->holiness() & MH_UNDEAD)
+            || !mons_aligned(&mon, *mi) || mi->is_peripheral()
+            || mi->cannot_act() || silenced(mi->pos())
+            || is_sanctuary(mi->pos()))
+        {
+            continue;
+        }
+
+        behaviour_event(*mi, ME_ALERT, foe, foe->pos(), false);
+    }
+}
+
+// Return true only when an action was spent. A distant foe lets the breathing
+// head take over while Cerberus approaches, rather than stalling on a bite.
+bool cerberus_action(monster& mon)
+{
+    if (mon.type != MONS_CERBERUS || mon.cannot_act() || mon.asleep()
+        || mon.confused() || mon.berserk_or_frenzied()
+        || is_sanctuary(mon.pos()))
+    {
+        return false;
+    }
+
+    actor* foe = mon.get_foe();
+    if (!foe || !foe->alive() || mons_aligned(&mon, foe)
+        || !mon.can_see(*foe) || is_sanctuary(foe->pos()))
+    {
+        return false;
+    }
+
+    const int head = mon.props.exists(CERBERUS_HEAD_KEY)
+                         ? mon.props[CERBERUS_HEAD_KEY].get_int()
+                         : CERBERUS_BITE;
+    const int range = head == CERBERUS_BITE ? 1
+                    : head == CERBERUS_BREATH ? 5 : LOS_RADIUS;
+    const int distance = grid_distance(mon.pos(), foe->pos());
+    if (head == CERBERUS_BITE && distance > 1)
+    {
+        mon.props[CERBERUS_HEAD_KEY] = CERBERUS_BREATH;
+        mon.props[CERBERUS_READY_KEY] = false;
+        return false;
+    }
+    if (distance > range
+        || !cell_see_cell(mon.pos(), foe->pos(), LOS_SOLID))
+    {
+        return false;
+    }
+
+    if (!mon.props.exists(CERBERUS_READY_KEY)
+        || !mon.props[CERBERUS_READY_KEY].get_bool())
+    {
+        static const char* warnings[] = {
+            " draws back his middle head, baring its crushing jaws!",
+            " fills his left maw with a gathering darkness!",
+            " raises his right head to call the dead!",
+        };
+        simple_monster_message(mon, warnings[head]);
+        mon.props[CERBERUS_HEAD_KEY] = head;
+        mon.props[CERBERUS_READY_KEY] = true;
+        mon.lose_energy(EUT_SPECIAL);
+        return true;
+    }
+
+    // Advance before attacking: reflected damage can kill the attacker.
+    mon.props[CERBERUS_READY_KEY] = false;
+    mon.props[CERBERUS_HEAD_KEY] = (head + 1) % NUM_CERBERUS_HEADS;
+    if (head == CERBERUS_BITE)
+    {
+        if (!mons_fight(&mon, foe) && mon.alive())
+            mon.lose_energy(EUT_SPECIAL);
+        return true; // mons_fight already charges attack energy.
+    }
+
+    if (head == CERBERUS_BREATH)
+    {
+        bolt beam = setup_targeting_beam(mon);
+        setup_mons_cast(&mon, beam, SPELL_STYGIAN_BREATH);
+        beam.target = foe->pos();
+        beam.range = range;
+        targeting_tracer tracer;
+        fire_tracer(&mon, tracer, beam);
+        if (tracer.friend_info.count == 0 && mons_should_fire(beam, tracer))
+        {
+            simple_monster_message(mon, " exhales a bolt of draining darkness!");
+            mons_cast(&mon, beam, SPELL_STYGIAN_BREATH,
+                      MON_SPELL_NATURAL, false);
+        }
+        else
+            simple_monster_message(mon, " lets the darkness in his left maw fade.");
+    }
+    else if (mon.is_silenced())
+        simple_monster_message(mon, " snaps his right maw shut without a sound.");
+    else
+        cerberus_grave_howl(mon);
+
+    if (mon.alive())
+        mon.lose_energy(EUT_SPECIAL);
+    return true;
 }
 
 bool mon_special_ability(monster* mons)

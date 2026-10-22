@@ -128,6 +128,22 @@ The same cannot be said for his many victims over his many centuries, from
 which he collects and channels their dying woes and regrets.
 
 %%%%
+Cerberus
+
+A colossal, three-headed hound whose broken bronze collar still bears the
+chains of the underworld. The dead may pass his gate in one direction only;
+the living are discouraged from approaching it at all.
+
+His heads take turns: the middle head delivers a crushing bite, the left
+breathes a bolt of draining darkness up to five paces, and the right howls to
+rally nearby allied undead. Each head visibly prepares for an action before
+attacking. An out-of-reach bite yields to the breathing head as he closes in.
+Step away from his jaws, shelter behind walls from his breath, or silence his
+howl. His current head is shown among his attributes.
+
+<brown>DC Chili change: Cerberus is a new Unique found in Tartarus:1-5.</brown>
+
+%%%%
 Cassandra
 
 As a young woman, Cassandra bound herself in service to Ashenzari and was

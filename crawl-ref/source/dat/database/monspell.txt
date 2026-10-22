@@ -280,6 +280,14 @@ Vhi's Electrolunge cast
 
 @The_monster@ charges forward with an electric crackle.
 %%%%
+Stygian Breath cast
+
+@The_monster@ exhales a bolt of draining darkness!
+%%%%
+Grave Howl cast
+
+__NONE
+%%%%
 Boreal Gale cast
 
 @The_monster@ unleashes the north wind!

@@ -241,6 +241,20 @@ fresh clouds of freezing vapour along with it. Collisions with obstacles can
 cause additional damage. Solid walls shelter creatures from the wind.
 
 %%%%
+Stygian Breath spell
+
+Breathes a piercing bolt of negative energy up to five paces. Negative energy
+resistance protects against the damage and draining; solid walls block the
+bolt. Cerberus visibly fills his left maw with darkness before releasing it.
+
+%%%%
+Grave Howl spell
+
+Calls nearby allied undead into battle against the caster's foe. Only existing
+undead within sight answer; this ability does not summon creatures or turn
+enemies into allies. Silence at the caller or listener prevents the call.
+
+%%%%
 Borgnjor's Revivification spell
 
 Instantly heals any and all wounds suffered by the caster, but also permanently

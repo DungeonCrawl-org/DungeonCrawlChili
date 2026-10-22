@@ -252,6 +252,8 @@ static bool _is_public_key(string key)
      || key == VAULT_HD_KEY
      || key == POLY_SET_KEY
      || key == NOBODY_MEMORIES_KEY
+     || key == CERBERUS_HEAD_KEY
+     || key == CERBERUS_READY_KEY
      || key == ORIGINAL_TYPE_KEY
      || key == SPLINTERFROST_POWER_KEY
      || key == TREE_POSITION_KEY)
@@ -1596,6 +1598,20 @@ vector<string> monster_info::attributes() const
                                     : NOBODY_MAX_MEMORIES;
         v.push_back(make_stringf("%d %s left", num_memories,
                                                num_memories == 1 ? "memory" : "memories"));
+    }
+
+    if (type == MONS_CERBERUS)
+    {
+        const int head = props.exists(CERBERUS_HEAD_KEY)
+                             ? props[CERBERUS_HEAD_KEY].get_int()
+                             : CERBERUS_BITE;
+        static const char* actions[] = {
+            "crushing bite", "draining breath", "grave howl"
+        };
+        const bool ready = props.exists(CERBERUS_READY_KEY)
+                           && props[CERBERUS_READY_KEY].get_bool();
+        v.push_back(make_stringf("%s: %s", ready ? "preparing" : "next head",
+                                actions[head]));
     }
 
     return v;

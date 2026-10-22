@@ -1910,6 +1910,11 @@ static bool _mons_take_special_action(monster &mons, int old_energy)
         return false;
     }
 
+    // His heads take turns preparing and acting; random spellcasting or a
+    // fallback special action must not bypass that warning.
+    if (mons.type == MONS_CERBERUS)
+        return cerberus_action(mons);
+
     // Prevents unfriendlies from nuking you from offscreen.
     // How nice!
     const bool friendly_or_near =

@@ -4838,6 +4838,28 @@ static const struct spell_desc spelldata[] =
     TILEG_WIND_BLAST,
 },
 
+{
+    SPELL_GRAVE_HOWL, "Grave Howl",
+    spschool::necromancy,
+    spflag::monster | spflag::selfench,
+    5,
+    0,
+    LOS_RADIUS, LOS_RADIUS,
+    20,
+    TILEG_HUNTING_CALL,
+},
+
+{
+    SPELL_STYGIAN_BREATH, "Stygian Breath",
+    spschool::necromancy,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
+    6,
+    200,
+    5, 5,
+    6,
+    TILEG_BOLT_OF_DRAINING,
+},
+
 #if TAG_MAJOR_VERSION == 34
 #define AXED_SPELL(tag, name) \
     { tag, name, spschool::none, spflag::none, 7, 0, -1, -1, 0, TILEG_ERROR },
