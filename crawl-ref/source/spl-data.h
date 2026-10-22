@@ -4827,6 +4827,17 @@ static const struct spell_desc spelldata[] =
     TILEG_SIROCCO,
 },
 
+{
+    SPELL_BOREAL_GALE, "Boreal Gale",
+    spschool::air | spschool::ice,
+    spflag::target | spflag::not_self | spflag::monster | spflag::cloud,
+    6,
+    120,
+    5, 5,
+    8,
+    TILEG_WIND_BLAST,
+},
+
 #if TAG_MAJOR_VERSION == 34
 #define AXED_SPELL(tag, name) \
     { tag, name, spschool::none, spflag::none, 7, 0, -1, -1, 0, TILEG_ERROR },

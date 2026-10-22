@@ -2812,4 +2812,10 @@ static const mon_spellbook mspell_list[] =
        { SPELL_INVISIBILITY, 100, MON_SPELL_WIZARD },
       }
     },
+
+    { MST_BOREAS,
+      {
+       { SPELL_BOREAL_GALE, 100, MON_SPELL_MAGICAL },
+      }
+    },
 };

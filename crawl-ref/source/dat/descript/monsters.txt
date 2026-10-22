@@ -106,6 +106,20 @@ of dividing his own form among its many colours to avoid killing blows - though
 even he must rest a while before doing so a second time.
 
 %%%%
+Boreas
+
+The North Wind given flesh: a towering, winged spirit with a beard of hoarfrost
+and a mantle of racing storm clouds. He prowls the frozen halls of Cocytus,
+claiming that even Antaeus must bow before the coming of winter.
+
+Boreas gathers the wind before unleashing his Boreal Gale, driving creatures
+and clouds away from him and filling the air with freezing vapour. His visible
+wind-up gives you time to seek cover behind solid walls. His frozen body is
+immune to cold, but vulnerable to fire.
+
+<brown>DC Chili change: Boreas is a new Unique found in Cocytus:1-5.</brown>
+
+%%%%
 Boris
 
 An ancient and powerful lich. Like all true liches, Boris is immortal, and will
