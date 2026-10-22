@@ -3,6 +3,8 @@ Stone Soup 0.35 (through 0.35-a0-1245-e467b9c7cb )
 
 Highlights
 ----------
+* A new Unique, Cerberus, roams Tartarus:1-5. His three heads prepare and cycle
+  through crushing bites, draining breath, and a howl that rallies allied undead.
 * A new Unique, Boreas the North Wind, roams Cocytus:1-5. His charged Boreal
   Gale pushes creatures and freezing clouds away from him; walls provide cover.
 * AI Coaching Help and Post-Mortem Analysis are now WebTiles-only features.

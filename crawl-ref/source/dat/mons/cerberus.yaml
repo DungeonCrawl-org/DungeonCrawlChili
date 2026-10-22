@@ -1,0 +1,22 @@
+name: "Cerberus"
+glyph: {char: "h", colour: darkgrey}
+flags: [see_invis, unblindable, unique, male]
+resists: {fire: 2, cold: 1, poison: 3, neg: 3}
+exp: 3600
+genus: hound
+holiness: [demonic]
+will: 140
+attacks:
+ - {type: bite, damage: 60}
+hd: 22
+hp_10x: 3600
+ac: 16
+ev: 14
+spells: cerberus
+shout: growl
+intelligence: human
+speed: 10
+uses: open_doors
+size: large
+shape: quadruped
+drop_on_death: {chance: 50, item: SCR_SUMMONING}

@@ -48,6 +48,7 @@
 #include "mapmark.h"
 #include "message.h"
 #include "misc.h"
+#include "mon-abil.h"
 #include "mon-act.h"
 #include "mon-ai-action.h"
 #include "mon-behv.h"
@@ -2460,6 +2461,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_DISPEL_UNDEAD:
     case SPELL_BOLT_OF_DRAINING:
     case SPELL_STICKY_FLAME:
+    case SPELL_STYGIAN_BREATH:
     case SPELL_STING:
     case SPELL_IRON_SHOT:
     case SPELL_BOMBARD:
@@ -2834,6 +2836,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
     case SPELL_CAGE_OF_BRAMBLES:
     case SPELL_WIND_BLAST:
     case SPELL_BOREAL_GALE:
+    case SPELL_GRAVE_HOWL:
     case SPELL_SUMMON_VERMIN:
     case SPELL_CALL_OGRE_AND_MULE:
     case SPELL_POLAR_VORTEX:
@@ -8688,6 +8691,10 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         _cage_of_brambles(mons);
         return;
 
+    case SPELL_GRAVE_HOWL:
+        cerberus_grave_howl(*mons);
+        return;
+
     case SPELL_BOREAL_GALE:
     {
         if (!foe || !cell_see_cell(mons->pos(), foe->pos(), LOS_SOLID))
@@ -9839,6 +9846,7 @@ ai_action::goodness monster_spell_goodness(monster* mon, spell_type spell)
 
     case SPELL_MOURNING_WAIL:
     case SPELL_BOLT_OF_DRAINING:
+    case SPELL_STYGIAN_BREATH:
     case SPELL_MALIGN_OFFERING:
     case SPELL_GHOSTLY_FIREBALL:
         ASSERT(foe);

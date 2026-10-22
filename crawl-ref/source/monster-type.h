@@ -1489,6 +1489,7 @@ enum monster_type                      // env.mons[].type
 
     // Append new monsters to preserve saved monster IDs.
     MONS_BOREAS,
+    MONS_CERBERUS,
 
     NUM_MONSTERS,               // used for polymorph
 

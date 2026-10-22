@@ -460,6 +460,10 @@ NAME:   uniq_boreas
 DEPTH:  Coc:1-5
 : place_unique(_G, "Boreas")
 
+NAME:   uniq_cerberus
+DEPTH:  Tar:1-5
+: place_unique(_G, "Cerberus")
+
 NAME:   uniq_aizul
 DEPTH:  Elf, Swamp, Snake, Shoals, Spider, Vaults:1-2
 WEIGHT: 50 (Snake), 10

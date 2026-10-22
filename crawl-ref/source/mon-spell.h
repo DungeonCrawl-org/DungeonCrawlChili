@@ -2818,4 +2818,12 @@ static const mon_spellbook mspell_list[] =
        { SPELL_BOREAL_GALE, 100, MON_SPELL_MAGICAL },
       }
     },
+
+    // Cerberus uses these through his head cycle, rather than random casting.
+    { MST_CERBERUS,
+      {
+       { SPELL_STYGIAN_BREATH, 50, MON_SPELL_NATURAL },
+       { SPELL_GRAVE_HOWL, 50, MON_SPELL_VOCAL },
+      }
+    },
 };
