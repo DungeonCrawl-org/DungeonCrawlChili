@@ -353,10 +353,6 @@ bool feat_is_dragon_vein(dungeon_feature_type feat)
  */
 command_type feat_stair_direction(dungeon_feature_type feat)
 {
-    // The Priest starts above D:1. The chapel's portal exit is a descent.
-    if (player_in_branch(BRANCH_START_TEMPLE) && feat_is_portal_exit(feat))
-        return CMD_GO_DOWNSTAIRS;
-
     if (feat_is_portal_entrance(feat)
         || feat_is_branch_entrance(feat))
     {

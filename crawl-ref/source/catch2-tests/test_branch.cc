@@ -12,11 +12,17 @@ TEST_CASE("Priest chapel exits lead to D:1", "[single-file]")
     unwind_var<branch_type> branch(you.where_are_you, BRANCH_START_TEMPLE);
     unwind_var<int> depth(you.depth, 1);
 
-    REQUIRE(feat_stair_direction(DNGN_EXIT_BAZAAR) == CMD_GO_DOWNSTAIRS);
+    REQUIRE_FALSE(feat_is_portal_exit(DNGN_STONE_STAIRS_DOWN_I));
+    REQUIRE(feat_stair_direction(DNGN_STONE_STAIRS_DOWN_I)
+            == CMD_GO_DOWNSTAIRS);
     REQUIRE(stair_destination(DNGN_STONE_STAIRS_DOWN_I, "", false)
             == level_id(BRANCH_DUNGEON, 1));
-    REQUIRE(stair_destination(DNGN_EXIT_BAZAAR, "", false)
-            == level_id(BRANCH_DUNGEON, 1));
+
+    you.where_are_you = BRANCH_DUNGEON;
+    REQUIRE(feat_stair_direction(DNGN_STONE_STAIRS_DOWN_I)
+            == CMD_GO_DOWNSTAIRS);
+    REQUIRE(stair_destination(DNGN_STONE_STAIRS_DOWN_I, "", false)
+            == level_id(BRANCH_DUNGEON, 2));
 }
 
 TEST_CASE( "is_random_subbranch_test", "[single-file]" ) {
