@@ -2451,6 +2451,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_POISON_ARROW:
     case SPELL_BOLT_OF_MAGMA:
     case SPELL_BOLT_OF_FIRE:
+    case SPELL_FUNERAL_TORCH:
     case SPELL_BOLT_OF_COLD:
     case SPELL_THROW_ICICLE:
     case SPELL_SHOCK:
@@ -2521,6 +2522,8 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_FREEZING_GUST:
     case SPELL_CORROSIVE_BLOB:
         zappy(spell_to_zap(real_spell), power, true, beam);
+        if (real_spell == SPELL_FUNERAL_TORCH)
+            beam.name = "funeral torch";
         break;
 
     case SPELL_MALMUTATE:
@@ -2838,6 +2841,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
     case SPELL_BOREAL_GALE:
     case SPELL_GRAVE_HOWL:
     case SPELL_CALL_BAILIFFS:
+    case SPELL_INCITE_FURY:
     case SPELL_SUMMON_VERMIN:
     case SPELL_CALL_OGRE_AND_MULE:
     case SPELL_POLAR_VORTEX:
@@ -8698,6 +8702,10 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_CALL_BAILIFFS:
         minos_call_bailiffs(*mons);
+        return;
+
+    case SPELL_INCITE_FURY:
+        alecto_incite_fury(*mons);
         return;
 
     case SPELL_BOREAL_GALE:

@@ -261,6 +261,19 @@ Summons up to two temporary war gargoyles to enforce Minos's verdicts.
 He announces the summons before they arrive.
 
 %%%%
+Funeral Torch spell
+
+Alecto hurls a bolt of fire at the square she marked one action earlier.
+Moving away from that square or taking cover behind a solid wall avoids it.
+
+%%%%
+Incite Fury spell
+
+Alecto shrieks to drive up to three nearby allied monsters into a brief
+berserk rage. Only existing allies capable of going berserk can answer.
+Silence at Alecto or an ally prevents the cry from affecting that ally.
+
+%%%%
 Borgnjor's Revivification spell
 
 Instantly heals any and all wounds suffered by the caster, but also permanently

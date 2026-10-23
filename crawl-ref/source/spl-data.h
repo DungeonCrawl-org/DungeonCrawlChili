@@ -4871,6 +4871,28 @@ static const struct spell_desc spelldata[] =
     TILEG_SUMMON_DEMON,
 },
 
+{
+    SPELL_FUNERAL_TORCH, "Funeral Torch",
+    spschool::conjuration | spschool::fire,
+    spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
+    6,
+    200,
+    6, 6,
+    0,
+    TILEG_BOLT_OF_FIRE,
+},
+
+{
+    SPELL_INCITE_FURY, "Incite Fury",
+    spschool::hexes,
+    spflag::monster,
+    5,
+    0,
+    LOS_RADIUS, LOS_RADIUS,
+    20,
+    TILEG_BATTLECRY,
+},
+
 #if TAG_MAJOR_VERSION == 34
 #define AXED_SPELL(tag, name) \
     { tag, name, spschool::none, spflag::none, 7, 0, -1, -1, 0, TILEG_ERROR },

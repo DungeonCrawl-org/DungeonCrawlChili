@@ -29,6 +29,17 @@
 #define MINOS_READY_KEY "minos_ready"
 #define MINOS_TARGET_KEY "minos_target"
 
+#define ALECTO_ACTION_KEY "alecto_action"
+#define ALECTO_READY_KEY "alecto_ready"
+#define ALECTO_TARGET_KEY "alecto_target"
+
+enum alecto_action_type
+{
+    ALECTO_TORCH,
+    ALECTO_CRY,
+    NUM_ALECTO_ACTIONS
+};
+
 enum minos_verdict_type
 {
     MINOS_IRON_SENTENCE,
@@ -54,6 +65,8 @@ bool cerberus_action(monster& mon);
 void cerberus_grave_howl(monster& mon);
 bool minos_action(monster& mon);
 void minos_call_bailiffs(monster& mon);
+bool alecto_action(monster& mon);
+void alecto_incite_fury(monster& mon);
 
 void draconian_change_colour(monster* drac);
 
