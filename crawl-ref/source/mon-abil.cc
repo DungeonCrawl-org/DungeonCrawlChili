@@ -1252,6 +1252,142 @@ bool cerberus_action(monster& mon)
     return true;
 }
 
+static int _minos_bailiff_count(const monster& mon)
+{
+    int count = 0;
+    for (monster_iterator mi; mi; ++mi)
+    {
+        if (mi->type == MONS_WAR_GARGOYLE
+            && mi->was_created_by(mon, SPELL_CALL_BAILIFFS))
+        {
+            ++count;
+        }
+    }
+    return count;
+}
+
+void minos_call_bailiffs(monster& mon)
+{
+    const int remaining = 2 - _minos_bailiff_count(mon);
+    int created = 0;
+    for (int i = 0; i < remaining; ++i)
+    {
+        mgen_data bailiff(MONS_WAR_GARGOYLE, SAME_ATTITUDE(&mon),
+                          mon.pos(), mon.foe);
+        bailiff.set_summoned(&mon, SPELL_CALL_BAILIFFS,
+                             random_range(80, 120));
+        if (create_monster(bailiff))
+            ++created;
+    }
+
+    if (created)
+        simple_monster_message(mon, " calls iron bailiffs to enforce his verdict!");
+    else
+        simple_monster_message(mon, " finds no room for his bailiffs.");
+}
+
+// One action announces the verdict and the next carries it out. The iron
+// sentence aims at the announced square, so moving away can evade it.
+bool minos_action(monster& mon)
+{
+    if (mon.type != MONS_MINOS || mon.cannot_act() || mon.asleep()
+        || mon.confused() || mon.berserk_or_frenzied()
+        || is_sanctuary(mon.pos()))
+    {
+        return false;
+    }
+
+    actor* foe = mon.get_foe();
+    if (!foe || !foe->alive() || mons_aligned(&mon, foe)
+        || is_sanctuary(foe->pos()))
+    {
+        mon.props[MINOS_READY_KEY] = false;
+        return false;
+    }
+
+    const bool ready = mon.props.exists(MINOS_READY_KEY)
+                       && mon.props[MINOS_READY_KEY].get_bool();
+    int verdict = mon.props.exists(MINOS_VERDICT_KEY)
+                  ? mon.props[MINOS_VERDICT_KEY].get_int()
+                  : MINOS_IRON_SENTENCE;
+    if (verdict < 0 || verdict >= NUM_MINOS_VERDICTS)
+        verdict = MINOS_IRON_SENTENCE;
+
+    if (!ready)
+    {
+        if (!mon.can_see(*foe)
+            || !cell_see_cell(mon.pos(), foe->pos(), LOS_SOLID))
+        {
+            return false;
+        }
+
+        if (verdict == MINOS_IRON_SENTENCE
+            && grid_distance(mon.pos(), foe->pos()) > 4)
+        {
+            verdict = MINOS_BIND_THE_GUILTY;
+        }
+        if (verdict == MINOS_CALL_BAILIFFS && _minos_bailiff_count(mon) >= 2)
+        {
+            verdict = grid_distance(mon.pos(), foe->pos()) <= 4
+                      ? MINOS_IRON_SENTENCE : MINOS_BIND_THE_GUILTY;
+        }
+
+        static const char* warnings[] = {
+            " fixes his scales on a square; iron shards gather above it!",
+            " raises his scales; binding chains gather around his foe!",
+            " strikes his scales and summons his bailiffs to the court!",
+        };
+        simple_monster_message(mon, warnings[verdict]);
+        mon.props[MINOS_VERDICT_KEY] = verdict;
+        mon.props[MINOS_TARGET_KEY].get_coord() = foe->pos();
+        mon.props[MINOS_READY_KEY] = true;
+        mon.lose_energy(EUT_SPECIAL);
+        return true;
+    }
+
+    mon.props[MINOS_READY_KEY] = false;
+    mon.props[MINOS_VERDICT_KEY] = (verdict + 1) % NUM_MINOS_VERDICTS;
+    if (verdict == MINOS_CALL_BAILIFFS)
+        minos_call_bailiffs(mon);
+    else
+    {
+        const spell_type spell = verdict == MINOS_IRON_SENTENCE
+                                 ? SPELL_METAL_SPLINTERS : SPELL_SLOW;
+        const coord_def target = verdict == MINOS_IRON_SENTENCE
+                                 ? mon.props[MINOS_TARGET_KEY].get_coord()
+                                 : foe->pos();
+        const int range = spell_range(spell, &mon);
+        if ((verdict == MINOS_IRON_SENTENCE || mon.can_see(*foe))
+            && grid_distance(mon.pos(), target) <= range
+            && cell_see_cell(mon.pos(), target, LOS_SOLID))
+        {
+            bolt beam = setup_targeting_beam(mon);
+            setup_mons_cast(&mon, beam, spell);
+            beam.target = target;
+            beam.range = range;
+            targeting_tracer tracer;
+            fire_tracer(&mon, tracer, beam);
+            if (tracer.friend_info.count == 0
+                && (verdict == MINOS_IRON_SENTENCE
+                    || mons_should_fire(beam, tracer)))
+            {
+                simple_monster_message(mon, verdict == MINOS_IRON_SENTENCE
+                    ? " releases a volley of iron shards at the marked square!"
+                    : " casts a binding sentence!");
+                mons_cast(&mon, beam, spell, MON_SPELL_MAGICAL, false);
+            }
+            else
+                simple_monster_message(mon, " lowers his scales without striking.");
+        }
+        else
+            simple_monster_message(mon, " loses sight of his sentence's target.");
+    }
+
+    if (mon.alive())
+        mon.lose_energy(EUT_SPECIAL);
+    return true;
+}
+
 bool mon_special_ability(monster* mons)
 {
     bool used = false;

@@ -2826,4 +2826,13 @@ static const mon_spellbook mspell_list[] =
        { SPELL_GRAVE_HOWL, 50, MON_SPELL_VOCAL },
       }
     },
+
+    // Minos chooses these through his warning and verdict cycle.
+    { MST_MINOS,
+      {
+       { SPELL_METAL_SPLINTERS, 40, MON_SPELL_MAGICAL },
+       { SPELL_SLOW, 40, MON_SPELL_MAGICAL },
+       { SPELL_CALL_BAILIFFS, 20, MON_SPELL_MAGICAL },
+      }
+    },
 };

@@ -568,6 +568,21 @@ Whether or not this angel is that same Mennas is something of a mystery, as he
 seems to have difficulty speaking.
 
 %%%%
+Minos
+
+Once king of Crete, Minos passed judgment on the dead. Dis has given him an
+iron crown, a long coiling tail, and a court that admits no appeal. He weighs
+each intruder on his scales before pronouncing a sentence.
+
+He visibly prepares every verdict. His iron sentence sends metal splinters
+at the square he marked, so moving away or taking cover avoids it. His binding
+sentence tries to slow a visible foe, resisted by Will; breaking line of sight
+stops it. He can also call up to two temporary war gargoyle bailiffs at once.
+His next verdict is shown among his attributes.
+
+<brown>DC Chili change: Minos is a new Unique found in Dis:1-5.</brown>
+
+%%%%
 Mlioglotl
 
 A demon prince once possessed a hunger for power that was exceptional even by

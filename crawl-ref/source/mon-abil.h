@@ -25,6 +25,18 @@
 #define CERBERUS_HEAD_KEY "cerberus_head"
 #define CERBERUS_READY_KEY "cerberus_ready"
 
+#define MINOS_VERDICT_KEY "minos_verdict"
+#define MINOS_READY_KEY "minos_ready"
+#define MINOS_TARGET_KEY "minos_target"
+
+enum minos_verdict_type
+{
+    MINOS_IRON_SENTENCE,
+    MINOS_BIND_THE_GUILTY,
+    MINOS_CALL_BAILIFFS,
+    NUM_MINOS_VERDICTS
+};
+
 enum cerberus_head_type
 {
     CERBERUS_BITE,
@@ -40,6 +52,8 @@ struct bolt;
 bool mon_special_ability(monster* mons);
 bool cerberus_action(monster& mon);
 void cerberus_grave_howl(monster& mon);
+bool minos_action(monster& mon);
+void minos_call_bailiffs(monster& mon);
 
 void draconian_change_colour(monster* drac);
 

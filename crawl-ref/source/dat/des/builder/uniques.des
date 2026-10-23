@@ -464,6 +464,10 @@ NAME:   uniq_cerberus
 DEPTH:  Tar:1-5
 : place_unique(_G, "Cerberus")
 
+NAME:   uniq_minos
+DEPTH:  Dis:1-5
+: place_unique(_G, "Minos")
+
 NAME:   uniq_aizul
 DEPTH:  Elf, Swamp, Snake, Shoals, Spider, Vaults:1-2
 WEIGHT: 50 (Snake), 10

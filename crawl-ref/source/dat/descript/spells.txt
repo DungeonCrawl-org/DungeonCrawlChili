@@ -255,6 +255,12 @@ undead within sight answer; this ability does not summon creatures or turn
 enemies into allies. Silence at the caller or listener prevents the call.
 
 %%%%
+Call Bailiffs spell
+
+Summons up to two temporary war gargoyles to enforce Minos's verdicts.
+He announces the summons before they arrive.
+
+%%%%
 Borgnjor's Revivification spell
 
 Instantly heals any and all wounds suffered by the caster, but also permanently

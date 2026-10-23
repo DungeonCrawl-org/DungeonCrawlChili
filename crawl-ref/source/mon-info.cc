@@ -254,6 +254,9 @@ static bool _is_public_key(string key)
      || key == NOBODY_MEMORIES_KEY
      || key == CERBERUS_HEAD_KEY
      || key == CERBERUS_READY_KEY
+     || key == MINOS_VERDICT_KEY
+     || key == MINOS_READY_KEY
+     || key == MINOS_TARGET_KEY
      || key == ORIGINAL_TYPE_KEY
      || key == SPLINTERFROST_POWER_KEY
      || key == TREE_POSITION_KEY)
@@ -1612,6 +1615,23 @@ vector<string> monster_info::attributes() const
                            && props[CERBERUS_READY_KEY].get_bool();
         v.push_back(make_stringf("%s: %s", ready ? "preparing" : "next head",
                                 actions[head]));
+    }
+
+    if (type == MONS_MINOS)
+    {
+        const int verdict = props.exists(MINOS_VERDICT_KEY)
+                            ? props[MINOS_VERDICT_KEY].get_int()
+                            : MINOS_IRON_SENTENCE;
+        static const char* sentences[] = {
+            "iron sentence", "binding sentence", "call bailiffs"
+        };
+        const bool ready = props.exists(MINOS_READY_KEY)
+                           && props[MINOS_READY_KEY].get_bool();
+        if (verdict >= 0 && verdict < NUM_MINOS_VERDICTS)
+        {
+            v.push_back(make_stringf("%s: %s", ready ? "preparing" : "next verdict",
+                                    sentences[verdict]));
+        }
     }
 
     return v;
