@@ -74,6 +74,7 @@ enum branch_type                // you.where_are_you
     BRANCH_NECROPOLIS,
     BRANCH_GULCH,
 #endif
+    BRANCH_START_TEMPLE,
     NUM_BRANCHES,
 
     GLOBAL_BRANCH_INFO = 127,

@@ -310,6 +310,13 @@ static void _post_init(bool newc)
         you.transit_stair = DNGN_UNSEEN;
         you.depth = starting_absdepth() + 1;
         you.where_are_you = root_branch;
+        if (you.char_class == JOB_PRIEST
+            && !crawl_state.game_is_sprint()
+            && !crawl_state.game_is_tutorial())
+        {
+            you.depth = 1;
+            you.where_are_you = BRANCH_START_TEMPLE;
+        }
         if (you.depth > 1)
             set_shafted();
     }

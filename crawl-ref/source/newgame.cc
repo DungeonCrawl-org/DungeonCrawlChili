@@ -142,7 +142,8 @@ static bool _char_defined(const newgame_def& ng)
 }
 
 static char_choice_restriction _job_allowed(species_type sp, job_type job) {
-    if (job == JOB_DELVER && crawl_state.game_is_sprint())
+    if ((job == JOB_DELVER || job == JOB_PRIEST)
+        && crawl_state.game_is_sprint())
         return CC_BANNED;
     return job_allowed(sp, job);
 }
@@ -1698,6 +1699,17 @@ static weapon_type _fixup_weapon(weapon_type wp,
     return WPN_UNKNOWN;
 }
 
+static const char* _priest_stat_choice_name(weapon_type choice)
+{
+    switch (choice)
+    {
+    case WPN_SHORT_SWORD: return "Strength (+8 Str, +2 Int, +2 Dex)";
+    case WPN_MACE:        return "Intelligence (+2 Str, +8 Int, +2 Dex)";
+    case WPN_SPEAR:       return "Dexterity (+2 Str, +2 Int, +8 Dex)";
+    default:              return "Balanced (+4 Str, +4 Int, +4 Dex)";
+    }
+}
+
 static void _construct_weapon_menu(const newgame_def& ng,
                                    const weapon_type& defweapon,
                                    const vector<weap_choice>& weapons,
@@ -1719,7 +1731,10 @@ static void _construct_weapon_menu(const newgame_def& ng,
     {
         weapon_type wpn_type = weapons[i].first;
 
-        if (wpn_type == WPN_UNARMED)
+        if (ng.job == JOB_PRIEST)
+            choices.emplace_back(SK_UNARMED_COMBAT,
+                                 _priest_stat_choice_name(wpn_type));
+        else if (wpn_type == WPN_UNARMED)
         {
             choices.emplace_back(SK_UNARMED_COMBAT,
                         species::has_claws(ng.species) ? "claws" : "unarmed");
@@ -1786,7 +1801,7 @@ static void _construct_weapon_menu(const newgame_def& ng,
         label->set_text(formatted_string(text, fg));
 
         hbox->set_main_alignment(Widget::Align::STRETCH);
-        string apt_text = make_stringf("(%+d apt)",
+        string apt_text = ng.job == JOB_PRIEST ? "" : make_stringf("(%+d apt)",
                 species_apt(choice.skill, ng.species));
         auto suffix = make_shared<Text>(formatted_string(apt_text, fg));
         hbox->add_child(suffix);
@@ -1804,14 +1819,19 @@ static void _construct_weapon_menu(const newgame_def& ng,
     }
 
     _add_menu_sub_item(sub_items, 0, 0, "+ - Recommended random choice",
-            "Picks a random recommended weapon", '+', M_VIABLE);
+            ng.job == JOB_PRIEST ? "Picks a random stat distribution"
+                                 : "Picks a random recommended weapon",
+            '+', M_VIABLE);
     _add_menu_sub_item(sub_items, 0, 1, "% - List aptitudes",
             "Lists the numerical skill train aptitudes for all races", '%',
             M_APTITUDES);
     _add_menu_sub_item(sub_items, 0, 2, "? - Help",
             "Opens the help screen", '?', M_HELP);
-    _add_menu_sub_item(sub_items, 1, 0, "* - Random weapon",
-            "Picks a random weapon", '*', WPN_RANDOM);
+    _add_menu_sub_item(sub_items, 1, 0,
+            ng.job == JOB_PRIEST ? "* - Random stats" : "* - Random weapon",
+            ng.job == JOB_PRIEST ? "Picks a random stat distribution"
+                                 : "Picks a random weapon",
+            '*', WPN_RANDOM);
     _add_menu_sub_item(sub_items, 1, 1, "Bksp - Return to character menu",
             "Lets you return back to Character choice menu", CK_BKSP, M_ABORT);
 
@@ -1821,6 +1841,7 @@ static void _construct_weapon_menu(const newgame_def& ng,
 
         text += defweapon == WPN_RANDOM  ? "Random" :
                 defweapon == WPN_VIABLE  ? "Recommended" :
+                ng.job == JOB_PRIEST ? _priest_stat_choice_name(defweapon) :
                 defweapon == WPN_UNARMED ? "unarmed" :
                 weapon_base_name(defweapon);
 
@@ -1857,7 +1878,9 @@ static bool _prompt_weapon(const newgame_def& ng, newgame_def& ng_choice,
     auto vbox = make_shared<Box>(Box::VERT);
     vbox->set_cross_alignment(Widget::Align::STRETCH);
     vbox->add_child(title_hbox);
-    auto prompt = make_shared<Text>(formatted_string("You have a choice of weapons.", CYAN));
+    auto prompt = make_shared<Text>(formatted_string(
+        ng.job == JOB_PRIEST ? "Choose your base stats."
+                             : "You have a choice of weapons.", CYAN));
     vbox->add_child(prompt);
 
     auto main_items = make_shared<OuterMenu>(true, 1, weapons.size());
@@ -1983,6 +2006,16 @@ weapon_type starting_weapon_upgrade(weapon_type wp, job_type job,
 static vector<weap_choice> _get_weapons(const newgame_def& ng)
 {
     vector<weap_choice> weapons;
+    if (ng.job == JOB_PRIEST)
+    {
+        for (weapon_type choice : { WPN_UNARMED, WPN_SHORT_SWORD,
+                                    WPN_MACE, WPN_SPEAR })
+        {
+            weapons.emplace_back(choice, CC_UNRESTRICTED);
+        }
+        return weapons;
+    }
+
     weapon_type startwep[7] = { WPN_SHORT_SWORD, WPN_MACE, WPN_HAND_AXE,
                                 WPN_SPEAR, WPN_FALCHION, WPN_QUARTERSTAFF,
                                 WPN_UNARMED };
@@ -2051,7 +2084,8 @@ static bool _choose_weapon(newgame_def& ng, newgame_def& ng_choice,
                            const newgame_def& defaults)
 {
     // No weapon use at all. The actual item will be removed later.
-    if (species::mutation_level(ng.species, MUT_NO_GRASPING))
+    if (ng.job != JOB_PRIEST
+        && species::mutation_level(ng.species, MUT_NO_GRASPING))
         return true;
 
     if (!job_has_weapon_choice(ng.job))

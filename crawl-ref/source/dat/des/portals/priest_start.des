@@ -1,0 +1,40 @@
+# Priest's chapel, adapted from BCadren Crawl's starting temple.
+# One altar for each god in the current game.
+NAME:    dcchili_priest_chapel
+TAGS:    arrival no_rotate no_hmirror no_vmirror no_mimic no_monster_gen
+ORIENT:  encompass
+PLACE:   Chapel
+KFEAT:  a = altar_ashenzari
+KFEAT:  b = altar_beogh
+KFEAT:  c = altar_cheibriados
+KFEAT:  d = altar_dithmenos
+KFEAT:  e = altar_elyvilon
+KFEAT:  f = altar_fedhas
+KFEAT:  g = altar_gozag
+KFEAT:  h = altar_hepliaklqana
+KFEAT:  j = altar_jiyva
+KFEAT:  k = altar_kikubaaqudgha
+KFEAT:  l = altar_lugonu
+KFEAT:  m = altar_makhleb
+KFEAT:  n = altar_nemelex_xobeh
+KFEAT:  o = altar_okawaru
+KFEAT:  q = altar_qazlal
+KFEAT:  r = altar_ru
+KFEAT:  s = altar_sif_muna
+KFEAT:  u = altar_uskayaw
+KFEAT:  v = altar_vehumet
+KFEAT:  w = altar_wu_jian
+KFEAT:  y = altar_yredelemnul
+KFEAT:  z = altar_zin
+KFEAT:  1 = altar_the_shining_one
+KFEAT:  T = altar_trog
+KFEAT:  X = altar_xom
+KFEAT:  I = altar_ignis
+MAP
+xxxxxxxxxxxxxxxxxxx
+x.a.b.c.d.e.f.g.h.x
+x{.j.k.l.m.n.o.q.>x
+x.r.s.u.v.w.y.z.1.x
+x......T.X.I......x
+xxxxxxxxxxxxxxxxxxx
+ENDMAP

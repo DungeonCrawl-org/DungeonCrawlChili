@@ -43,13 +43,4 @@
     { },
 } },
 
-{ JOB_PRIEST, {
-    "Pr", "Priest",
-    0, 0, 0,
-    { },
-    { },
-    { },
-    weapon_choice::none,
-    { },
-} },
 #endif

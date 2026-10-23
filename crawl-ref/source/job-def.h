@@ -11,6 +11,7 @@ enum class weapon_choice
     none,   ///< No weapon choice
     plain,  ///< Normal weapon choice
     good,   ///< Chooses from "good" weapons
+    stat,   ///< Priest chooses a starting stat distribution
 };
 
 struct job_def
