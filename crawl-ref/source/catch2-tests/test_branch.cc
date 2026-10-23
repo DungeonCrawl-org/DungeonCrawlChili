@@ -2,7 +2,22 @@
 
 #include "AppHdr.h"
 #include "branch.h"
+#include "player.h"
 #include "stairs.h"
+#include "terrain.h"
+#include "unwind.h"
+
+TEST_CASE("Priest chapel exits lead to D:1", "[single-file]")
+{
+    unwind_var<branch_type> branch(you.where_are_you, BRANCH_START_TEMPLE);
+    unwind_var<int> depth(you.depth, 1);
+
+    REQUIRE(feat_stair_direction(DNGN_EXIT_BAZAAR) == CMD_GO_DOWNSTAIRS);
+    REQUIRE(stair_destination(DNGN_STONE_STAIRS_DOWN_I, "", false)
+            == level_id(BRANCH_DUNGEON, 1));
+    REQUIRE(stair_destination(DNGN_EXIT_BAZAAR, "", false)
+            == level_id(BRANCH_DUNGEON, 1));
+}
 
 TEST_CASE( "is_random_subbranch_test", "[single-file]" ) {
 

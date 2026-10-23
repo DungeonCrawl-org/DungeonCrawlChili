@@ -1,0 +1,21 @@
+enum: JOB_PRIEST
+name: "Priest"
+category: Zealot
+category_priority: 80
+str: 4
+int: 4
+dex: 4
+equipment:
+  - "robe"
+weapon_choice: stat
+recommended_species:
+  - mountain dwarf
+  - formicid
+  - minotaur
+  - human
+skills:
+  dodging: 2
+  stealth: 2
+  unarmed combat: 3
+  invocations: 4
+create_enum: false

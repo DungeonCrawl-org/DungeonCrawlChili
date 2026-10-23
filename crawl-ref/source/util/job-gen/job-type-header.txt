@@ -57,5 +57,8 @@ enum job_type
     JOB_FORGEWRIGHT,
     JOB_MYSTIC,
     JOB_ARCHAEOLOGIST,
+#if TAG_MAJOR_VERSION > 34
+    JOB_PRIEST,
+#endif
 
     // Auto-generated enums start here

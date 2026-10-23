@@ -116,6 +116,7 @@ void tile_default_flv(branch_type br, tile_flavour &flv)
         return;
 
     case BRANCH_TEMPLE:
+    case BRANCH_START_TEMPLE:
         flv.wall  = TILE_WALL_VINES;
         flv.floor = TILE_FLOOR_VINES;
         return;

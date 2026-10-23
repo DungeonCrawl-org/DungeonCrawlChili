@@ -289,6 +289,10 @@ void give_items_skills(const newgame_def& ng)
         you.raw_piety = 150;
         break;
 
+    case JOB_PRIEST:
+        // Priests choose their god at the altars in their starting chapel.
+        break;
+
     default:
         break;
     }
@@ -297,6 +301,29 @@ void give_items_skills(const newgame_def& ng)
         newgame_make_item(OBJ_WEAPONS, ng.weapon, 1, 0, SPWPN_CHAOS);
     else if (you.char_class == JOB_CINDER_ACOLYTE)
         newgame_make_item(OBJ_WEAPONS, ng.weapon, 1, -1, SPWPN_FLAMING);
+    else if (you.char_class == JOB_PRIEST)
+    {
+        // BCadren's four choices: balanced, or +4 to one stat and -2 to each
+        // of the others, for the same total of twelve background stat points.
+        if (ng.weapon == WPN_SHORT_SWORD)
+        {
+            you.base_stats[STAT_STR] += 4;
+            you.base_stats[STAT_INT] -= 2;
+            you.base_stats[STAT_DEX] -= 2;
+        }
+        else if (ng.weapon == WPN_MACE)
+        {
+            you.base_stats[STAT_STR] -= 2;
+            you.base_stats[STAT_INT] += 4;
+            you.base_stats[STAT_DEX] -= 2;
+        }
+        else if (ng.weapon == WPN_SPEAR)
+        {
+            you.base_stats[STAT_STR] -= 2;
+            you.base_stats[STAT_INT] -= 2;
+            you.base_stats[STAT_DEX] += 4;
+        }
+    }
     else if (job_has_weapon_choice(you.char_class))
         newgame_make_item(OBJ_WEAPONS, ng.weapon);
 

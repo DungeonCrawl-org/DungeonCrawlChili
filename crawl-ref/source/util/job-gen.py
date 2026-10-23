@@ -128,7 +128,7 @@ ALL_SKILLS = ('fighting', 'short blades', 'long blades', 'axes',
     'fire magic', 'ice magic', 'air magic', 'earth magic',
     'alchemy', 'invocations', 'evocations', 'shapeshifting', 'forgecraft',
     'weapon')
-ALL_WCHOICES = ('none', 'plain', 'good')
+ALL_WCHOICES = ('none', 'plain', 'good', 'stat')
 
 #SPELL_ENUM = 'SPELL'
 SKILL_ENUM = 'SK'

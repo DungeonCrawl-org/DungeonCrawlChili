@@ -97,6 +97,13 @@ Monks start with a simple weapon of their choice, an orb of light, a potion
 of divine ambrosia, a potion of enlightenment, and gain additional piety with
 the first god they worship.
 %%%%
+Priest
+
+Priests start with little more than a robe and their faith. They begin in a
+chapel outside the Dungeon, where they may choose a god before entering D:1.
+
+<brown>DC Chili change: This background was imported from BCadren Crawl.</brown>
+%%%%
 Mystic
 
 Mystics transform their bodies with talismans to be more attuned with magic.
