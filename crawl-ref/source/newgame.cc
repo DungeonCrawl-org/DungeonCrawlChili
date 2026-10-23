@@ -144,7 +144,9 @@ static bool _char_defined(const newgame_def& ng)
 static char_choice_restriction _job_allowed(species_type sp, job_type job) {
     if ((job == JOB_DELVER || job == JOB_PRIEST)
         && crawl_state.game_is_sprint())
+    {
         return CC_BANNED;
+    }
     return job_allowed(sp, job);
 }
 
@@ -1732,8 +1734,10 @@ static void _construct_weapon_menu(const newgame_def& ng,
         weapon_type wpn_type = weapons[i].first;
 
         if (ng.job == JOB_PRIEST)
+        {
             choices.emplace_back(SK_UNARMED_COMBAT,
                                  _priest_stat_choice_name(wpn_type));
+        }
         else if (wpn_type == WPN_UNARMED)
         {
             choices.emplace_back(SK_UNARMED_COMBAT,
@@ -2086,7 +2090,9 @@ static bool _choose_weapon(newgame_def& ng, newgame_def& ng_choice,
     // No weapon use at all. The actual item will be removed later.
     if (ng.job != JOB_PRIEST
         && species::mutation_level(ng.species, MUT_NO_GRASPING))
+    {
         return true;
+    }
 
     if (!job_has_weapon_choice(ng.job))
         return true;

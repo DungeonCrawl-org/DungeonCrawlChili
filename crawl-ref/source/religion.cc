@@ -3294,7 +3294,9 @@ int gozag_service_fee()
 {
     if ((you.char_class == JOB_MONK || you.char_class == JOB_PRIEST)
         && had_gods() == 0)
+    {
         return 0;
+    }
 
     if (crawl_state.game_is_sprint())
         return 0;
@@ -3528,7 +3530,9 @@ static void _apply_monk_bonus()
 {
     if ((you.char_class != JOB_MONK && you.char_class != JOB_PRIEST)
         || had_gods() > 0)
+    {
         return;
+    }
 
     // monks get bonus piety for first god
     if (you_worship(GOD_RU))
