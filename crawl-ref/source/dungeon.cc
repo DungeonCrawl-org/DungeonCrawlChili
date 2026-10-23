@@ -19,6 +19,7 @@
 
 #include "abyss.h"
 #include "acquire.h"
+#include "act-iter.h"
 #include "artefact.h"
 #include "branch.h"
 #include "chardump.h"
@@ -4693,6 +4694,12 @@ static int _place_uniques()
                    level_id::current().describe().c_str());
 #endif
 
+    constexpr int MAX_UNIQUES_PER_LEVEL = 4;
+    int num_existing = 0;
+    for (monster_iterator mi; mi; ++mi)
+        if (mons_is_unique(mi->type))
+            num_existing++;
+
     int num_placed = 0;
 
     // Magic numbers for dpeg's unique system.
@@ -4700,8 +4707,9 @@ static int _place_uniques()
     const int unique_chance_numerator = in_lair ? 2 : 3;
     int unique_chance_denominator = in_lair ? 3 : 5;
     const int B = 5;
-    while (x_chance_in_y(unique_chance_numerator,
-                         unique_chance_denominator))
+    while (num_existing + num_placed < MAX_UNIQUES_PER_LEVEL
+           && x_chance_in_y(unique_chance_numerator,
+                            unique_chance_denominator))
     {
         // In dpeg's unique placement system, there is an initial chance of
         // even starting to place a unique; this is reduced if there are fewer
