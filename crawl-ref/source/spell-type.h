@@ -675,5 +675,6 @@ enum spell_type : int
     SPELL_BOREAL_GALE,
     SPELL_GRAVE_HOWL,
     SPELL_STYGIAN_BREATH,
+    SPELL_CALL_BAILIFFS,
     NUM_SPELLS
 };

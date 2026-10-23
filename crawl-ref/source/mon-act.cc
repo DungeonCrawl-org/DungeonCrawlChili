@@ -1915,6 +1915,9 @@ static bool _mons_take_special_action(monster &mons, int old_energy)
     if (mons.type == MONS_CERBERUS)
         return cerberus_action(mons);
 
+    if (mons.type == MONS_MINOS)
+        return minos_action(mons);
+
     // Prevents unfriendlies from nuking you from offscreen.
     // How nice!
     const bool friendly_or_near =

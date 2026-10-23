@@ -2837,6 +2837,7 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
     case SPELL_WIND_BLAST:
     case SPELL_BOREAL_GALE:
     case SPELL_GRAVE_HOWL:
+    case SPELL_CALL_BAILIFFS:
     case SPELL_SUMMON_VERMIN:
     case SPELL_CALL_OGRE_AND_MULE:
     case SPELL_POLAR_VORTEX:
@@ -8693,6 +8694,10 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_GRAVE_HOWL:
         cerberus_grave_howl(*mons);
+        return;
+
+    case SPELL_CALL_BAILIFFS:
+        minos_call_bailiffs(*mons);
         return;
 
     case SPELL_BOREAL_GALE:

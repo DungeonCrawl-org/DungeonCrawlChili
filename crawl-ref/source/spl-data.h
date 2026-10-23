@@ -4860,6 +4860,17 @@ static const struct spell_desc spelldata[] =
     TILEG_BOLT_OF_DRAINING,
 },
 
+{
+    SPELL_CALL_BAILIFFS, "Call Bailiffs",
+    spschool::summoning,
+    spflag::monster | spflag::mons_abjure,
+    6,
+    0,
+    -1, -1,
+    0,
+    TILEG_SUMMON_DEMON,
+},
+
 #if TAG_MAJOR_VERSION == 34
 #define AXED_SPELL(tag, name) \
     { tag, name, spschool::none, spflag::none, 7, 0, -1, -1, 0, TILEG_ERROR },

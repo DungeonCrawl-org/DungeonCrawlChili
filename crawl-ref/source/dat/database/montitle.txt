@@ -235,6 +235,10 @@ Mennas title
 
 Mennas, the Voice of Zin
 %%%%
+Minos title
+
+Minos, Judge of the Iron Dead
+%%%%
 Mlioglotl title
 
 Mlioglotl, the Unformed Horror
