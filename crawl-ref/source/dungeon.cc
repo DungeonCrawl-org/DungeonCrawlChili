@@ -2091,9 +2091,12 @@ static void _fixup_branch_stairs()
     const bool top = you.depth == 1;
     const bool bottom = at_branch_bottom();
 
+    // A branch without a parent exit can still have an arrival stair in its
+    // vault. Replace that stair with floor instead of the NUM_FEATURES sentinel.
     const dungeon_feature_type exit =
         root ? DNGN_EXIT_DUNGEON
-             : branch.exit_stairs;
+             : branch.exit_stairs == NUM_FEATURES ? DNGN_FLOOR
+                                                  : branch.exit_stairs;
     const dungeon_feature_type escape =
         branch.escape_feature == NUM_FEATURES ? DNGN_ESCAPE_HATCH_UP :
                                                 branch.escape_feature;
