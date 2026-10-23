@@ -1268,8 +1268,7 @@ level_id stair_destination(dungeon_feature_type feat, const string &dst,
         return dest;
 
     if (player_in_branch(BRANCH_START_TEMPLE)
-        && (feat_is_portal_exit(feat)
-            || feat == DNGN_STONE_STAIRS_DOWN_I
+        && (feat == DNGN_STONE_STAIRS_DOWN_I
             || feat == DNGN_STONE_STAIRS_DOWN_II
             || feat == DNGN_STONE_STAIRS_DOWN_III))
     {

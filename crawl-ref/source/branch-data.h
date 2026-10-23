@@ -456,7 +456,7 @@ const Branch branches[NUM_BRANCHES] =
 
     { BRANCH_START_TEMPLE, NUM_BRANCHES, -1, -1, 1, 0,
       brflag::no_x_level_travel | brflag::no_items,
-      NUM_FEATURES, DNGN_STONE_STAIRS_DOWN_I, NUM_FEATURES,
+      NUM_FEATURES, NUM_FEATURES, NUM_FEATURES,
       "Chapel", "a chapel outside the Dungeon", "Chapel",
       "You enter a quiet chapel.",
       LIGHTGREY, BROWN,
