@@ -1,0 +1,21 @@
+name: "Alecto"
+glyph: {char: "A", colour: lightred}
+flags: [flies, see_invis, speaks, unique, female]
+resists: {fire: 3, cold: -1, poison: 3, neg: 2}
+exp: 3400
+holiness: [demonic]
+will: 140
+attacks:
+ - {type: hit, flavour: fire, damage: 32}
+hd: 20
+hp_10x: 3000
+ac: 14
+ev: 17
+spells: alecto
+shout: shout
+intelligence: human
+speed: 12
+uses: open_doors
+size: medium
+shape: humanoid_winged
+drop_on_death: {chance: 50, item: SCR_IMMOLATION}

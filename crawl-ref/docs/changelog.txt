@@ -3,6 +3,8 @@ Stone Soup 0.35 (through 0.35-a0-1245-e467b9c7cb )
 
 Highlights
 ----------
+* A new Unique, Alecto, roams Gehenna:1-5. She warns before throwing a funeral
+  torch at a marked square or driving nearby allies into a brief berserk rage.
 * A new Unique, Minos, judges intruders in Dis:1-5. He warns before firing at
   a marked square, slowing a foe, or calling temporary war gargoyle bailiffs.
 * A new Unique, Cerberus, roams Tartarus:1-5. His three heads prepare and cycle

@@ -2835,4 +2835,12 @@ static const mon_spellbook mspell_list[] =
        { SPELL_CALL_BAILIFFS, 20, MON_SPELL_MAGICAL },
       }
     },
+
+    // Her turns are handled by a warning and action cycle.
+    { MST_ALECTO,
+      {
+       { SPELL_FUNERAL_TORCH, 60, MON_SPELL_MAGICAL },
+       { SPELL_INCITE_FURY, 40, MON_SPELL_VOCAL },
+      }
+    },
 };

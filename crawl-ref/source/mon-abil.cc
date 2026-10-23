@@ -1388,6 +1388,158 @@ bool minos_action(monster& mon)
     return true;
 }
 
+static bool _alecto_can_incite(const monster& mon)
+{
+    if (mon.is_silenced())
+        return false;
+
+    for (monster_near_iterator mi(&mon, LOS_NO_TRANS); mi; ++mi)
+    {
+        if (*mi != &mon && mons_aligned(&mon, *mi)
+            && !mons_is_unique(mi->type) && !mi->is_peripheral()
+            && mi->can_go_berserk() && !silenced(mi->pos())
+            && !is_sanctuary(mi->pos()))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Her cry only affects existing allies that can become berserk. The short
+// duration and three-monster limit keep repeated cries from overwhelming a
+// crowded Gehenna floor.
+void alecto_incite_fury(monster& mon)
+{
+    actor* foe = mon.get_foe();
+    if (mon.is_silenced() || !foe || !foe->alive()
+        || mons_aligned(&mon, foe) || is_sanctuary(mon.pos()))
+    {
+        return;
+    }
+
+    simple_monster_message(mon, " shrieks, driving her allies into a fury!");
+    noisy(20, mon.pos(), mon.mid);
+    int incited = 0;
+    for (monster_near_iterator mi(&mon, LOS_NO_TRANS); mi && incited < 3; ++mi)
+    {
+        if (*mi == &mon || !mons_aligned(&mon, *mi)
+            || mons_is_unique(mi->type) || mi->is_peripheral()
+            || !mi->can_go_berserk() || silenced(mi->pos())
+            || is_sanctuary(mi->pos()))
+        {
+            continue;
+        }
+
+        mi->del_ench(ENCH_SLOW, true);
+        mi->del_ench(ENCH_FEAR, true);
+        mi->add_ench(mon_enchant(ENCH_BERSERK, &mon, random_range(50, 70)));
+        behaviour_event(*mi, ME_ALERT, foe, foe->pos(), false);
+        ++incited;
+    }
+}
+
+// Each torch or cry is announced one action before it happens. The torch is
+// aimed at the announced position rather than tracking a fleeing foe.
+bool alecto_action(monster& mon)
+{
+    if (mon.type != MONS_ALECTO || mon.cannot_act() || mon.asleep()
+        || mon.confused() || mon.berserk_or_frenzied()
+        || is_sanctuary(mon.pos()))
+    {
+        return false;
+    }
+
+    actor* foe = mon.get_foe();
+    if (!foe || !foe->alive() || mons_aligned(&mon, foe)
+        || is_sanctuary(foe->pos()))
+    {
+        mon.props[ALECTO_READY_KEY] = false;
+        return false;
+    }
+
+    const bool ready = mon.props.exists(ALECTO_READY_KEY)
+                       && mon.props[ALECTO_READY_KEY].get_bool();
+    int action = mon.props.exists(ALECTO_ACTION_KEY)
+                 ? mon.props[ALECTO_ACTION_KEY].get_int()
+                 : ALECTO_TORCH;
+    if (action < 0 || action >= NUM_ALECTO_ACTIONS)
+        action = ALECTO_TORCH;
+
+    if (!ready)
+    {
+        if (!mon.can_see(*foe)
+            || !cell_see_cell(mon.pos(), foe->pos(), LOS_SOLID))
+        {
+            return false;
+        }
+
+        const bool in_torch_range = grid_distance(mon.pos(), foe->pos())
+                                    <= spell_range(SPELL_FUNERAL_TORCH, &mon);
+        if (action == ALECTO_CRY && !_alecto_can_incite(mon))
+            action = ALECTO_TORCH;
+        if (action == ALECTO_TORCH && !in_torch_range)
+        {
+            if (!_alecto_can_incite(mon))
+                return false;
+            action = ALECTO_CRY;
+        }
+
+        if (action == ALECTO_TORCH)
+        {
+            simple_monster_message(mon, foe->is_player()
+                ? " marks your position with her raised funeral torch!"
+                : " marks her foe's position with her raised funeral torch!");
+        }
+        else
+            simple_monster_message(mon, " draws breath for a furious cry!");
+        mon.props[ALECTO_ACTION_KEY] = action;
+        mon.props[ALECTO_TARGET_KEY].get_coord() = foe->pos();
+        mon.props[ALECTO_READY_KEY] = true;
+        mon.lose_energy(EUT_SPECIAL);
+        return true;
+    }
+
+    mon.props[ALECTO_READY_KEY] = false;
+    mon.props[ALECTO_ACTION_KEY] = (action + 1) % NUM_ALECTO_ACTIONS;
+    if (action == ALECTO_CRY)
+    {
+        if (mon.is_silenced())
+            simple_monster_message(mon, " opens her mouth, but no cry escapes.");
+        else
+            alecto_incite_fury(mon);
+    }
+    else
+    {
+        const coord_def target = mon.props[ALECTO_TARGET_KEY].get_coord();
+        const int range = spell_range(SPELL_FUNERAL_TORCH, &mon);
+        if (grid_distance(mon.pos(), target) <= range
+            && cell_see_cell(mon.pos(), target, LOS_SOLID))
+        {
+            bolt beam = setup_targeting_beam(mon);
+            setup_mons_cast(&mon, beam, SPELL_FUNERAL_TORCH);
+            beam.target = target;
+            beam.range = range;
+            targeting_tracer tracer;
+            fire_tracer(&mon, tracer, beam);
+            if (tracer.friend_info.count == 0)
+            {
+                simple_monster_message(mon, " hurls a blazing funeral torch!");
+                mons_cast(&mon, beam, SPELL_FUNERAL_TORCH,
+                          MON_SPELL_MAGICAL, false);
+            }
+            else
+                simple_monster_message(mon, " lowers her torch to spare an ally.");
+        }
+        else
+            simple_monster_message(mon, " lets her funeral torch gutter out.");
+    }
+
+    if (mon.alive())
+        mon.lose_energy(EUT_SPECIAL);
+    return true;
+}
+
 bool mon_special_ability(monster* mons)
 {
     bool used = false;

@@ -23,6 +23,21 @@ failure by protecting the only treasure the villains overlooked, a single
 precious talisman.
 
 %%%%
+Alecto
+
+One of the ancient Furies, Alecto has brought her funeral torch and serpents
+to the burning halls of Gehenna. Her shriek makes the condemned forget their
+fear and rush into battle; she pursues anyone who escapes the flames herself.
+
+Alecto visibly raises her torch before hurling a bolt of fire at the square
+she marked. Moving aside or taking solid cover avoids it. Her other warning
+precedes a cry that drives up to three nearby allies into a brief berserk rage.
+Silence at Alecto or her listeners prevents the cry. Her next action is shown
+among her attributes. She resists fire but is vulnerable to cold.
+
+<brown>DC Chili change: Alecto is a new Unique found in Gehenna:1-5.</brown>
+
+%%%%
 Amaemon
 
 Amaemon always knew he was different, but it was still a horrific surprise when

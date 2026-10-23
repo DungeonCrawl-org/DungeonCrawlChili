@@ -257,6 +257,9 @@ static bool _is_public_key(string key)
      || key == MINOS_VERDICT_KEY
      || key == MINOS_READY_KEY
      || key == MINOS_TARGET_KEY
+     || key == ALECTO_ACTION_KEY
+     || key == ALECTO_READY_KEY
+     || key == ALECTO_TARGET_KEY
      || key == ORIGINAL_TYPE_KEY
      || key == SPLINTERFROST_POWER_KEY
      || key == TREE_POSITION_KEY)
@@ -1631,6 +1634,21 @@ vector<string> monster_info::attributes() const
         {
             v.push_back(make_stringf("%s: %s", ready ? "preparing" : "next verdict",
                                     sentences[verdict]));
+        }
+    }
+
+    if (type == MONS_ALECTO)
+    {
+        const int action = props.exists(ALECTO_ACTION_KEY)
+                           ? props[ALECTO_ACTION_KEY].get_int()
+                           : ALECTO_TORCH;
+        static const char* actions[] = {"funeral torch", "fury cry"};
+        const bool ready = props.exists(ALECTO_READY_KEY)
+                           && props[ALECTO_READY_KEY].get_bool();
+        if (action >= 0 && action < NUM_ALECTO_ACTIONS)
+        {
+            v.push_back(make_stringf("%s: %s", ready ? "preparing" : "next action",
+                                    actions[action]));
         }
     }
 

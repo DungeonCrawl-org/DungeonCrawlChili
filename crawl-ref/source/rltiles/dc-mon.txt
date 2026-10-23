@@ -1645,6 +1645,7 @@ mule MONS_MULE
 boreas MONS_BOREAS
 cerberus MONS_CERBERUS
 minos MONS_MINOS
+alecto MONS_ALECTO
 
 %sdir misc
 %rim 1
