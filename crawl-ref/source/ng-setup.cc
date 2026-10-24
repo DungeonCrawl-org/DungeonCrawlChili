@@ -325,7 +325,14 @@ void give_items_skills(const newgame_def& ng)
         }
     }
     else if (job_has_weapon_choice(you.char_class))
-        newgame_make_item(OBJ_WEAPONS, ng.weapon);
+    {
+        const bool lesson_seven = crawl_state.game_is_tutorial()
+                                  && crawl_state.map == "tutorial_lesson7";
+        item_def *weapon = newgame_make_item(OBJ_WEAPONS,
+            lesson_seven ? WPN_TRIDENT : ng.weapon, 1, 0, 0, lesson_seven);
+        if (lesson_seven)
+            ASSERT(weapon && you.weapon() == weapon);
+    }
 
     give_job_equipment(you.char_class);
     give_job_skills(you.char_class);

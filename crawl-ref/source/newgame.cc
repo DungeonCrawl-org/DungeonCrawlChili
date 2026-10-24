@@ -199,8 +199,7 @@ void choose_tutorial_character(newgame_def& ng_choice)
 {
     ng_choice.species = SP_HUMAN;
     ng_choice.job = JOB_FIGHTER;
-    ng_choice.weapon = ng_choice.map == "tutorial_lesson7"
-                       ? WPN_TRIDENT : WPN_FLAIL;
+    ng_choice.weapon = WPN_FLAIL;
 }
 
 static void _resolve_species(newgame_def& ng, const newgame_def& ng_choice)
