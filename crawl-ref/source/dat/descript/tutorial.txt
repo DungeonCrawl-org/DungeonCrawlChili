@@ -1041,7 +1041,8 @@ An orc archer can shoot you along this narrow passage. Before closing in,
 step north around the nearby corner into the alcove; the wall should block
 its line of sight. Then approach the archer. The Mephitic Cloud parchment is
 on the floor beyond it. Pick it up to add the spell to your library, then
-memorize it before descending to the final exercise.
+memorize it before continuing through the passage into the island chamber on
+this floor.
 %%%%
 tutorial7 archer_entry
 
@@ -1053,11 +1054,6 @@ tutorial7 archer_parchment
 
 Picking up this parchment adds Mephitic Cloud to your spell library. Use the
 memorization command to learn it. You need to be at least XL3 to cast it.
-%%%%
-tutorial7 archer_stairs
-
-You reached the stairs at the end of the passage. Descend for the orc priest
-exercise. Memorize Mephitic Cloud first if you have not already.
 %%%%
 tutorial7 island
 

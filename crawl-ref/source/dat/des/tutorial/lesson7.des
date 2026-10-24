@@ -110,46 +110,20 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
 
 ##########################################################
-# Level 4: Break line of sight with an archer             #
+# Level 4: Archer cover and the orc island                #
 ##########################################################
 NAME:    tutorial_lesson7_level4
 TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
 PLACE:   D:4
 ORIENT:  encompass
 KFEAT:   x = stone_wall
-KFEAT:   H = stone_wall
-KFEAT:   q = .
+KFEAT:   w = deep_water
 KITEM:   q = parchment of mephitic cloud
 KMONS:   a = orc generate_awake ; shortbow mundane
+KMONS:   o = orc priest generate_awake
 MARKER:  q = lua:tutorial7.msg("archer_parchment")
 MARKER:  { = lua:tutorial7.msg("archer_entry")
-MARKER:  } = lua:tutorial7.msg("archer_stairs")
-epilogue{{
-  if crawl.game_started() then
-    crawl.clear_messages(true)
-    crawl.tutorial_msg("tutorial7 archer")
-  end
-}}
-MAP
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-x############################x
-x..HHHHHHHHHHHHHHHHHHHHHHHHHHx
-x.{...........a......q......}x
-x############################x
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-ENDMAP
-
-##########################################################
-# Level 5: Confuse an orc priest above deep water         #
-##########################################################
-NAME:    tutorial_lesson7_level5
-TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
-PLACE:   D:5
-ORIENT:  encompass
-KFEAT:   x = stone_wall
-KFEAT:   w = deep_water
-KMONS:   o = orc priest generate_awake
-MARKER:  { = lua:tutorial7.msg("island_entry")
+MARKER:  B = lua:tutorial7.msg("island")
 MARKER:  [ = lua:tutorial7.msg("island_exit")
 MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
                                  desc = "finish the tutorial", \
@@ -157,17 +131,22 @@ MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
 epilogue{{
   if crawl.game_started() then
     crawl.clear_messages(true)
-    crawl.tutorial_msg("tutorial7 island")
+    crawl.tutorial_msg("tutorial7 archer")
   end
 }}
 MAP
-xxxxxxxxxxxxxxxxxxxxxxxxxx
-x........................x
-x........................x
-x....www.................x
-x.{..wow.................x
-x....www.................x
-x....................[...x
-x........................x
-xxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x.{........a.....q........B........x
+xxxxxxxxxxxxxxxxxxxxxxxxxx.........x
+x..................................x
+x..................................x
+x..................................x
+x.............................www..x
+x.............................wow..x
+x.............................www..x
+x.................................[x
+x..................................x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
