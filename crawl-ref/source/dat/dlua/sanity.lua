@@ -14,7 +14,8 @@ local function sanity_checks()
       "tutorial_lesson2", "tutorial_lesson2_level2",
       "tutorial_lesson3", "tutorial_lesson3_level2", "tutorial_lesson3_level3",
       "tutorial_lesson4", "tutorial_lesson4_level2",
-      "tutorial_lesson5", "tutorial_lesson6", "tutorial_lesson6_level2"
+      "tutorial_lesson5", "tutorial_lesson6", "tutorial_lesson6_level2",
+      "tutorial_lesson7", "tutorial_lesson7_level2"
     }
     for _, name in ipairs(tutorials) do
       assert(dgn.map_by_name(name), "No tutorial map found for " .. name)

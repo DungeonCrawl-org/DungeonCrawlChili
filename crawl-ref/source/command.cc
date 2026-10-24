@@ -1316,7 +1316,7 @@ static void _add_formatted_hints_help(column_composer &cols)
 static void _add_formatted_tutorial_keyhelp(column_composer &cols)
 {
     cols.add_formatted(0,
-        "Keys taught in the six tutorial lessons.\n"
+        "Keys taught in the seven tutorial lessons.\n"
         "\n<h>1. Movement and exploration\n"
         "Move with arrows, numpad or vi keys.\n"
         "Walk into a monster to attack it.\n");

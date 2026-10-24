@@ -325,7 +325,14 @@ void give_items_skills(const newgame_def& ng)
         }
     }
     else if (job_has_weapon_choice(you.char_class))
-        newgame_make_item(OBJ_WEAPONS, ng.weapon);
+    {
+        const bool lesson_seven = crawl_state.game_is_tutorial()
+                                  && crawl_state.map == "tutorial_lesson7";
+        item_def *weapon = newgame_make_item(OBJ_WEAPONS,
+            lesson_seven ? WPN_TRIDENT : ng.weapon, 1, 0, 0, lesson_seven);
+        if (lesson_seven)
+            ASSERT(weapon && you.weapon() == weapon);
+    }
 
     give_job_equipment(you.char_class);
     give_job_skills(you.char_class);
@@ -385,6 +392,14 @@ static void _setup_tutorial_miscs()
     // Some spellcasting for the magic tutorial.
     if (crawl_state.map.find("tutorial_lesson4") != string::npos)
         you.skills[SK_SPELLCASTING] = 1;
+
+    // Give the Tutorial's two-threat exercise enough weapon skill and HP to
+    // practise positioning without making the first pursuer overwhelming.
+    if (crawl_state.map == "tutorial_lesson7")
+    {
+        you.skills[SK_FIGHTING] += 2;
+        you.skills[SK_POLEARMS] += 3;
+    }
 }
 
 static void _give_basic_knowledge()
