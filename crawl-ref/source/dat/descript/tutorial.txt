@@ -1038,15 +1038,16 @@ exercise.
 tutorial7 archer
 
 An orc archer can shoot you along this narrow passage. Before closing in,
-step north into the small alcove to break its line of sight. A parchment of
-Mephitic Cloud is there; pick it up to add the spell to your library. Then
+step north around the nearby corner into the alcove; the wall should block
+its line of sight. Then approach the archer. The Mephitic Cloud parchment is
+on the floor beyond it. Pick it up to add the spell to your library, then
 memorize it before descending to the final exercise.
 %%%%
 tutorial7 archer_entry
 
-The archer has a clear shot down the passage. Step into the alcove to the
-north to break line of sight before advancing. Use the passage's corner for
-cover as you approach.
+The archer has a clear shot down the passage. Step north around the corner
+into the alcove to break line of sight before advancing. Use the passage's
+corner for cover as you approach.
 %%%%
 tutorial7 archer_parchment
 
