@@ -5,7 +5,7 @@
 It's a game of dungeon exploration, combat and magic, involving characters of diverse skills, worshiping deities of great power and caprice. 
 To win, you'll need to be a master of tactics and strategy, and prevail against overwhelming odds.
 
-[Dungeon Crawl Chili](https://dungeoncrawlchili.org/) is a [Dungeon Crawl fork](https://www.dungeoncrawlforks.org/) that was launched in June 2026.  It is based on [DCSS](https://crawl.develz.org/) v0.35 Trunk.
+[Dungeon Crawl Chili](https://dungeoncrawlchili.org/) is a [Dungeon Crawl fork](https://www.dungeoncrawlforks.org/) that was launched in June 2026.  It is based on [DCSS](https://crawl.develz.org/) v0.35 Trunk with elements from the forks BCadren Crawl and BCrawl.
 It's main purpose is to make the early Dungeon more forgiving than DCSS so that new crawlers make it more often than not to the Lair and the Orcish Mines.
 
 ## Contents
