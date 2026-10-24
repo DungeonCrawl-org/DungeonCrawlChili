@@ -62,14 +62,9 @@ NAME:    tutorial_lesson7_level2
 TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
 PLACE:   D:2
 ORIENT:  encompass
-KFEAT:   AB = .
-COLOUR:  AB = lightblue
-FTILE:   AB = tutorial_pad
 KFEAT:   x = stone_wall
 KMONS:   1 = gnoll generate_awake ; club mundane
-KMONS:   2 = orc wizard generate_awake
-MARKER:  A = lua:tutorial7.msg("two_threats")
-MARKER:  B = lua:tutorial7.msg("doorway")
+KMONS:   2 = gnoll generate_awake ; club mundane
 MARKER:  { = lua:tutorial7.msg("entry")
 MARKER:  [ = lua:tutorial7.msg("stairs")
 MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
@@ -83,12 +78,8 @@ epilogue{{
 }}
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-x...........xxxxxxxxxxxxxxxxxxxxxxxx
-x.{..1A...x........................x
-x...........x......................x
-x...........+B.....................x
-x...........x.......2..............x
-x...........x....................[.x
-x...........xxxxxxxxxxxxxxxxxxxxxxxx
+x..................................x
+x.{1...2.......................[...x
+x..................................x
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
