@@ -110,11 +110,40 @@ xxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
 
 ##########################################################
-# Level 4: Confuse an orc priest above deep water         #
+# Level 4: Break line of sight with an archer             #
 ##########################################################
 NAME:    tutorial_lesson7_level4
 TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
 PLACE:   D:4
+ORIENT:  encompass
+KFEAT:   x = stone_wall
+KFEAT:   # = stone_wall
+KITEM:   p = parchment of mephitic cloud
+KMONS:   a = orc generate_awake ; shortbow mundane
+MARKER:  p = lua:tutorial7.msg("archer_parchment")
+MARKER:  { = lua:tutorial7.msg("archer_entry")
+MARKER:  } = lua:tutorial7.msg("archer_stairs")
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial7 archer")
+  end
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x############################x
+x.p##########################x
+x.{...........a.............}x
+x############################x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+##########################################################
+# Level 5: Confuse an orc priest above deep water         #
+##########################################################
+NAME:    tutorial_lesson7_level5
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
+PLACE:   D:5
 ORIENT:  encompass
 KFEAT:   x = stone_wall
 KFEAT:   w = deep_water

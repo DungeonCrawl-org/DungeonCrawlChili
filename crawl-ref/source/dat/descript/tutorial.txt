@@ -972,9 +972,11 @@ tutorial7 start
 
 This lesson combines threat assessment with using stairs to manage a group.
 You have a trident and extra Fighting and Polearms skill for this exercise.
-You know Mephitic Cloud for a later exercise. First, assess the two gnolls in
-view, one beside the entry stairs and one farther away. Inspect them and use
-the stairs to separate them. You do not need to kill both.
+Later, you will find a parchment of Mephitic Cloud on the floor. Pick it up to
+add the spell to your library, then memorize it before the final exercise.
+First, assess the two gnolls in view, one beside the entry stairs and one
+farther away. Inspect them and use the stairs to separate them. You do not
+need to kill both.
 %%%%
 tutorial7 supplies
 
@@ -1020,7 +1022,7 @@ tutorial7 halberd
 This gnoll carries a halberd, which can deal heavy damage. Use the polymorph
 wand to change it into another monster. Polymorphing makes it drop its
 equipment, including the halberd, but the new monster may still be dangerous.
-Assess the result, then descend to the final exercise.
+Assess the result, then descend to the archer exercise.
 %%%%
 tutorial7 halberd_entry
 
@@ -1030,8 +1032,31 @@ it with a different monster.
 %%%%
 tutorial7 halberd_stairs
 
-You reached the stairs beyond the halberd gnoll. Descend for the orc priest
-and the Mephitic Cloud exercise.
+You reached the stairs beyond the halberd gnoll. Descend to the archer
+exercise.
+%%%%
+tutorial7 archer
+
+An orc archer can shoot you along this narrow passage. Before closing in,
+step north into the small alcove to break its line of sight. A parchment of
+Mephitic Cloud is there; pick it up to add the spell to your library. Then
+memorize it before descending to the final exercise.
+%%%%
+tutorial7 archer_entry
+
+The archer has a clear shot down the passage. Step into the alcove to the
+north to break line of sight before advancing. Use the passage's corner for
+cover as you approach.
+%%%%
+tutorial7 archer_parchment
+
+Picking up this parchment adds Mephitic Cloud to your spell library. Use the
+memorization command to learn it. You need to be at least XL3 to cast it.
+%%%%
+tutorial7 archer_stairs
+
+You reached the stairs at the end of the passage. Descend for the orc priest
+exercise. Memorize Mephitic Cloud first if you have not already.
 %%%%
 tutorial7 island
 
@@ -1064,6 +1089,8 @@ tutorial7 exit
   <input>$cmd[CMD_GO_UPSTAIRS]</input> draw an adjacent pursuer upstairs
   Return downstairs for an enemy that stayed behind
   Use the polymorph wand to remove a dangerous monster's weapon
+  Break line of sight before approaching a ranged attacker
+  Pick up and memorize the Mephitic Cloud parchment
   <input>$cmd[CMD_CAST_SPELL]</input> confuse an enemy with Mephitic Cloud
   Use terrain so a confused enemy may stumble into danger
   <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys

@@ -408,9 +408,6 @@ static void _setup_tutorial_miscs()
         you.skills[SK_ALCHEMY] = max<int>(you.skills[SK_ALCHEMY], 4);
         you.skills[SK_AIR_MAGIC] = max<int>(you.skills[SK_AIR_MAGIC], 4);
         you.mp_max_adj += 3;
-        library_add_spells({SPELL_MEPHITIC_CLOUD}, true);
-        if (!you.has_spell(SPELL_MEPHITIC_CLOUD))
-            add_spell_to_memory(SPELL_MEPHITIC_CLOUD);
     }
 }
 
