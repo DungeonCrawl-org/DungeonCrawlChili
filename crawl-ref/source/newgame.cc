@@ -2130,6 +2130,7 @@ static tile_def tile_for_map_name(string name)
             TILEG_CMD_CAST_SPELL,
             TILEG_CMD_USE_ABILITY,
             TILEG_CMD_DISPLAY_CHARACTER_STATUS,
+            TILE_DNGN_STONE_STAIRS_UP,
         };
         ASSERT_RANGE(i, 0, static_cast<int>(ARRAYSZ(tutorial_tiles)));
         return tile_def(tutorial_tiles[i]);

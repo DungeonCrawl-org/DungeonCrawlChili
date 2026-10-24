@@ -2091,9 +2091,12 @@ static void _fixup_branch_stairs()
     const bool top = you.depth == 1;
     const bool bottom = at_branch_bottom();
 
+    // A branch without a parent exit can still have an arrival stair in its
+    // vault. Replace that stair with floor instead of the NUM_FEATURES sentinel.
     const dungeon_feature_type exit =
         root ? DNGN_EXIT_DUNGEON
-             : branch.exit_stairs;
+             : branch.exit_stairs == NUM_FEATURES ? DNGN_FLOOR
+                                                  : branch.exit_stairs;
     const dungeon_feature_type escape =
         branch.escape_feature == NUM_FEATURES ? DNGN_ESCAPE_HATCH_UP :
                                                 branch.escape_feature;
@@ -2116,7 +2119,10 @@ static void _fixup_branch_stairs()
         if (bottom && (feat_is_stone_stair_down(env.grid(*ri))
                        || env.grid(*ri) == DNGN_ESCAPE_HATCH_DOWN))
         {
-            env.grid(*ri) = escape_replacement;
+            // The starting Chapel uses a down hatch to enter D:1. It has no
+            // parent exit, so the normal bottom-floor fixup would erase it.
+            env.grid(*ri) = player_in_branch(BRANCH_START_TEMPLE)
+                            ? DNGN_STONE_STAIRS_DOWN_I : escape_replacement;
         }
 
         if (top)

@@ -2093,6 +2093,26 @@ static void _learn_transporters()
         li->update_transporter(tp.position, get_transporter_dest(tp.position));
 }
 
+// Restore the exit in Chapels generated while bottom-floor stair fixup
+// mistakenly replaced their down hatch with floor.
+static void _repair_priest_chapel_exit()
+{
+    if (!player_in_branch(BRANCH_START_TEMPLE))
+        return;
+
+    for (const auto &vault : env.level_vaults)
+    {
+        if (vault->map.name != "dcchili_priest_chapel")
+            continue;
+
+        // The down hatch is the '>' in the third row of priest_start.des.
+        const coord_def exit = vault->pos + coord_def(17, 2);
+        if (in_bounds(exit) && env.grid(exit) == DNGN_FLOOR)
+            dungeon_terrain_changed(exit, DNGN_STONE_STAIRS_DOWN_I);
+        return;
+    }
+}
+
 /**
  * Load the current level.
  *
@@ -2238,6 +2258,9 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
             you.on_current_level = true;
         _redraw_all(); // TODO why is there a redraw call here?
     }
+
+    if (load_mode != LOAD_VISITOR)
+        _repair_priest_chapel_exit();
 
     const bool just_created_level = !you.level_visited(level_id::current());
 

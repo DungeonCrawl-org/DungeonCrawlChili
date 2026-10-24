@@ -91,7 +91,7 @@ stairs. To travel directly to the stairs, you can
 %%%%
 tutorial1 basic_keys
 
-You can review the basic keys taught in the six tutorial lessons at any time.
+You can review the basic keys taught in the seven tutorial lessons at any time.
 Press <input>$cmd[CMD_DISPLAY_COMMANDS]</input> to open the help menu,
 then press <input>></input> for the basic keys page.
 
@@ -967,4 +967,60 @@ tutorial6 exit
   <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
 
 You do not have to win every fight. Recognise danger and use your supplies early.
+%%%%
+tutorial7 start
+
+This lesson combines threat assessment with using stairs to manage a group.
+You have a trident and extra Fighting and Polearms skill for this exercise.
+You will face two gnolls in view, one beside the entry stairs and one farther
+away. Inspect them and use the stairs to separate them. Reach the far upstairs
+exit; you do not need to kill both.
+%%%%
+tutorial7 supplies
+
+These known healing and haste potions, and a scroll of fog, can help if the
+encounter goes badly. Check your supplies before descending. Using an item
+takes time, so make your choice while you still have room to act.
+%%%%
+tutorial7 downstairs
+
+Before descending, think about where the upstairs is and which way you can
+retreat. The enemies below are more dangerous together than separately.
+%%%%
+tutorial7 entry
+
+The closer gnoll is beside the stairs. The second gnoll is visible farther
+down the corridor, but is too far away to follow if you climb now. The stair
+delay gives the closer gnoll time to attack, so start retreating before you
+are badly hurt.
+
+tutorial7 newlevel
+
+Both gnolls are visible in the corridor. One is beside the entry stairs; the
+other is farther away. Inspect them before acting. If you start climbing while
+the closer gnoll is adjacent, it can follow you upstairs. The farther gnoll
+cannot follow from its current position. Deal with the pursuer above, then
+return downstairs for the other gnoll. Climbing takes time, so the closer
+gnoll may attack during your retreat. The far stairs end the lesson.
+%%%%
+tutorial7 stairs
+
+You reached the far stairs. Press <input>$cmd[CMD_GO_UPSTAIRS]</input> to
+finish. Stairdancing uses stairs to separate enemies: only an adjacent enemy
+can follow when you start climbing. The delay still gives that enemy time to
+attack, so make the decision while you have enough health and room to retreat.
+%%%%
+tutorial7 exit
+
+:nowrap
+<white>Tutorial 7 summary: Threat Assessment and Stairdancing</white>
+
+  <input>$cmd[CMD_LOOK_AROUND]$cmd[CMD_TARGET_DESCRIBE]</input> inspect a threat
+  <input>$cmd[CMD_DISPLAY_INVENTORY]</input> check supplies before engaging
+  Keep the closer gnoll beside you and the farther one away
+  <input>$cmd[CMD_GO_UPSTAIRS]</input> draw an adjacent pursuer upstairs
+  Return downstairs for an enemy that stayed behind
+  <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
+
+Assess the group, keep an escape route, and choose where to fight.
 %%%%
