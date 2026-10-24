@@ -1,19 +1,83 @@
 for the DCSS changelog.txt see: https://github.com/crawl/crawl/blob/master/crawl-ref/docs/changelog.txt
 
 Dungeon Crawl Chili v1.0-a0-... (through 1.0-a0-1650 )
---------------------------------------------------
+------------------------------------------------------
 
 Highlights
 ----------
-* A new Unique for each of the 4 Hell branches.
-* AI Coaching Help and Post-Mortem Analysis are now WebTiles-only features.
-  Local Tiles no longer provides their menus, shortcuts or AI account access.
+* Scrolls and potions are identified when the game begins.
+* Artefact generation rates have been doubled.
+* Malevolent Forces have been removed.
+* Monster descriptions use brown "DC Chili change" notes to explain fork-
+  specific behaviour, including unique spawn locations and special drops.
+* Most uniques have a 5% chance for one of their normal weapons, armour pieces,
+  rings, or shields to be upgraded to an artefact.
+* Many uniques have a 50% chance to drop a unique item when killed. The item
+  depends on the monster and may be unavailable if it has already been found.
+* The WebTiles inventory bar has been redesigned and is vertical by default.
+* AI Coaching Help and the Post-Mortem Analysis are available only on the DCF 
+  WebTiles server.
+* A Death Replay functionality has been added to both offline Tiles and online
+  WebTiles. The Webtiles functionality is only active on DCF at the moment.
+* 16 new Uniques including a new Unique for each of the 4 Hell branches.
 * Nine retired uniques return exclusively in the Necropolis: Michael, Duane,
   Francis, Norbert, Terpsichore, Jozef, Pan, Lamia and Maud. One awake unique
-  roams each Necropolis, chosen to suit the entrance's difficulty.
+  roams each Necropolis, chosen to suit the entrance's difficulty level.
 * A new background: Archaeologist, imported from BCrawl. They start with
   exploration equipment and decipher a dusty tome into acquirement at XL 5.
-* A new species: Fairies, imported from BCrawl. Small flying spellcasters with
+* A new background: Priest, imported from BCadren Crawl. They start in a chapel 
+  with an altar to each god.
+* 1 new species imported from BCrawl: Fairies are small flying spellcasters with
   cheaper spells, shimmering defensive scales and no body armour.
-* A new species: Lignifites, growing treefolk adapted from BcadrenCrawl.
-  They grow larger, tougher and slower, and can root themselves from XL 12.
+* 2 new species adapted from BcadrenCrawl:
+  * Lignifites, a growing treefolk, grow larger, tougher and slower, and can root 
+    themselves from XL 12.
+  * Silent Spcepters, have a halo of silence around them and cannot read scrolls.
+
+Branches and dungeon floors
+---------------------------
+* Dungeon and branch lengths were reduced by one floor, except for Orc, Elf,
+  and Crypt. Unique spawn rates were increased to help replace the lost XP.
+* XP gained from kills was also increased by 10%.
+* A floor can have at most four uniques.
+* Out-of-depth monster generation in the Dungeon was reduced from 7% to 3%.
+* D:1 is a mostly forested, semi-open floor with a guaranteed faded altar and
+  a basic shop for the 270 gold players start with.
+* D:2 is mostly forested and semi-open, with dead trees, at least two altars,
+  and Jessica almost guaranteed to appear.
+* D:3 has corrupted trees and eight possible layouts, including a castle.
+  Medusa is guaranteed to appear there.
+* D:4 uses BcadrenCrawl's sewer layout, with Oskar almost guaranteed. The
+  standard DCSS Sewer branch has been removed.
+* D:5 is a catacomb with Menkaure almost guaranteed. The standard DCSS Ossuary
+  has been removed.
+* D:6 has a hot-and-cold theme with four central vaults. 
+* D:7 has a central  abandoned nature reserve with three possible central vaults.
+
+Early Unique encounters and rewards
+-----------------------------
+* Jessica is almost guaranteed on D:2 and has a 50% chance to drop a small
+  spellbook. A dropped book has a 50% chance to contain Blink.
+* Pooka can appear on D:2 and has a 50% chance to drop a Protean talisman.
+* Medusa is guaranteed on D:3. She may carry the Talisman of Medusa; when she
+  dies, nearby statues become adders and a water moccasin emerges from a
+  fountain.
+* Oskar is a D:4 unique who throws garbage bags and has a 50% chance to drop a
+  potion of cancellation.
+
+Other additions and adjustments
+-------------------------------
+* From BcadrenCrawl: the Leiomanos weapon in Shoals, potions of beneficial 
+  mutation and stat gain, and scrolls of bless item. Wooden weapons can no
+  longer receive the Flaming brand.
+* The XP value is shown in monster descriptions. 
+* Black Mark was reworked:
+  tier 1 keeps its 20% Hex enhancer, tier 2's proc chance rises from 20% to
+  50%, and tier 3 replaces the silence aura with an engulf attack and silent
+  casting. The silence aura mutation became a three-tier halo that does not
+  silence its owner.
+* Formicids and tengu can wear hats; felids can wear hats and boots; and
+  octopodes can wear scarves and hats. 
+* Monsters no longer blink randomly when they turn invisible.
+* Corrosive Blob was added as a level 7 spell, and staves of summoning that
+  heal allies were reintroduced.
