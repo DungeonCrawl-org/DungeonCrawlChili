@@ -972,15 +972,20 @@ tutorial7 start
 
 This lesson combines threat assessment with using stairs to manage a group.
 You have a trident and extra Fighting and Polearms skill for this exercise.
-You will face two gnolls in view, one beside the entry stairs and one farther
-away. Inspect them and use the stairs to separate them. Reach the far upstairs
-exit; you do not need to kill both.
+Later, you will find a parchment of Mephitic Cloud on the floor. Pick it up to
+add the spell to your library, then memorize it before the final exercise.
+First, assess the two gnolls in view, one beside the entry stairs and one
+farther away. Inspect them and use the stairs to separate them. You do not
+need to kill both.
 %%%%
 tutorial7 supplies
 
-These known healing and haste potions, and a scroll of fog, can help if the
-encounter goes badly. Check your supplies before descending. Using an item
-takes time, so make your choice while you still have room to act.
+These known healing and haste potions, a scroll of fog, and a wand of
+polymorph can help if the encounter goes badly. The wand will be useful
+against a halberd-wielding gnoll later in the lesson: polymorphing it makes
+it drop its equipment, but it becomes a different monster, so assess the new
+threat. Check your supplies before descending. Using an item takes time, so
+act while you still have room to respond.
 %%%%
 tutorial7 downstairs
 
@@ -989,26 +994,86 @@ retreat. The enemies below are more dangerous together than separately.
 %%%%
 tutorial7 entry
 
-The closer gnoll is beside the stairs. The second gnoll is visible farther
-down the corridor, but is too far away to follow if you climb now. The stair
-delay gives the closer gnoll time to attack, so start retreating before you
-are badly hurt.
+The closer gnoll is beside the stairs and carries a club. The second gnoll has
+a spear and is farther down the corridor, too far away to follow if you climb
+now. The stair delay gives the closer gnoll time to attack, so start retreating
+before you are badly hurt.
+%%%%
 
 tutorial7 newlevel
 
-Both gnolls are visible in the corridor. One is beside the entry stairs; the
-other is farther away. Inspect them before acting. If you start climbing while
-the closer gnoll is adjacent, it can follow you upstairs. The farther gnoll
-cannot follow from its current position. Deal with the pursuer above, then
-return downstairs for the other gnoll. Climbing takes time, so the closer
-gnoll may attack during your retreat. The far stairs end the lesson.
+Both gnolls are visible in the corridor. The closer one carries a club and
+the farther one a spear. Inspect them before acting. If you start climbing
+while the closer gnoll is adjacent, it can follow you upstairs. The farther
+gnoll cannot follow from its current position. Deal with the pursuer above,
+then return downstairs for the other gnoll. Climbing takes time, so the closer
+gnoll may attack during your retreat. Descend at the far stairs when you are
+ready for the halberd exercise.
 %%%%
 tutorial7 stairs
 
-You reached the far stairs. Press <input>$cmd[CMD_GO_UPSTAIRS]</input> to
-finish. Stairdancing uses stairs to separate enemies: only an adjacent enemy
-can follow when you start climbing. The delay still gives that enemy time to
-attack, so make the decision while you have enough health and room to retreat.
+You reached the far stairs. Descend to continue. Stairdancing uses stairs to
+separate enemies: only an adjacent enemy can follow when you start climbing.
+The delay still gives that enemy time to attack, so make the decision while
+you have enough health and room to retreat.
+%%%%
+tutorial7 halberd
+
+This gnoll carries a halberd, which can deal heavy damage. Use the polymorph
+wand to change it into another monster. Polymorphing makes it drop its
+equipment, including the halberd, but the new monster may still be dangerous.
+Assess the result, then descend to the archer exercise.
+%%%%
+tutorial7 halberd_entry
+
+The gnoll with the halberd is ahead. Check its threat and your supplies before
+approaching. The polymorph wand makes it drop its equipment, but can replace
+it with a different monster.
+%%%%
+tutorial7 halberd_stairs
+
+You reached the stairs beyond the halberd gnoll. Descend to the archer
+exercise.
+%%%%
+tutorial7 archer
+
+An orc archer can shoot you along this narrow passage. Before closing in,
+step north around the nearby corner into the alcove; the wall should block
+its line of sight. Then approach the archer. The Mephitic Cloud parchment is
+on the floor beyond it. Pick it up to add the spell to your library, then
+memorize it before continuing through the passage into the island chamber on
+this floor.
+%%%%
+tutorial7 archer_entry
+
+The archer has a clear shot down the passage. Step north around the corner
+into the alcove to break line of sight before advancing. Use the passage's
+corner for cover as you approach.
+%%%%
+tutorial7 archer_parchment
+
+Picking up this parchment adds Mephitic Cloud to your spell library. Use the
+memorization command to learn it. You need to be at least XL3 to cast it.
+%%%%
+tutorial7 island
+
+An orc priest stands on a one-tile island surrounded by deep water. Stay on
+the shore and cast Mephitic Cloud at the priest. If it becomes confused, it
+may wander into the water and drown. The priest can smite you from a distance,
+so act promptly. If the cloud fades before it wanders off the island, try
+again. Do not step into deep water yourself.
+%%%%
+tutorial7 island_entry
+
+The orc priest is isolated on a tiny island. Mephitic Cloud can confuse it;
+while confused, it may walk into the surrounding deep water and drown. Keep
+your distance: the priest can smite you across the water.
+%%%%
+tutorial7 island_exit
+
+Press <input>$cmd[CMD_GO_UPSTAIRS]</input> to finish the lesson. The goal of
+the island exercise was to use confusion and the terrain so the orc priest
+would drown itself.
 %%%%
 tutorial7 exit
 
@@ -1020,6 +1085,11 @@ tutorial7 exit
   Keep the closer gnoll beside you and the farther one away
   <input>$cmd[CMD_GO_UPSTAIRS]</input> draw an adjacent pursuer upstairs
   Return downstairs for an enemy that stayed behind
+  Use the polymorph wand to remove a dangerous monster's weapon
+  Break line of sight before approaching a ranged attacker
+  Pick up and memorize the Mephitic Cloud parchment
+  <input>$cmd[CMD_CAST_SPELL]</input> confuse an enemy with Mephitic Cloud
+  Use terrain so a confused enemy may stumble into danger
   <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
 
 Assess the group, keep an escape route, and choose where to fight.

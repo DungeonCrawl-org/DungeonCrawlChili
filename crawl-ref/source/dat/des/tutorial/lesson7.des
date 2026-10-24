@@ -29,6 +29,7 @@ FTILE:   ABCD = tutorial_pad
 KITEM:   h = potion of heal wounds q:2 pre_id
 KITEM:   s = potion of haste q:1 pre_id
 KITEM:   f = scroll of fog q:1 pre_id
+KITEM:   p = wand of polymorph charges:5 pre_id
 MARKER:  A = lua:tutorial7.msg("start")
 MARKER:  B = lua:tutorial7.msg("supplies")
 MARKER:  } = lua:tutorial7.msg("downstairs")
@@ -46,7 +47,7 @@ MAP
 xxxxxxxxxxxxxxxxxxxxxxx
 x.....................x
 x...A.................x
-x.....hB....s.........x
+x.....hBp...s.........x
 x...{.................x
 x...................f.x
 x.....................x
@@ -66,10 +67,7 @@ KFEAT:   x = stone_wall
 KMONS:   1 = gnoll generate_awake ; club mundane
 KMONS:   2 = gnoll generate_awake ; spear mundane
 MARKER:  { = lua:tutorial7.msg("entry")
-MARKER:  [ = lua:tutorial7.msg("stairs")
-MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
-                                 desc = "finish the tutorial", \
-                                 onclimb = "tutorial7.win" }
+MARKER:  } = lua:tutorial7.msg("stairs")
 epilogue{{
   if crawl.game_started() then
     crawl.clear_messages(true)
@@ -79,7 +77,76 @@ epilogue{{
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 x..................................x
-x.{1...2.......................[...x
+x.{1...2.......................}...x
+x..................................x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+##########################################################
+# Level 3: Disarm a halberd gnoll with polymorph          #
+##########################################################
+NAME:    tutorial_lesson7_level3
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
+PLACE:   D:3
+ORIENT:  encompass
+KFEAT:   x = stone_wall
+KMONS:   g = gnoll generate_awake ; halberd mundane
+MARKER:  { = lua:tutorial7.msg("halberd_entry")
+MARKER:  } = lua:tutorial7.msg("halberd_stairs")
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial7 halberd")
+  end
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxx
+x........................x
+x........................x
+x.{..g..................}x
+x........................x
+x........................x
+xxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+##########################################################
+# Level 4: Archer cover and the orc island                #
+##########################################################
+NAME:    tutorial_lesson7_level4
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
+PLACE:   D:4
+ORIENT:  encompass
+KFEAT:   x = stone_wall
+KFEAT:   w = deep_water
+KITEM:   q = parchment of mephitic cloud
+KMONS:   a = orc generate_awake ; shortbow mundane
+KMONS:   o = orc priest generate_awake
+MARKER:  q = lua:tutorial7.msg("archer_parchment")
+MARKER:  { = lua:tutorial7.msg("archer_entry")
+MARKER:  B = lua:tutorial7.msg("island")
+MARKER:  [ = lua:tutorial7.msg("island_exit")
+MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
+                                 desc = "finish the tutorial", \
+                                 onclimb = "tutorial7.win" }
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial7 archer")
+  end
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x.{........a.....q........B........x
+xxxxxxxxxxxxxxxxxxxxxxxxxx.........x
+x..................................x
+x..................................x
+x..................................x
+x.............................www..x
+x.............................wow..x
+x.............................www..x
+x.................................[x
 x..................................x
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP
