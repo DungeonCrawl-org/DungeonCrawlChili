@@ -979,11 +979,11 @@ the stairs to separate them. You do not need to kill both.
 tutorial7 supplies
 
 These known healing and haste potions, a scroll of fog, and a wand of
-polymorph can help if the encounter goes badly. The closer gnoll carries a
-halberd. Polymorphing it makes it drop its equipment, including the weapon,
-but it will become a different monster, so assess the new threat. Check your
-supplies before descending. Using an item takes time, so act while you still
-have room to respond.
+polymorph can help if the encounter goes badly. The wand will be useful
+against a halberd-wielding gnoll later in the lesson: polymorphing it makes
+it drop its equipment, but it becomes a different monster, so assess the new
+threat. Check your supplies before descending. Using an item takes time, so
+act while you still have room to respond.
 %%%%
 tutorial7 downstairs
 
@@ -992,22 +992,21 @@ retreat. The enemies below are more dangerous together than separately.
 %%%%
 tutorial7 entry
 
-The closer gnoll is beside the stairs and carries a halberd. If you polymorph
-it, it drops its equipment, but may become a different threat. The second
-gnoll is visible farther down the corridor, but is too far away to follow if
-you climb now. The stair delay gives the closer gnoll time to attack, so start
-retreating before you are badly hurt.
+The closer gnoll is beside the stairs and carries a club. The second gnoll has
+a spear and is farther down the corridor, too far away to follow if you climb
+now. The stair delay gives the closer gnoll time to attack, so start retreating
+before you are badly hurt.
+%%%%
 
 tutorial7 newlevel
 
-Both gnolls are visible in the corridor. The closer one carries a halberd and
-the farther one a spear. Inspect them before acting. A polymorph wand makes
-its target drop its equipment, but the new monster may still be dangerous. If
-you start climbing while the closer gnoll is adjacent, it can follow you
-upstairs. The farther gnoll cannot follow from its current position. Deal with
-the pursuer above, then return downstairs for the other gnoll. Climbing takes
-time, so the closer gnoll may attack during your retreat. Descend at the far
-stairs when you are ready for the next exercise.
+Both gnolls are visible in the corridor. The closer one carries a club and
+the farther one a spear. Inspect them before acting. If you start climbing
+while the closer gnoll is adjacent, it can follow you upstairs. The farther
+gnoll cannot follow from its current position. Deal with the pursuer above,
+then return downstairs for the other gnoll. Climbing takes time, so the closer
+gnoll may attack during your retreat. Descend at the far stairs when you are
+ready for the halberd exercise.
 %%%%
 tutorial7 stairs
 
@@ -1015,6 +1014,24 @@ You reached the far stairs. Descend to continue. Stairdancing uses stairs to
 separate enemies: only an adjacent enemy can follow when you start climbing.
 The delay still gives that enemy time to attack, so make the decision while
 you have enough health and room to retreat.
+%%%%
+tutorial7 halberd
+
+This gnoll carries a halberd, which can deal heavy damage. Use the polymorph
+wand to change it into another monster. Polymorphing makes it drop its
+equipment, including the halberd, but the new monster may still be dangerous.
+Assess the result, then descend to the final exercise.
+%%%%
+tutorial7 halberd_entry
+
+The gnoll with the halberd is ahead. Check its threat and your supplies before
+approaching. The polymorph wand makes it drop its equipment, but can replace
+it with a different monster.
+%%%%
+tutorial7 halberd_stairs
+
+You reached the stairs beyond the halberd gnoll. Descend for the orc priest
+and the Mephitic Cloud exercise.
 %%%%
 tutorial7 island
 
@@ -1046,6 +1063,7 @@ tutorial7 exit
   Keep the closer gnoll beside you and the farther one away
   <input>$cmd[CMD_GO_UPSTAIRS]</input> draw an adjacent pursuer upstairs
   Return downstairs for an enemy that stayed behind
+  Use the polymorph wand to remove a dangerous monster's weapon
   <input>$cmd[CMD_CAST_SPELL]</input> confuse an enemy with Mephitic Cloud
   Use terrain so a confused enemy may stumble into danger
   <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
