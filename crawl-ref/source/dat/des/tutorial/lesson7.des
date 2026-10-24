@@ -1,0 +1,94 @@
+##############################################
+# Tutorial map 7: Threat Assessment and       #
+#                Stairdancing                 #
+##############################################
+
+{{
+crawl_require("dlua/tutorial.lua")
+tutorial7 = {}
+function tutorial7.msg(text)
+    return tutorial_msg("tutorial7 " .. text)
+end
+function tutorial7.exit()
+    crawl.tutorial_msg("tutorial7 exit", true)
+end
+function tutorial7.win()
+    crawl.mark_game_won()
+    return tutorial7.exit()
+end
+}}
+
+NAME:    tutorial_lesson7
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial
+DESC:    Lesson 7: Threat Assessment and Stairdancing
+ORDER:   7
+ORIENT:  encompass
+KFEAT:   ABCD = .
+COLOUR:  ABCD = lightblue
+FTILE:   ABCD = tutorial_pad
+KITEM:   h = potion of heal wounds q:2 pre_id
+KITEM:   s = potion of haste q:1 pre_id
+KITEM:   f = scroll of fog q:1 pre_id
+MARKER:  A = lua:tutorial7.msg("start")
+MARKER:  B = lua:tutorial7.msg("supplies")
+MARKER:  } = lua:tutorial7.msg("downstairs")
+MARKER:  { = lua:one_way_stair { dst = "tutorial_lesson7", \
+                                 desc = "leave the tutorial early", \
+                                 onclimb = "tutorial7.exit" }
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial7 start")
+    tutorial_intro()
+  end
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxx
+x.....................x
+x...A.................x
+x.....hB....s.........x
+x...{.................x
+x...................f.x
+x.....................x
+x............}........x
+x.....................x
+xxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+##########################################################
+# Level 2: Separate the threats and use the stairs       #
+##########################################################
+NAME:    tutorial_lesson7_level2
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
+PLACE:   D:2
+ORIENT:  encompass
+KFEAT:   AB = .
+COLOUR:  AB = lightblue
+FTILE:   AB = tutorial_pad
+KFEAT:   x = stone_wall
+KMONS:   1 = gnoll generate_awake ; spear mundane
+KMONS:   2 = orc wizard generate_awake
+MARKER:  A = lua:tutorial7.msg("two_threats")
+MARKER:  B = lua:tutorial7.msg("doorway")
+MARKER:  { = lua:tutorial7.msg("entry")
+MARKER:  [ = lua:tutorial7.msg("stairs")
+MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
+                                 desc = "finish the tutorial", \
+                                 onclimb = "tutorial7.win" }
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial7 newlevel")
+  end
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x...........xxxxxxxxxxxxxxxxxxxxxxxx
+x.{..1A...x........................x
+x...........x......................x
+x...........+B.....................x
+x...........x.......2..............x
+x...........x....................[.x
+x...........xxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP

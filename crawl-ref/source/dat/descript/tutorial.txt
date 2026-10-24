@@ -91,7 +91,7 @@ stairs. To travel directly to the stairs, you can
 %%%%
 tutorial1 basic_keys
 
-You can review the basic keys taught in the six tutorial lessons at any time.
+You can review the basic keys taught in the seven tutorial lessons at any time.
 Press <input>$cmd[CMD_DISPLAY_COMMANDS]</input> to open the help menu,
 then press <input>></input> for the basic keys page.
 
@@ -967,4 +967,73 @@ tutorial6 exit
   <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
 
 You do not have to win every fight. Recognise danger and use your supplies early.
+%%%%
+tutorial7 start
+
+This lesson combines threat assessment with using stairs to manage a group.
+You will face two dangerous monsters. Inspect them, pay attention to where
+they are, and avoid letting both attack you at once. Reach the far upstairs
+exit; you do not need to kill every enemy.
+%%%%
+tutorial7 supplies
+
+These known healing and haste potions, and a scroll of fog, can help if the
+encounter goes badly. Check your supplies before descending. Using an item
+takes time, so make your choice while you still have room to act.
+%%%%
+tutorial7 downstairs
+
+Before descending, think about where the upstairs is and which way you can
+retreat. The enemies below are more dangerous together than separately.
+%%%%
+tutorial7 newlevel
+
+Two enemies are ahead: a gnoll near the entry stairs and an orc wizard beyond
+the doorway. Inspect them and consider which attacks can reach you. Avoid
+standing in the open where both can attack. If one follows you upstairs, deal
+with it there, then return and reassess the enemy that stayed behind. The far
+stairs end the lesson.
+%%%%
+tutorial7 entry
+
+The gnoll is close to the stairs. If you retreat upstairs, it may follow.
+Check whether the other enemy is close enough to follow too. Stairdancing
+means using a known stairway to draw pursuers into a better fight, then
+returning for the enemies that stayed behind. It costs turns and does not
+make the stairs safe automatically.
+%%%%
+tutorial7 two_threats
+
+Pause before approaching. Inspect each enemy, check your health and supplies,
+and choose a route that keeps space behind you. If both close in, retreat
+before you are surrounded; you do not have to stand and fight.
+%%%%
+tutorial7 doorway
+
+This narrow doorway is a choke point. Step back and let enemies approach
+through it so fewer can stand beside you. If a ranged enemy can still see you,
+use the wall to break its line of sight. Moving away takes a turn, so retreat
+while you still have room. After drawing one enemy upstairs, return and check
+whether the other is still below before you advance.
+%%%%
+tutorial7 stairs
+
+You reached the far stairs. Press <input>$cmd[CMD_GO_UPSTAIRS]</input> to
+finish. In a regular game, stairdancing can help separate a group, but nearby
+enemies may follow and every trip gives them time to act. Check the area on
+both sides of the stairs before committing.
+%%%%
+tutorial7 exit
+
+:nowrap
+<white>Tutorial 7 summary: Threat Assessment and Stairdancing</white>
+
+  <input>$cmd[CMD_LOOK_AROUND]$cmd[CMD_TARGET_DESCRIBE]</input> inspect a threat
+  <input>$cmd[CMD_DISPLAY_INVENTORY]</input> check supplies before engaging
+  Retreat through a doorway to limit how many enemies can attack at once
+  <input>$cmd[CMD_GO_UPSTAIRS]</input> use a known stair to retreat or split pursuers
+  Enemies may follow; stairs do not make you safe automatically
+  <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
+
+Assess the group, keep an escape route, and choose where to fight.
 %%%%
