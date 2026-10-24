@@ -978,9 +978,12 @@ exit; you do not need to kill both.
 %%%%
 tutorial7 supplies
 
-These known healing and haste potions, and a scroll of fog, can help if the
-encounter goes badly. Check your supplies before descending. Using an item
-takes time, so make your choice while you still have room to act.
+These known healing and haste potions, a scroll of fog, and a wand of
+polymorph can help if the encounter goes badly. The closer gnoll carries a
+halberd. Polymorphing it makes it drop its equipment, including the weapon,
+but it will become a different monster, so assess the new threat. Check your
+supplies before descending. Using an item takes time, so act while you still
+have room to respond.
 %%%%
 tutorial7 downstairs
 
@@ -989,19 +992,22 @@ retreat. The enemies below are more dangerous together than separately.
 %%%%
 tutorial7 entry
 
-The closer gnoll is beside the stairs. The second gnoll is visible farther
-down the corridor, but is too far away to follow if you climb now. The stair
-delay gives the closer gnoll time to attack, so start retreating before you
-are badly hurt.
+The closer gnoll is beside the stairs and carries a halberd. If you polymorph
+it, it drops its equipment, but may become a different threat. The second
+gnoll is visible farther down the corridor, but is too far away to follow if
+you climb now. The stair delay gives the closer gnoll time to attack, so start
+retreating before you are badly hurt.
 
 tutorial7 newlevel
 
-Both gnolls are visible in the corridor. One is beside the entry stairs; the
-other is farther away. Inspect them before acting. If you start climbing while
-the closer gnoll is adjacent, it can follow you upstairs. The farther gnoll
-cannot follow from its current position. Deal with the pursuer above, then
-return downstairs for the other gnoll. Climbing takes time, so the closer
-gnoll may attack during your retreat. The far stairs end the lesson.
+Both gnolls are visible in the corridor. The closer one carries a halberd and
+the farther one a spear. Inspect them before acting. A polymorph wand makes
+its target drop its equipment, but the new monster may still be dangerous. If
+you start climbing while the closer gnoll is adjacent, it can follow you
+upstairs. The farther gnoll cannot follow from its current position. Deal with
+the pursuer above, then return downstairs for the other gnoll. Climbing takes
+time, so the closer gnoll may attack during your retreat. The far stairs end
+the lesson.
 %%%%
 tutorial7 stairs
 
