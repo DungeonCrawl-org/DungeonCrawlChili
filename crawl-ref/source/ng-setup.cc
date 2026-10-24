@@ -397,6 +397,10 @@ static void _setup_tutorial_miscs()
     // practise positioning without making the first pursuer overwhelming.
     if (crawl_state.map == "tutorial_lesson7")
     {
+        // Start one level ahead so the player can reach XL3 from the lesson's
+        // encounters before the final spell exercise.
+        you.experience = exp_needed(2);
+        you.total_experience = you.experience;
         you.skills[SK_FIGHTING] += 2;
         you.skills[SK_POLEARMS] += 3;
         you.skills[SK_SPELLCASTING] = max<int>(you.skills[SK_SPELLCASTING], 4);
