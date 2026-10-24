@@ -3648,6 +3648,16 @@ static const map_def *_dgn_random_map_for_place(bool minivault)
                 crawl_state.map.c_str());
         }
     }
+    else if (crawl_state.game_is_tutorial()
+             && lid.branch == root_branch)
+    {
+        // Follow-up tutorial floors are named after the selected lesson and
+        // their dungeon depth. Select them directly so they cannot lose to a
+        // normal floor layout at the same depth.
+        const string name = make_stringf("%s_level%d",
+                                         crawl_state.map.c_str(), lid.depth);
+        vault = find_map_by_name(name);
+    }
 
     if (!vault)
         // Pick a normal map

@@ -124,8 +124,6 @@ KMONS:   a = orc generate_awake ; shortbow mundane
 MARKER:  q = lua:tutorial7.msg("archer_parchment")
 MARKER:  { = lua:tutorial7.msg("archer_entry")
 MARKER:  } = lua:tutorial7.msg("archer_stairs")
-MARKER:  } = lua:one_way_stair { dst = "tutorial_lesson7_level5", \
-                                 desc = "descend to the orc priest exercise" }
 epilogue{{
   if crawl.game_started() then
     crawl.clear_messages(true)
