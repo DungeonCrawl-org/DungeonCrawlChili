@@ -67,10 +67,9 @@ KFEAT:   x = stone_wall
 KMONS:   1 = gnoll generate_awake ; halberd mundane
 KMONS:   2 = gnoll generate_awake ; spear mundane
 MARKER:  { = lua:tutorial7.msg("entry")
-MARKER:  [ = lua:tutorial7.msg("stairs")
-MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
-                                 desc = "finish the tutorial", \
-                                 onclimb = "tutorial7.win" }
+MARKER:  } = lua:tutorial7.msg("stairs")
+MARKER:  } = lua:one_way_stair { dst = "tutorial_lesson7_level3", \
+                                 desc = "descend to the Mephitic Cloud exercise" }
 epilogue{{
   if crawl.game_started() then
     crawl.clear_messages(true)
@@ -80,7 +79,40 @@ epilogue{{
 MAP
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 x..................................x
-x.{1...2.......................[...x
+x.{1...2.......................}...x
 x..................................x
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+##########################################################
+# Level 3: Confuse an orc priest above deep water         #
+##########################################################
+NAME:    tutorial_lesson7_level3
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson7
+PLACE:   D:3
+ORIENT:  encompass
+KFEAT:   x = stone_wall
+KFEAT:   w = deep_water
+KMONS:   o = orc priest generate_awake
+MARKER:  { = lua:tutorial7.msg("island_entry")
+MARKER:  [ = lua:tutorial7.msg("island_exit")
+MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
+                                 desc = "finish the tutorial", \
+                                 onclimb = "tutorial7.win" }
+epilogue{{
+  if crawl.game_started() then
+    crawl.clear_messages(true)
+    crawl.tutorial_msg("tutorial7 island")
+  end
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxx
+x........................x
+x........................x
+x....www.................x
+x.{..wow.................x
+x....www.................x
+x....................[...x
+x........................x
+xxxxxxxxxxxxxxxxxxxxxxxxxx
 ENDMAP

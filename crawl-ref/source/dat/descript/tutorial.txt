@@ -972,9 +972,9 @@ tutorial7 start
 
 This lesson combines threat assessment with using stairs to manage a group.
 You have a trident and extra Fighting and Polearms skill for this exercise.
-You will face two gnolls in view, one beside the entry stairs and one farther
-away. Inspect them and use the stairs to separate them. Reach the far upstairs
-exit; you do not need to kill both.
+You know Mephitic Cloud for a later exercise. First, assess the two gnolls in
+view, one beside the entry stairs and one farther away. Inspect them and use
+the stairs to separate them. You do not need to kill both.
 %%%%
 tutorial7 supplies
 
@@ -1006,15 +1006,35 @@ its target drop its equipment, but the new monster may still be dangerous. If
 you start climbing while the closer gnoll is adjacent, it can follow you
 upstairs. The farther gnoll cannot follow from its current position. Deal with
 the pursuer above, then return downstairs for the other gnoll. Climbing takes
-time, so the closer gnoll may attack during your retreat. The far stairs end
-the lesson.
+time, so the closer gnoll may attack during your retreat. Descend at the far
+stairs when you are ready for the next exercise.
 %%%%
 tutorial7 stairs
 
-You reached the far stairs. Press <input>$cmd[CMD_GO_UPSTAIRS]</input> to
-finish. Stairdancing uses stairs to separate enemies: only an adjacent enemy
-can follow when you start climbing. The delay still gives that enemy time to
-attack, so make the decision while you have enough health and room to retreat.
+You reached the far stairs. Descend to continue. Stairdancing uses stairs to
+separate enemies: only an adjacent enemy can follow when you start climbing.
+The delay still gives that enemy time to attack, so make the decision while
+you have enough health and room to retreat.
+%%%%
+tutorial7 island
+
+An orc priest stands on a one-tile island surrounded by deep water. Stay on
+the shore and cast Mephitic Cloud at the priest. If it becomes confused, it
+may wander into the water and drown. The priest can smite you from a distance,
+so act promptly. If the cloud fades before it wanders off the island, try
+again. Do not step into deep water yourself.
+%%%%
+tutorial7 island_entry
+
+The orc priest is isolated on a tiny island. Mephitic Cloud can confuse it;
+while confused, it may walk into the surrounding deep water and drown. Keep
+your distance: the priest can smite you across the water.
+%%%%
+tutorial7 island_exit
+
+Press <input>$cmd[CMD_GO_UPSTAIRS]</input> to finish the lesson. The goal of
+the island exercise was to use confusion and the terrain so the orc priest
+would drown itself.
 %%%%
 tutorial7 exit
 
@@ -1026,6 +1046,8 @@ tutorial7 exit
   Keep the closer gnoll beside you and the farther one away
   <input>$cmd[CMD_GO_UPSTAIRS]</input> draw an adjacent pursuer upstairs
   Return downstairs for an enemy that stayed behind
+  <input>$cmd[CMD_CAST_SPELL]</input> confuse an enemy with Mephitic Cloud
+  Use terrain so a confused enemy may stumble into danger
   <input>$cmd[CMD_DISPLAY_COMMANDS]></input> review the basic tutorial keys
 
 Assess the group, keep an escape route, and choose where to fight.
