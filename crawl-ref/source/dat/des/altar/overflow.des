@@ -3578,7 +3578,7 @@ TAGS:   no_item_gen no_monster_gen no_pool_fixup
 : if you.absdepth() <= 4 then
 MONS:   Sigmund
 : elseif you.absdepth() <= 6 then
-MONS:   orc wizard w:15 / Blorkula the orcula
+MONS:   orc wizard w:15 / Blorkula the Orcula
 : elseif you.in_branch("Depths") then
 MONS:   lich
 : else
