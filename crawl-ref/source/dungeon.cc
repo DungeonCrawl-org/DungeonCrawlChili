@@ -2119,7 +2119,10 @@ static void _fixup_branch_stairs()
         if (bottom && (feat_is_stone_stair_down(env.grid(*ri))
                        || env.grid(*ri) == DNGN_ESCAPE_HATCH_DOWN))
         {
-            env.grid(*ri) = escape_replacement;
+            // The starting Chapel uses a down hatch to enter D:1. It has no
+            // parent exit, so the normal bottom-floor fixup would erase it.
+            env.grid(*ri) = player_in_branch(BRANCH_START_TEMPLE)
+                            ? DNGN_STONE_STAIRS_DOWN_I : escape_replacement;
         }
 
         if (top)
