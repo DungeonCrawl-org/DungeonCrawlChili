@@ -2039,7 +2039,7 @@ cB''''+.. x....x  ..+''''Bc
 ENDMAP
 
 NAME:    regret_index_lairdec_grave_grove
-TAGS:    transparent extra lairdec
+TAGS:    transparent extra lairdec no_exits
 WEIGHT:  5
 KMONS:   D = pile of debris
 KMONS:   P = plant
