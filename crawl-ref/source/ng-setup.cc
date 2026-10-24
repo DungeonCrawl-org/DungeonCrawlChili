@@ -385,6 +385,14 @@ static void _setup_tutorial_miscs()
     // Some spellcasting for the magic tutorial.
     if (crawl_state.map.find("tutorial_lesson4") != string::npos)
         you.skills[SK_SPELLCASTING] = 1;
+
+    // Give the Tutorial's two-threat exercise enough weapon skill and HP to
+    // practise positioning without making the first pursuer overwhelming.
+    if (crawl_state.map == "tutorial_lesson7")
+    {
+        you.skills[SK_FIGHTING] += 2;
+        you.skills[SK_POLEARMS] += 3;
+    }
 }
 
 static void _give_basic_knowledge()

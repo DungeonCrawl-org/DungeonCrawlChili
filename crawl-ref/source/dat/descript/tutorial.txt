@@ -971,6 +971,7 @@ You do not have to win every fight. Recognise danger and use your supplies early
 tutorial7 start
 
 This lesson combines threat assessment with using stairs to manage a group.
+You have a trident and extra Fighting and Polearms skill for this exercise.
 You will face two dangerous monsters. Inspect them, pay attention to where
 they are, and avoid letting both attack you at once. Reach the far upstairs
 exit; you do not need to kill every enemy.
