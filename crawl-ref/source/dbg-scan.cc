@@ -648,6 +648,10 @@ void check_map_validity()
     if (you.depth == 1 && !player_in_branch(root_branch))
         exit = branches[you.where_are_you].exit_stairs;
 
+    // A starting branch such as the Priest Chapel has no parent exit.
+    if (exit == NUM_FEATURES)
+        exit = DNGN_UNSEEN;
+
     // these may require you to look farther:
     if (exit == DNGN_EXIT_PANDEMONIUM)
         exit = DNGN_TRANSIT_PANDEMONIUM;
