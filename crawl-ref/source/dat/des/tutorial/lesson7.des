@@ -64,7 +64,7 @@ PLACE:   D:2
 ORIENT:  encompass
 KFEAT:   x = stone_wall
 KMONS:   1 = gnoll generate_awake ; club mundane
-KMONS:   2 = gnoll generate_awake ; club mundane
+KMONS:   2 = gnoll generate_awake ; spear mundane
 MARKER:  { = lua:tutorial7.msg("entry")
 MARKER:  [ = lua:tutorial7.msg("stairs")
 MARKER:  [ = lua:one_way_stair { dst = "tutorial_lesson7", \
