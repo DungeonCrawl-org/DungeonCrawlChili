@@ -670,6 +670,36 @@ spret cast_summon_dragon(actor *caster, int pow, bool fail)
     return spret::success;
 }
 
+spret cast_summon_drakes(int pow, bool fail)
+{
+    fail_check();
+    const int count = 2 + random2(2 + max(1, pow) / 9);
+    int summoned = 0;
+    const monster_type drakes[] = {
+        MONS_WIND_DRAKE, MONS_RIME_DRAKE, MONS_SWAMP_DRAKE,
+        MONS_DEATH_DRAKE, MONS_WYVERN
+    };
+
+    for (int i = 0; i < count; ++i)
+    {
+        const monster_type drake = drakes[random2(ARRAYSZ(drakes))];
+        mgen_data mg(drake, BEH_FRIENDLY, you.pos(), MHITYOU,
+                     MG_FORCE_BEH | MG_AUTOFOE);
+        mg.set_summoned(&you, SPELL_NO_SPELL, summ_dur(3), true);
+        if (monster *summon = create_monster(mg))
+        {
+            summon->flags |= MF_ATT_CHANGE_ATTEMPT;
+            ++summoned;
+        }
+    }
+
+    if (summoned)
+        mpr("You call forth Piva's drakes to fight for you.");
+    else
+        canned_msg(MSG_NOTHING_HAPPENS);
+    return spret::success;
+}
+
 spret cast_summon_mana_viper(int pow, bool fail)
 {
     if (!player_summon_check(MONS_MANA_VIPER))

@@ -269,6 +269,11 @@ static const vector<god_passive> god_passives[] =
     {
         { 0, passive_t::resist_fire },
     }, // TODO
+
+    // Paha & Piva
+    {
+        { 0, passive_t::resist_fire },
+    },
 };
 COMPILE_CHECK(ARRAYSZ(god_passives) == NUM_GODS);
 

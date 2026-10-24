@@ -759,6 +759,14 @@ static vector<ability_def> &_get_ability_list()
             0, 0, 12, -1, {fail_basis::invo}, abflag::quiet_fail },
         { ABIL_IGNIS_RISING_FLAME, "Rising Flame",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+        { ABIL_PIVARRA_SUMMON_DRAKES, "Summon Drakes",
+            5, 0, 10, -1, {fail_basis::invo}, abflag::none },
+        { ABIL_PIVARRA_TRANSFORM, "Change Draconian Colour",
+            0, 0, 15, -1, {fail_basis::invo}, abflag::none },
+        { ABIL_PAHAMUT_DRAGONSLAYING, "Brand Weapon with Dragon Slaying",
+            0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+        { ABIL_PIVARRA_DRAGON_BOOK, "Receive the Book of the Dragon",
+            0, 0, 0, -1, {fail_basis::invo}, abflag::none },
 
         { ABIL_RENOUNCE_RELIGION, "Renounce Religion",
             0, 0, 0, -1, {fail_basis::invo}, abflag::silence_ok },
@@ -3229,6 +3237,10 @@ int draconian_breath_power(int shapeshifting_skill)
     if (species::is_draconian(you.species))
         power += you.experience_level;
 
+    // Paha's favour strengthens the breath inherited by Draconians.
+    if (actual && you_worship(GOD_PAHAMUT_PIVARRA) && piety_rank() >= 2)
+        power += you.experience_level / 2;
+
     return power;
 }
 
@@ -4184,6 +4196,45 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         you.one_time_ability_used.set(GOD_IGNIS);
         return spret::success;
 
+    case ABIL_PIVARRA_SUMMON_DRAKES:
+        return cast_summon_drakes(you.skill(SK_INVOCATIONS, 3), fail);
+
+    case ABIL_PIVARRA_TRANSFORM:
+    {
+        fail_check();
+        species_type new_species;
+        do
+            new_species = species::random_draconian_colour();
+        while (new_species == you.species);
+        change_species_to(new_species);
+        mprf(MSGCH_GOD, "Piva transforms you into a %s Draconian.",
+             species::name(new_species).c_str());
+        break;
+    }
+
+    case ABIL_PAHAMUT_DRAGONSLAYING:
+        fail_check();
+        if (!bless_weapon(GOD_PAHAMUT_PIVARRA, SPWPN_DRAGON_SLAYING,
+                          LIGHTCYAN))
+            return spret::abort;
+        break;
+
+    case ABIL_PIVARRA_DRAGON_BOOK:
+    {
+        fail_check();
+        if (!can_do_capstone_ability(GOD_PAHAMUT_PIVARRA))
+            return spret::abort;
+        int book = items(true, OBJ_BOOKS, BOOK_DRAGON, 1, 0,
+                         GOD_PAHAMUT_PIVARRA);
+        if (book == NON_ITEM || !move_item_to_grid(&book, you.pos()))
+            return spret::abort;
+        env.item[book].flags |= ISFLAG_IDENTIFIED;
+        you.one_time_ability_used.set(GOD_PAHAMUT_PIVARRA);
+        take_note(Note(NOTE_GOD_GIFT, GOD_PAHAMUT_PIVARRA));
+        mpr("Piva grants you the Book of the Dragon!");
+        break;
+    }
+
     case ABIL_RENOUNCE_RELIGION:
         if (yesno("Really renounce your faith, foregoing its fabulous benefits?",
                   false, 'n')
@@ -4429,8 +4480,10 @@ static void _add_talent(vector<talent>& vec, const ability_type ability)
 bool is_religious_ability(ability_type abil)
 {
     // ignores abandon religion / convert to beogh
-    return abil >= ABIL_FIRST_RELIGIOUS_ABILITY
-        && abil <= ABIL_LAST_RELIGIOUS_ABILITY;
+    return (abil >= ABIL_FIRST_RELIGIOUS_ABILITY
+            && abil <= ABIL_LAST_RELIGIOUS_ABILITY)
+        || (abil >= ABIL_PIVARRA_SUMMON_DRAKES
+            && abil <= ABIL_PIVARRA_DRAGON_BOOK);
 }
 
 bool is_card_ability(ability_type abil)

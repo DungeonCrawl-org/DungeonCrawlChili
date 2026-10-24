@@ -5460,7 +5460,7 @@ ENDMAP
 
 # every god in the game
 NAME:   hellmonk_choose_your_character
-TAGS:   temple_rare temple_altars_26 no_rotate no_vmirror no_hmirror
+TAGS:   temple_rare temple_altars_27 no_rotate no_vmirror no_hmirror
 PLACE:  Temple
 ORIENT: encompass
 WEIGHT: 1
@@ -5470,9 +5470,10 @@ KFEAT:  J = altar_jiyva
 KFEAT:  I = altar_ignis
 KFEAT:  O = altar_beogh
 KFEAT:  E = altar_ecumenical
+KFEAT:  P = altar_pahamut_pivarra
 KFEAT:  + = closed_clear_door
 FTILE:  .+ = floor_pebble_darkgray
-FTILE:  BLJIOE = floor_rough_red
+FTILE:  BLJIOEP = floor_rough_red
 MAP
 ccccccccccccccccccc
 c.................c
@@ -5492,7 +5493,7 @@ c.nnnnnnnnnnn.nnn.c
 c.nBnBnBnBnBn.nEn.c
 c.n+n+n+n+n+n.n+n.c
 c.................c
-c..............{..c
+c.............P{..c
 c.................c
 ccccccccccccccccccc
 ENDMAP

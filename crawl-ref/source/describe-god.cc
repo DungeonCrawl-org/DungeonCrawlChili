@@ -242,6 +242,10 @@ static const char *divine_title[][8] =
     // Ignis -- fire/candles theme
     {"Extinguished",          "Last Ember",             "Glowing Coal",              "Thurifer",
         "Hearthfire",     "Furnace",               "Raging Flame",              "Inferno"},
+
+    // Paha & Piva -- twin dragon theme
+    {"Scale-bearer", "Dragonkin", "Broodling", "Wyrm",
+        "Drake", "Dragon", "Wyrmkin", "Twin Dragon"},
 };
 COMPILE_CHECK(ARRAYSZ(divine_title) == NUM_GODS);
 

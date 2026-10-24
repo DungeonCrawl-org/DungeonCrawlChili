@@ -359,7 +359,6 @@ enum ability_type
 #else
     ABIL_LAST_RELIGIOUS_ABILITY = ABIL_IGNIS_RISING_FLAME,
 #endif
-
     // General divine (pseudo) abilities.
     ABIL_RENOUNCE_RELIGION,
     ABIL_CONVERT_TO_BEOGH,
@@ -371,6 +370,12 @@ enum ability_type
     // Appended to preserve saved ability identifiers.
     ABIL_PLANT_ROOTS,
     ABIL_UPROOT,
+
+    // New religious abilities are appended to preserve saved ability ids.
+    ABIL_PIVARRA_SUMMON_DRAKES = 1520,
+    ABIL_PIVARRA_TRANSFORM,
+    ABIL_PAHAMUT_DRAGONSLAYING,
+    ABIL_PIVARRA_DRAGON_BOOK,
 
 #ifdef WIZARD
     ABIL_WIZ_BUILD_TERRAIN = 10000,
