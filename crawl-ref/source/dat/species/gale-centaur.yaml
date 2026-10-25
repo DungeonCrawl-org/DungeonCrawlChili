@@ -55,6 +55,7 @@ mutations:
 recommended_jobs:
   - archaeologist
   - gladiator
+  - priest
   - brigand
   - stalker
   - hunter

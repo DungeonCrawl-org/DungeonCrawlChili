@@ -47,6 +47,7 @@ mutations:
     MUT_FANGS: 1
     MUT_DISTRIBUTED_TRAINING: 1
 recommended_jobs:
+  - priest
   - cinder acolyte
   - reaver
   - warper
