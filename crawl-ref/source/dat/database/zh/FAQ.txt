@@ -354,7 +354,7 @@ A:changes
 
 A: 在最近的主要发行版本中，
 无可否认只是我们主观认为的亮点及版本信息均会列出，
-按'?v'进行查看。有关旧版本的更改，请查看目录中的changelog.txt。
+按'?v'进行查看。有关旧版本的更改，请查看目录中的dcchili-changelog.txt。
 %%%%
 Q:tiles lag
 

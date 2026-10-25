@@ -162,13 +162,16 @@ monster* place_necropolis_retired_unique(int tier)
     if (type == MONS_PAN)
     {
         vector<coord_def> escort_positions;
-        for (const coord_def& candidate : connected)
+        for (rectangle_iterator ri(1); ri; ++ri)
+        {
+            const coord_def candidate = *ri;
             if (env.grid(candidate) == DNGN_FLOOR
                 && !monster_at(candidate) && candidate != you.pos()
                 && grid_distance(candidate, pos) <= 3)
             {
                 escort_positions.push_back(candidate);
             }
+        }
         shuffle_array(escort_positions);
         for (int i = 0; i < 2; ++i)
         {

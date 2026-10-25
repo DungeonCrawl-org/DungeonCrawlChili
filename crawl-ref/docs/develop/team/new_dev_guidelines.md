@@ -58,7 +58,7 @@ JavaDoc style, and example of which you can see
 all new functions and data structures in this way, but not required.
 
 Significant changes that affect the gameplay should be documented in the
-[*changelog*](../../changelog.txt). We try to be brief in
+[*changelog*](../../dcchili-changelog.txt). We try to be brief in
 these entries, giving players a simple description of the change without
 technical detail. It’s good to read previous entries or ask a team member if
 you’re not sure about including an item or how to word it.

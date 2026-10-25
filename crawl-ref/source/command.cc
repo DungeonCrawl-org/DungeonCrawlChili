@@ -148,7 +148,7 @@ static string _get_version_features()
 static string _get_version_changes()
 {
     // Attempts to print "Highlights" of the latest version.
-    FILE* fp = fopen_u(datafile_path("changelog.txt", false).c_str(), "r");
+    FILE* fp = fopen_u(datafile_path("dcchili-changelog.txt", false).c_str(), "r");
     if (!fp)
         return "";
 
@@ -201,12 +201,12 @@ static string _get_version_changes()
     {
         result.erase(1+result.find_last_not_of('\n'));
         result += "\n\n";
-        result += "For earlier changes, see changelog.txt "
+        result += "For earlier changes, see dcchili-changelog.txt "
                   "in the docs/ directory.";
     }
     else
     {
-        result += "For a list of changes, see changelog.txt in the docs/ "
+        result += "For a list of changes, see dcchili-changelog.txt in the docs/ "
                   "directory.";
     }
 

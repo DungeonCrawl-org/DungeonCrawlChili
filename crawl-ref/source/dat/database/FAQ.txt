@@ -390,7 +390,7 @@ A:changes
 
 A: The admittedly highly subjective highlights of the most recent major release
 are listed along with the version information under '?v'. For older releases'
-changes, check out changelog.txt in the docs/ directory.
+changes, check out dcchili-changelog.txt in the docs/ directory.
 %%%%
 Q:tiles lag
 

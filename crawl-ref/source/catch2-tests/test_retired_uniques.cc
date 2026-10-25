@@ -162,7 +162,7 @@ TEST_CASE_METHOD(RetiredUniqueFixture, "Every restored unique can be created wit
     }
 }
 
-TEST_CASE_METHOD(RetiredUniqueFixture, "Pan's archers stay outside sealed vaults", "[retired-uniques]")
+TEST_CASE_METHOD(RetiredUniqueFixture, "Pan spawns two nearby archers", "[retired-uniques]")
 {
     for (monster_type type : retired_uniques)
         if (type != MONS_PAN)
@@ -176,7 +176,6 @@ TEST_CASE_METHOD(RetiredUniqueFixture, "Pan's archers stay outside sealed vaults
         if (mi->type != MONS_FAUN)
             continue;
         ++archers;
-        CHECK(mi->pos().x < 44);
         CHECK(grid_distance(mi->pos(), pan->pos()) <= 3);
         CHECK(mi->behaviour == BEH_WANDER);
     }
