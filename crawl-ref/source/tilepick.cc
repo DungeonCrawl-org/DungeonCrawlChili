@@ -4408,6 +4408,13 @@ tileidx_t tileidx_ability(const ability_type ability)
         return TILEG_ABILITY_EVOKE_INVISIBILITY;
 
     // Divine abilities
+    // Paha & Piva
+    case ABIL_PIVARRA_TRANSFORM:
+        return TILEG_ABILITY_RU_SACRIFICE_FORMS;
+    case ABIL_PAHAMUT_DRAGONSLAYING:
+        return TILEG_ABILITY_OKAWARU_GIFT_WEAPON;
+    case ABIL_PIVARRA_DRAGON_BOOK:
+        return TILEG_ABILITY_KIKU_NECRONOMICON;
     // Zin
     case ABIL_ZIN_RECITE:
         return TILEG_ABILITY_ZIN_RECITE;
