@@ -55,6 +55,7 @@ enum cerberus_head_type
     CERBERUS_HOWL,
     NUM_CERBERUS_HEADS
 };
+#define SEISMOSAURUS_EGG_RADIUS 4
 
 class actor;
 class monster;

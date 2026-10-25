@@ -1475,7 +1475,7 @@ static function<void(bolt&, const monster&, int)> _zap_setup(spell_type spell)
 
 static void _setup_healing_beam(bolt &beam, const monster &caster)
 {
-    beam.damage   = dice_def(2, caster.spell_hd(SPELL_MINOR_HEALING) / 2);
+    beam.damage   = healing_beam_dice(caster.spell_hd(SPELL_MINOR_HEALING));
     beam.flavour  = BEAM_HEALING;
 }
 
@@ -2297,11 +2297,23 @@ bool mons_spell_is_spell(spell_type spell)
  * @param hd        The spell_hd of the given monster.
  * @return          A spellpower value for the spell.
  */
-int mons_power_for_hd(spell_type spell, int hd)
+static int _mons_power_for_hd(spell_type spell, int hd)
 {
     const int power = hd * _mons_power_hd_factor(spell);
     if (spell == SPELL_PAIN)
         return max(50, power);
+    return power;
+}
+
+static int _mons_spellpower(spell_type spell, monster_type mon, int hd,
+                            int spell_hd)
+{
+    const int power = _mons_power_for_hd(spell, mons_spell_is_spell(spell)
+                                                ? spell_hd : hd);
+    if (spell == SPELL_SEARING_BREATH && mon == MONS_XTAHUA)
+        return power * 3 / 2;
+    if (spell == SPELL_COLD_BREATH && mons_is_draconian(mon))
+        return power * 5 / 6;
     return power;
 }
 
@@ -2315,22 +2327,13 @@ int mons_power_for_hd(spell_type spell, int hd)
  */
 int mons_spellpower(const monster &mons, spell_type spell)
 {
-    return mons_power_for_hd(spell, mons.spell_hd(spell));
+    return _mons_spellpower(spell, mons.type, mons.get_hit_dice(),
+                            mons.spell_hd(spell));
 }
 
-/**
- * How much range does a monster of the given spell HD have with the given
- * spell?
- *
- * @param spell         The spell in question.
- * @param hd            The monster's effective HD for spellcasting purposes.
- * @param use_veh_bonus Whether to use Vehumet's range bonus (for player Servitor)
- * @return              -1 if the spell has an undefined range; else its range.
- */
-int mons_spell_range_for_hd(spell_type spell, int hd, bool use_veh_bonus)
+int mons_spellpower(const monster_info &mi, spell_type spell)
 {
-    const int power = mons_power_for_hd(spell, hd);
-    return calc_spell_range(spell, power, use_veh_bonus);
+    return _mons_spellpower(spell, mi.type, mi.hd, mi.spell_hd(spell));
 }
 
 // Returns the power with which a monster of a given HD casts a spell via a wand.
@@ -2340,7 +2343,7 @@ int mons_wand_power(int hd, spell_type spell)
 
     // Apply power scaling factor that would be used for this spell normally,
     // in monster hands.
-    return base_power * mons_power_for_hd(spell, 1) / 12;
+    return base_power * _mons_power_for_hd(spell, 1) / 12;
 }
 
 /**
@@ -2430,9 +2433,6 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     beam.origin_spell = real_spell;
     beam.source_id = mons->mid;
     beam.source_name = mons->name(DESC_A, true);
-
-    if (!mons_spell_is_spell(real_spell))
-        power = mons_power_for_hd(real_spell, mons->get_hit_dice());
 
     const mons_spell_logic* logic = _get_spell_logic(*mons, spell_cast);
     if (logic && logic->setup_beam)
@@ -2574,15 +2574,11 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
         break;
 
     case SPELL_SEARING_BREATH:
-        if (mons && mons->type == MONS_XTAHUA)
-            power = power * 3/2;
         zappy(spell_to_zap(real_spell), power, true, beam);
         beam.aux_source  = "blast of searing breath";
         break;
 
     case SPELL_COLD_BREATH:
-        if (mons && mons_is_draconian(mons->type))
-            power = power * 5 / 6;
         zappy(spell_to_zap(real_spell), power, true, beam);
         beam.aux_source = "blast of icy breath";
         beam.short_name = "frost";
@@ -2655,7 +2651,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     case SPELL_DEATH_RATTLE:
         beam.name     = "vile air";
         beam.colour   = DARKGREY;
-        beam.damage   = dice_def(2, 4);
+        beam.damage   = death_rattle_damage();
         beam.hit      = AUTOMATIC_HIT;
         beam.flavour  = BEAM_DEATH_RATTLE;
         beam.foe_ratio = 30;
@@ -2687,7 +2683,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     // Hack so beam.cc allows us to correctly use that function
     case SPELL_UPHEAVAL:
         beam.flavour     = BEAM_RANDOM;
-        beam.damage      = dice_def(3, 24);
+        beam.damage      = upheaval_damage();
         beam.hit         = AUTOMATIC_HIT;
         beam.glyph       = dchar_glyph(DCHAR_EXPLOSION);
         beam.ex_size     = 1;
@@ -2965,6 +2961,56 @@ bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
 dice_def eruption_damage()
 {
     return dice_def(3, 24);
+}
+
+dice_def upheaval_damage()
+{
+    return dice_def(3, 24);
+}
+
+dice_def death_rattle_damage()
+{
+    return dice_def(2, 4);
+}
+
+dice_def healing_beam_dice(int spell_hd)
+{
+    return dice_def(2, spell_hd / 2);
+}
+
+static const int MAJOR_HEALING_MIN = 50;
+static const int WOODWEAL_MIN = 35;
+
+static int _major_healing_max(int spell_hd)
+{
+    return MAJOR_HEALING_MIN + spell_hd * 10 - 1;
+}
+
+static int _woodweal_max(int spell_hd)
+{
+    return WOODWEAL_MIN + spell_hd * 3 - 1;
+}
+
+string describe_mons_healing(spell_type spell, int spell_hd)
+{
+    switch (spell)
+    {
+    case SPELL_MINOR_HEALING:
+    case SPELL_HEAL_OTHER:
+    {
+        const dice_def dice = healing_beam_dice(spell_hd);
+        if (!dice.num || !dice.size)
+            return make_stringf("%d", HEALING_BEAM_BONUS);
+        return make_stringf("%dd%d+%d", dice.num, dice.size, HEALING_BEAM_BONUS);
+    }
+    case SPELL_MAJOR_HEALING:
+        return make_stringf("%d-%d", MAJOR_HEALING_MIN,
+                            _major_healing_max(spell_hd));
+    case SPELL_WOODWEAL:
+        return make_stringf("%d-%d", WOODWEAL_MIN, _woodweal_max(spell_hd));
+    default:
+        return "";
+    }
 }
 
 // Can 'binder' bind 'bound's soul with BIND_SOUL?
@@ -7249,7 +7295,7 @@ static void _mons_upheaval(monster& mons, actor& /*foe*/, bool randomize)
     beam.source_id   = mons.mid;
     beam.source_name = mons.name(DESC_THE).c_str();
     beam.thrower     = KILL_MON_MISSILE;
-    beam.damage      = dice_def(3, 24);
+    beam.damage      = upheaval_damage();
     beam.foe_ratio   = random_range(20, 30);
     beam.hit         = AUTOMATIC_HIT;
     beam.glyph       = dchar_glyph(DCHAR_EXPLOSION);
@@ -8123,14 +8169,22 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     }
 
     case SPELL_WOODWEAL:
-        if (mons->heal(35 + random2(mons->spell_hd(spell_cast) * 3)))
+    {
+        const int amount = random_range(
+            WOODWEAL_MIN, _woodweal_max(mons->spell_hd(spell_cast)));
+        if (mons->heal(amount))
             simple_monster_message(*mons, " is healed.");
         return;
+    }
 
     case SPELL_MAJOR_HEALING:
-        if (mons->heal(50 + random2avg(mons->spell_hd(spell_cast) * 10, 2)))
+    {
+        const int amount = random_range(
+            MAJOR_HEALING_MIN, _major_healing_max(mons->spell_hd(spell_cast)), 2);
+        if (mons->heal(amount))
             simple_monster_message(*mons, " is healed.");
         return;
+    }
 
     case SPELL_BERSERKER_RAGE:
         mons->props.erase(BROTHERS_KEY);
@@ -8333,8 +8387,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_CONJURE_BALL_LIGHTNING:
     {
-        const int hd = mons->spell_hd(spell_cast);
-        const int pow = mons_power_for_hd(spell_cast, hd);
+        const int pow = mons_spellpower(*mons, spell_cast);
         const int n = 3;
         for (int i = 0; i < n; ++i)
         {
