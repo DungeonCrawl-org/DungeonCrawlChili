@@ -75,6 +75,17 @@ Ignis' power is offered unconditionally to any who would deign to worship, but
 once used, it can never be replenished. Ignis' other worshippers deserted long
 ago; the divine fire burns low, and soon it will go out.
 %%%%
+Paha & Piva
+
+Paha and Piva are twin dragon gods who accept only Draconians. Their
+followers gain fire resistance and, with growing favour, an empowered natural
+breath. Devout worshippers may call allied drakes to fight, change their
+Draconian colour, then claim either Paha's valourous weapon brand or
+Piva's Book of the Dragon.
+
+<brown>DC Chili change: This god was adapted from BCadren's Bahumat and
+Tiamat.</brown>
+%%%%
 Jiyva
 
 Jiyva is the ancient deity of the slimes. Followers are expected to

@@ -56,6 +56,7 @@ spret cast_summon_cactus(int pow, bool fail);
 spret cast_monstrous_menagerie(monster* caster, int pow);
 spret cast_sphinx_sisters(const actor& caster, int pow, bool fail);
 spret cast_summon_dragon(actor *caster, int pow, bool fail = false);
+spret cast_summon_drakes(int pow, bool fail);
 spret cast_summon_hydra(actor *caster, int pow, bool fail = false);
 spret cast_summon_mana_viper(int pow, bool fail);
 bool summon_berserker(actor *caster, monster_type type);

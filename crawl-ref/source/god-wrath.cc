@@ -100,6 +100,7 @@ static const char *_god_wrath_adjectives[] =
     "memory",           // Hepliaklqana (unused)
     "rancor",           // Wu Jian
     "fiery vengeance",  // Ignis
+    "dragonfire",       // Paha & Piva
 };
 COMPILE_CHECK(ARRAYSZ(_god_wrath_adjectives) == NUM_GODS);
 

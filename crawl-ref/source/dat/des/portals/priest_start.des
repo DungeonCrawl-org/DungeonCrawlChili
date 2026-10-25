@@ -30,11 +30,12 @@ KFEAT:  1 = altar_the_shining_one
 KFEAT:  T = altar_trog
 KFEAT:  X = altar_xom
 KFEAT:  I = altar_ignis
+KFEAT:  P = altar_pahamut_pivarra
 MAP
 xxxxxxxxxxxxxxxxxxx
 x.a.b.c.d.e.f.g.h.x
 x{.j.k.l.m.n.o.q.>x
 x.r.s.u.v.w.y.z.1.x
-x......T.X.I......x
+x.....P.T.X.I......x
 xxxxxxxxxxxxxxxxxxx
 ENDMAP

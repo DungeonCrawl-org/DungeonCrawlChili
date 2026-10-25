@@ -67,6 +67,7 @@
 #include "prompt.h"
 #include "randbook.h"
 #include "shopping.h"
+#include "species.h"
 #include "skills.h"
 #include "spl-book.h"
 #include "spl-summoning.h"
@@ -444,6 +445,20 @@ const vector<vector<god_power>> & get_all_god_powers()
             { 1, ABIL_IGNIS_FIERY_ARMOUR, "armour yourself in flame" },
             { 1, ABIL_IGNIS_FOXFIRE, "call a swarm of foxfires against your foes" },
             { 7, ABIL_IGNIS_RISING_FLAME, "rocket upward and away, once" },
+        },
+
+        // Paha & Piva
+        {
+            { 0, "", "", "You are resistant to fire." },
+            { 2, "Your natural draconic breath is empowered." },
+            { 4, ABIL_PIVARRA_SUMMON_DRAKES,
+                 "summon a horde of drakes into battle" },
+            { 6, ABIL_PIVARRA_TRANSFORM,
+                 "transform into a different Draconian colour" },
+            { 7, ABIL_PAHAMUT_DRAGONSLAYING,
+                 "brand a weapon with valour" },
+            { 7, ABIL_PIVARRA_DRAGON_BOOK,
+                 "receive the Book of the Dragon" },
         },
     };
     static bool god_powers_init = false;
@@ -2177,6 +2192,7 @@ string god_name(god_type which_god, bool long_name)
     case GOD_HEPLIAKLQANA:  return "Hepliaklqana";
     case GOD_WU_JIAN:       return "Wu Jian";
     case GOD_IGNIS:         return "Ignis";
+    case GOD_PAHAMUT_PIVARRA: return "Paha & Piva";
     case GOD_JIYVA: // This is handled at the beginning of the function
     case GOD_ECUMENICAL:    return "an unknown god";
     case NUM_GODS:          return "Buggy";
@@ -3350,6 +3366,12 @@ string cannot_join_god_reason(god_type which_god, bool include_temp, bool check_
                 || which_god == GOD_KIKUBAAQUDGHA)))
     {
         return god + " does not accept worship from those such as you!";
+    }
+
+    if (which_god == GOD_PAHAMUT_PIVARRA
+        && !species::is_draconian(you.species))
+    {
+        return god + " accepts only Draconians!";
     }
 
     if (which_god == GOD_GOZAG && include_temp && you.gold < gozag_service_fee())

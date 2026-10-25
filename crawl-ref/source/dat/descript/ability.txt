@@ -1056,6 +1056,24 @@ Sends you floating upward and, after a short delay for Ignis to gather enough
 power, blasts you through the ceiling and into the level above. This ability
 may only be used once.
 %%%%
+Summon Drakes ability
+
+Calls several allied drakes to fight for you. They remain only temporarily.
+%%%%
+Brand Weapon with Valour ability
+
+Paha brands one of your weapons with valour. This one-time gift
+requires a suitable unbranded weapon.
+%%%%
+Receive the Book of the Dragon ability
+
+Piva grants you the Book of the Dragon as a one-time gift.
+%%%%
+Change Draconian Colour ability
+
+Piva permanently transforms you into a different Draconian colour,
+changing your innate traits and breath weapon.
+%%%%
 Hop ability
 
 Hops toward a chosen destination, landing somewhere nearby. After using this
