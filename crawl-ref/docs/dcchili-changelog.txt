@@ -1,6 +1,6 @@
 for the DCSS changelog.txt see: https://github.com/crawl/crawl/blob/master/crawl-ref/docs/changelog.txt
 
-Dungeon Crawl Chili v1.0-a0-... (through 1.0-a0-1650 )
+Dungeon Crawl Chili v1.0-a0-... (through 1.0-a0-1655 )
 ------------------------------------------------------
 
 Highlights
@@ -23,6 +23,7 @@ Highlights
 * Nine retired uniques return exclusively in the Necropolis: Michael, Duane,
   Francis, Norbert, Terpsichore, Jozef, Pan, Lamia and Maud. One awake unique
   roams each Necropolis, chosen to suit the entrance's difficulty level.
+* A new god: Paha & Piva, imported from BCadren's crawl (Bahumet & Tiamat).
 * A new background: Archaeologist, imported from BCrawl. They start with
   exploration equipment and decipher a dusty tome into acquirement at XL 5.
 * A new background: Priest, imported from BCadren Crawl. They start in a chapel
