@@ -1,4 +1,5 @@
 name: Lamia
+tile: lamia_static
 glyph:
   char: N
   colour: magenta

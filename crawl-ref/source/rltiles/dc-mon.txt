@@ -1647,6 +1647,17 @@ cerberus MONS_CERBERUS
 minos MONS_MINOS
 alecto MONS_ALECTO
 
+# Static monster tiles for the restored uniques must precede MCACHE_START.
+mon/player/michael MONS_MICHAEL_STATIC
+mon/player/duane MONS_DUANE_STATIC
+mon/player/francis MONS_FRANCIS_STATIC
+mon/player/norbert MONS_NORBERT_STATIC
+mon/player/terpsichore MONS_TERPSICHORE_STATIC
+mon/player/jozef MONS_JOZEF_STATIC
+mon/player/pan MONS_PAN_STATIC
+mon/player/lamia MONS_LAMIA_STATIC
+mon/player/maud MONS_MAUD_STATIC
+
 %sdir misc
 %rim 1
 unseen_monster MONS_UNKNOWN
@@ -1680,3 +1691,4 @@ francis MONS_FRANCIS
 norbert MONS_NORBERT
 terpsichore MONS_TERPSICHORE
 jozef MONS_JOZEF
+pan MONS_PAN

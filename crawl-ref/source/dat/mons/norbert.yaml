@@ -1,4 +1,5 @@
 name: Norbert
+tile: norbert_static
 glyph:
   char: '@'
   colour: brown

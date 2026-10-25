@@ -1,4 +1,5 @@
 name: Duane
+tile: duane_static
 glyph:
   char: '@'
   colour: yellow

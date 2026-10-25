@@ -1,4 +1,5 @@
 name: Jozef
+tile: jozef_static
 glyph:
   char: '@'
   colour: lightmagenta
