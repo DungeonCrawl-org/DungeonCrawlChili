@@ -456,7 +456,7 @@ const vector<vector<god_power>> & get_all_god_powers()
             { 6, ABIL_PIVARRA_TRANSFORM,
                  "transform into a different Draconian colour" },
             { 7, ABIL_PAHAMUT_DRAGONSLAYING,
-                 "brand a weapon with dragon slaying" },
+                 "brand a weapon with valour" },
             { 7, ABIL_PIVARRA_DRAGON_BOOK,
                  "receive the Book of the Dragon" },
         },
@@ -3370,7 +3370,9 @@ string cannot_join_god_reason(god_type which_god, bool include_temp, bool check_
 
     if (which_god == GOD_PAHAMUT_PIVARRA
         && !species::is_draconian(you.species))
+    {
         return god + " accepts only Draconians!";
+    }
 
     if (which_god == GOD_GOZAG && include_temp && you.gold < gozag_service_fee())
     {

@@ -763,7 +763,7 @@ static vector<ability_def> &_get_ability_list()
             5, 0, 10, -1, {fail_basis::invo}, abflag::none },
         { ABIL_PIVARRA_TRANSFORM, "Change Draconian Colour",
             0, 0, 15, -1, {fail_basis::invo}, abflag::none },
-        { ABIL_PAHAMUT_DRAGONSLAYING, "Brand Weapon with Dragon Slaying",
+        { ABIL_PAHAMUT_DRAGONSLAYING, "Brand Weapon with Valour",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
         { ABIL_PIVARRA_DRAGON_BOOK, "Receive the Book of the Dragon",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
@@ -4204,7 +4204,9 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         fail_check();
         species_type new_species;
         do
+        {
             new_species = species::random_draconian_colour();
+        }
         while (new_species == you.species);
         change_species_to(new_species);
         mprf(MSGCH_GOD, "Piva transforms you into a %s Draconian.",
@@ -4214,9 +4216,11 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
     case ABIL_PAHAMUT_DRAGONSLAYING:
         fail_check();
-        if (!bless_weapon(GOD_PAHAMUT_PIVARRA, SPWPN_DRAGON_SLAYING,
+        if (!bless_weapon(GOD_PAHAMUT_PIVARRA, SPWPN_VALOUR,
                           LIGHTCYAN))
+        {
             return spret::abort;
+        }
         break;
 
     case ABIL_PIVARRA_DRAGON_BOOK:

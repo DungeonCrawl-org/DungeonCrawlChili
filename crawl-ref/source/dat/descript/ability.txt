@@ -1060,9 +1060,9 @@ Summon Drakes ability
 
 Calls several allied drakes to fight for you. They remain only temporarily.
 %%%%
-Brand Weapon with Dragon Slaying ability
+Brand Weapon with Valour ability
 
-Paha brands one of your weapons with dragon slaying. This one-time gift
+Paha brands one of your weapons with valour. This one-time gift
 requires a suitable unbranded weapon.
 %%%%
 Receive the Book of the Dragon ability
