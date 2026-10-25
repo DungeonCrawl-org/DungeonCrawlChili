@@ -39,6 +39,7 @@ levelup_stat_frequency: 4
 recommended_jobs:
   - gladiator
   - berserker
+  - priest
   - hedge wizard
   - necromancer
   - fire elementalist
