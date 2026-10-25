@@ -1,4 +1,5 @@
 name: Terpsichore
+tile: terpsichore_static
 glyph:
   char: W
   colour: lightmagenta

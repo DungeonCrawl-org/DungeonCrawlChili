@@ -26,4 +26,4 @@ intelligence: human
 uses: weapons_armour
 size: medium
 shape: humanoid_tailed
-tile: satyr
+tile: pan_static

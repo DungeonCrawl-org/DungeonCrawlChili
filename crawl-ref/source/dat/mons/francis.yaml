@@ -1,4 +1,5 @@
 name: Francis
+tile: francis_static
 glyph:
   char: '@'
   colour: yellow

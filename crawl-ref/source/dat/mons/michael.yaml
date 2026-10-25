@@ -1,4 +1,5 @@
 name: Michael
+tile: michael_static
 glyph:
   char: '@'
   colour: lightgray

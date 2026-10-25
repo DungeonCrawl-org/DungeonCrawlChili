@@ -1,4 +1,5 @@
 name: Maud
+tile: maud_static
 glyph:
   char: '@'
   colour: red
