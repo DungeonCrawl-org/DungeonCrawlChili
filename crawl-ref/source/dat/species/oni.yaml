@@ -50,6 +50,7 @@ mutations:
 recommended_jobs:
   - gladiator
   - berserker
+  - priest
   - cinder acolyte
   - hedge wizard
   - air elementalist

@@ -15,6 +15,9 @@ recommended_species:
   - human
   - base draconian
   - demonspawn
+  - gale centaur
+  - gnoll
+  - oni
 skills:
   dodging: 2
   stealth: 2
