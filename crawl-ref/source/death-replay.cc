@@ -2,6 +2,7 @@
 #include "death-replay.h"
 
 #include <cstdio>
+#include <cstdlib>
 #include <fstream>
 #include <limits>
 #include <memory>
@@ -26,19 +27,35 @@ static const char *const DEATH_Y_KEY = "death_replay_death_y";
 static const int CHECKPOINT_INTERVAL = 50;
 static int recommendation_vote = 0;
 
+bool death_replay_enabled()
+{
+#if defined(USE_TILE_WEB) && defined(CRAWL_HAS_DEATH_REPLAY)
+    // WebTiles servers opt in through their launcher, never through player RCs.
+    // In particular, CXC and CPO must not create intermediate replay saves.
+    const char *enabled = std::getenv("DCCHILI_DEATH_REPLAY");
+    return enabled && enabled[0] == '1' && enabled[1] == '\0';
+#elif defined(USE_TILE_LOCAL) && defined(CRAWL_HAS_DEATH_REPLAY)
+    return true;
+#else
+    return false;
+#endif
+}
+
 bool is_death_replay()
 {
-    return you.props.exists(REPLAY_KEY);
+    return death_replay_enabled() && you.props.exists(REPLAY_KEY);
 }
 
 void set_death_replay_recommendation(bool recommend)
 {
+    if (!death_replay_enabled())
+        return;
     recommendation_vote = recommend ? 1 : -1;
 }
 
 int death_replay_recommendation_vote()
 {
-    return recommendation_vote;
+    return death_replay_enabled() ? recommendation_vote : 0;
 }
 
 bool death_replay_marker_position(coord_def &position)
@@ -245,11 +262,16 @@ static void _prune_replay_archive(const string &archive_dir)
 
 void queue_death_replay(const string &morgue_file)
 {
-    queued_morgue = morgue_file;
+    queued_morgue = death_replay_enabled() ? morgue_file : "";
 }
 
 bool start_queued_death_replay(const string &player_name)
 {
+    if (!death_replay_enabled())
+    {
+        queued_morgue.clear();
+        return true;
+    }
     if (queued_morgue.empty())
         return true;
     const string file = queued_morgue;
@@ -327,7 +349,8 @@ static string _checkpoint_path(int slot)
 
 void checkpoint_death_replay()
 {
-    if (!crawl_state.game_started || crawl_state.generating_level || is_death_replay()
+    if (!death_replay_enabled() || !crawl_state.game_started
+        || crawl_state.generating_level || is_death_replay()
         || Options.no_save || Options.opt_out_death_replay || !you.save
         || you.hp <= 0 || !you.on_current_level)
     {
@@ -381,7 +404,7 @@ void checkpoint_death_replay()
 
 void archive_death_replay(const scorefile_entry &score)
 {
-    if (is_death_replay() || Options.no_save)
+    if (!death_replay_enabled() || is_death_replay() || Options.no_save)
         return;
     if (Options.opt_out_death_replay)
     {
@@ -395,26 +418,10 @@ void archive_death_replay(const scorefile_entry &score)
     string archive_dir = catpath(morgue_root, "death-replay");
     if (!check_mkdir("Death Replay directory", &archive_dir, true)) return;
 
-    // Consolidate checkpoints written by earlier prototype versions into the
-    // shared archive before applying the server-wide retention limit.
-    for (const string &player_dir_name : get_dir_files(morgue_root))
-    {
-        const string player_dir = catpath(morgue_root, player_dir_name);
-        if (player_dir_name == "death-replay" || !dir_exists(player_dir))
-            continue;
-        for (const string &filename : get_dir_files(player_dir))
-        {
-            string stem;
-            if (!_checkpoint_stem(filename, stem))
-                continue;
-            const string source = catpath(player_dir, filename);
-            const string target = catpath(archive_dir, filename);
-            if (file_exists(target))
-                std::remove(source.c_str());
-            else
-                rename_u(source.c_str(), target.c_str());
-        }
-    }
+    // Keep game-end work limited to this game's checkpoints and the shared
+    // replay archive. Scanning every player's morgues here can stall deaths
+    // on large WebTiles servers. prepare_death_replay() still reads legacy
+    // checkpoints in place, without migrating the server's entire history.
 
     const string base = strip_filename_unsafe_chars(
         morgue_name(score.get_name(), score.get_death_time()));
@@ -438,7 +445,7 @@ void archive_death_replay(const scorefile_entry &score)
     _prune_replay_archive(archive_dir);
 }
 
-bool death_replay_pending() { return bool(pending); }
+bool death_replay_pending() { return death_replay_enabled() && bool(pending); }
 
 static void _notice(const string &text)
 {
@@ -454,6 +461,8 @@ static void _notice(const string &text)
 
 bool prepare_death_replay(const string &path)
 {
+    if (!death_replay_enabled())
+        return false;
     pending.reset();
     std::ifstream input(path);
     string text;
@@ -562,6 +571,8 @@ bool prepare_death_replay(const string &path)
 
 void configure_death_replay(newgame_def &game)
 {
+    if (!death_replay_enabled())
+        return;
     ASSERT(pending);
     game = newgame_def();
     for (int suffix = 1; ; ++suffix)
@@ -584,6 +595,8 @@ void configure_death_replay(newgame_def &game)
 
 bool restore_death_replay(const newgame_def &game)
 {
+    if (!death_replay_enabled())
+        return false;
     const string target = get_savedir_filename(game.name);
     if (!_copy_save(selected.path, target))
     {
@@ -619,6 +632,8 @@ bool restore_death_replay(const newgame_def &game)
 
 void start_death_replay()
 {
+    if (!death_replay_enabled())
+        return;
     ASSERT(pending);
     recommendation_vote = 0;
     const int rewind = pending->turns - selected.turn;

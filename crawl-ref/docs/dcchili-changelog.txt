@@ -17,8 +17,9 @@ Highlights
 * The WebTiles inventory bar has been redesigned and is vertical by default.
 * AI Coaching Help and Post-Mortem Analysis are available only on the DCF
   WebTiles server.
-* A Death Replay functionality has been added to both offline Tiles and online
-  WebTiles. The Webtiles functionality is only active on DCF at the moment.
+* Death Replay is available in offline Tiles and on DCF WebTiles. Other
+  WebTiles servers, including CXC and CPO, do not create replay checkpoints or
+  display replay controls; WebTiles replay requires a server-level opt-in.
 * 16 new Uniques including a new Unique for each of the 4 Hell branches.
 * Nine retired uniques return exclusively in the Necropolis: Michael, Duane,
   Francis, Norbert, Terpsichore, Jozef, Pan, Lamia and Maud. One awake unique

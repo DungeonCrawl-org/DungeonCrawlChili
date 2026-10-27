@@ -31,6 +31,7 @@ bool read_replay_checkpoint(const std::string &path, replay_checkpoint &checkpoi
 int select_death_replay_checkpoint(const std::vector<replay_checkpoint> &checkpoints,
                                    int death_turn);
 bool death_replay_checkpoint_due(int turn, int last);
+bool death_replay_enabled();
 void checkpoint_death_replay();
 void archive_death_replay(const scorefile_entry &score);
 bool prepare_death_replay(const std::string &morgue_path);

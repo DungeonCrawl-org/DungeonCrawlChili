@@ -35,6 +35,12 @@ last_game_id = 0
 processes = dict() # type: Dict[str,CrawlProcessHandler]
 unowned_process_logger = logging.LoggerAdapter(logging.getLogger(), {})
 
+def _crawl_environment(game, username):
+    environment = dict(game.templated("env", username=username, default={}))
+    environment["DCCHILI_DEATH_REPLAY"] = (
+        "1" if config.get("enable_death_replay", False) else "0")
+    return environment
+
 # this will not template username...
 def find_game_info(socket_dir, socket_file):
     game_id = socket_file[socket_file.index(":")+1:-5]
@@ -953,7 +959,7 @@ class CrawlProcessHandler(CrawlProcessHandlerBase):
             self.process = TerminalRecorder(call,
                                             self.logger,
                                             config.get('recording_term_size'),
-                                            env_vars = game.templated("env", username=self.username, default={}),
+                                            env_vars = _crawl_environment(game, self.username),
                                             game_cwd = game.templated("cwd", username=self.username, default=None),)
             self.process.end_callback = self._on_process_end
             self.process.output_callback = self._on_process_output

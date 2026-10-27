@@ -6117,7 +6117,7 @@ bool parse_args(int argc, char **argv, bool rc_only)
             break;
 
         case CLO_DEATH_REPLAY:
-            if (!next_is_param)
+            if (!death_replay_enabled() || !next_is_param)
                 return false;
             if (!rc_only)
                 queue_death_replay(next_arg);

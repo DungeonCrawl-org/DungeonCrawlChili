@@ -202,7 +202,9 @@
       </div>
 
       <div id="play_now"></div>
+{% if config.get("enable_death_replay", False) %}
       <div id="death_replays" style="display: none;"></div>
+{% end %}
 
       <br>
 

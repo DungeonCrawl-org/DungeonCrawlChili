@@ -1,10 +1,73 @@
 #include "AppHdr.h"
 #include "catch_amalgamated.hpp"
+#include <cstdlib>
 
 #include "death-replay.h"
 #include "player.h"
 #include "store.h"
 #include "test_player_fixture.h"
+#include "unwind.h"
+
+#if defined(__linux__) && defined(USE_TILE)
+#include <cerrno>
+#include <fstream>
+#include <sys/inotify.h>
+#include <unistd.h>
+
+#include "files.h"
+#include "hiscores.h"
+#include "options.h"
+#include "package.h"
+#include "state.h"
+#include "syscalls.h"
+#endif
+
+#ifdef USE_TILE_WEB
+static void set_replay_server_flag(const char *value)
+{
+#ifdef TARGET_OS_WINDOWS
+    _putenv_s("DCCHILI_DEATH_REPLAY", value ? value : "");
+#else
+    if (value)
+        setenv("DCCHILI_DEATH_REPLAY", value, 1);
+    else
+        unsetenv("DCCHILI_DEATH_REPLAY");
+#endif
+}
+
+class replay_server_scope
+{
+public:
+    explicit replay_server_scope(const char *value)
+        : was_set(std::getenv("DCCHILI_DEATH_REPLAY") != nullptr),
+          previous(was_set ? std::getenv("DCCHILI_DEATH_REPLAY") : "")
+    {
+        set_replay_server_flag(value);
+    }
+
+    ~replay_server_scope()
+    {
+        set_replay_server_flag(was_set ? previous.c_str() : nullptr);
+    }
+
+private:
+    bool was_set;
+    string previous;
+};
+
+TEST_CASE("WebTiles Death Replay requires a server opt-in", "[death-replay]")
+{
+    replay_server_scope server(nullptr);
+    CHECK_FALSE(death_replay_enabled());
+    for (const char *value : {"", "0", "false", "yes", "true", "11"})
+    {
+        set_replay_server_flag(value);
+        CHECK_FALSE(death_replay_enabled());
+    }
+    set_replay_server_flag("1");
+    CHECK(death_replay_enabled());
+}
+#endif
 
 static string replay_morgue()
 {
@@ -128,9 +191,116 @@ TEST_CASE("Death Replay requires coordinates inside the Death Recap section", "[
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture, "Death Replay marker survives saved-player properties", "[death-replay]")
 {
+#ifdef USE_TILE_WEB
+    replay_server_scope server("1");
+#endif
     you.props.erase("death_replay_source");
     CHECK_FALSE(is_death_replay());
     you.props["death_replay_source"] = "Original character";
-    CHECK(is_death_replay());
+    CHECK(is_death_replay() == death_replay_enabled());
     CHECK(you.props["death_replay_source"].get_string() == "Original character");
 }
+
+#if defined(__linux__) && defined(USE_TILE)
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Death Replay archiving does not scan the shared morgue tree",
+                 "[death-replay]")
+{
+#ifdef USE_TILE_WEB
+    const bool enabled = GENERATE(false, true);
+    replay_server_scope server(enabled ? "1" : nullptr);
+#else
+    const bool enabled = true;
+#endif
+    char temporary[] = "/tmp/chili-replay-archive-XXXXXX";
+    REQUIRE(mkdtemp(temporary) != nullptr);
+    const string root = temporary;
+    const string morgues = catpath(root, "morgues");
+    const string owner = catpath(morgues, you.your_name);
+    const string other = catpath(morgues, "OtherPlayer");
+    const string archive = catpath(morgues, "death-replay");
+    const string saves = catpath(root, "saves");
+    const string legacy = "morgue-OtherPlayer-20261027-191722.replay-0.cs";
+    ON_UNWIND
+    {
+        unlink(catpath(root, "normal.cs").c_str());
+        unlink(catpath(other, legacy).c_str());
+        unlink(catpath(archive, legacy).c_str());
+        rmdir(owner.c_str());
+        rmdir(other.c_str());
+        rmdir(archive.c_str());
+        rmdir(morgues.c_str());
+        rmdir(saves.c_str());
+        rmdir(root.c_str());
+    };
+    for (const string &path : {morgues, owner, other, saves})
+        REQUIRE(mkdir_u(path.c_str(), 0700) == 0);
+    {
+        std::ofstream checkpoint(catpath(other, legacy));
+        checkpoint << "legacy checkpoint";
+        REQUIRE(checkpoint.good());
+    }
+
+    const int notify = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
+    REQUIRE(notify >= 0);
+    ON_UNWIND { close(notify); };
+    REQUIRE(inotify_add_watch(notify, morgues.c_str(), IN_ACCESS) >= 0);
+
+    unwind_var<string> morgue_dir(Options.morgue_dir, owner);
+    unwind_var<string> save_dir(Options.save_dir, saves);
+    unwind_bool no_save(Options.no_save, false);
+    unwind_bool opt_out(Options.opt_out_death_replay, false);
+    you.props.erase("death_replay_source");
+    scorefile_entry score;
+    if (!enabled)
+    {
+        // Supply an active game and a real save so unrelated early returns
+        // cannot mask a missing server-policy check in checkpoint creation.
+        package normal(catpath(root, "normal.cs").c_str(), true, true);
+        {
+            chunk_writer chunk(&normal, "test");
+            chunk.write("normal save", 11);
+        }
+        normal.commit();
+        unwind_var<package *> save(you.save, &normal);
+        unwind_bool started(crawl_state.game_started, true);
+        unwind_bool generating(crawl_state.generating_level, false);
+        unwind_bool current_level(you.on_current_level, true);
+        unwind_var<int> hp(you.hp, 10);
+        checkpoint_death_replay();
+        CHECK_FALSE(you.props.exists("death_replay_last_checkpoint"));
+        queue_death_replay(catpath(owner, "unavailable.txt"));
+        CHECK(start_queued_death_replay(you.your_name));
+        CHECK_FALSE(prepare_death_replay(catpath(owner, "unavailable.txt")));
+        CHECK_FALSE(death_replay_pending());
+    }
+    archive_death_replay(score);
+    CHECK(dir_exists(archive) == enabled);
+    CHECK(get_dir_files(saves).empty());
+
+    // Legacy files remain available in place; no other player's archive is
+    // migrated as a side effect of this character dying.
+    CHECK(file_exists(catpath(other, legacy)));
+    CHECK_FALSE(file_exists(catpath(archive, legacy)));
+
+    alignas(inotify_event) char events[4096];
+    ssize_t count;
+    while ((count = read(notify, events, sizeof events)) > 0)
+        for (size_t offset = 0; offset < static_cast<size_t>(count);)
+        {
+            const auto *event = reinterpret_cast<const inotify_event *>(events + offset);
+            INFO("replay enabled=" << enabled << ", mask=" << event->mask
+                 << ", name=" << (event->len ? event->name : "<watched directory>"));
+            CHECK(enabled);
+            // Reading the shared archive or this player's directory is fine.
+            // Reading the morgue root itself enumerates the server's players.
+            CHECK(event->len > 0);
+            if (event->len > 0)
+                CHECK(string(event->name) != "OtherPlayer");
+            offset += sizeof(inotify_event) + event->len;
+        }
+    const int read_error = errno;
+    CHECK(count == -1);
+    CHECK(read_error == EAGAIN);
+}
+#endif
