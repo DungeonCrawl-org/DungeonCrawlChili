@@ -19,6 +19,14 @@ The entry point for running the server is `server.py` in this directory; see
 [webtiles/README.md](webtiles/README.md) for a brief overview of the python
 app's code.
 
+Dungeon Crawl Chili Death Replay is disabled on WebTiles by default. DCF sets
+`enable_death_replay = True` in its server configuration; CXC, CPO, and other
+servers should leave it disabled. The launcher sets `DCCHILI_DEATH_REPLAY=1`
+only for an opted-in server. Without that flag, the game does not write interim
+replay saves, archive checkpoints, or offer replay controls. Player RC options
+cannot enable this server feature. Offline Tiles retains its local replay
+support.
+
 ## Contents
 
 * [Prerequisites](#prerequisites)

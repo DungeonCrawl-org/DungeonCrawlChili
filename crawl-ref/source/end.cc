@@ -447,7 +447,7 @@ NORETURN void end_game(scorefile_entry &se)
     const string replay_archive = catpath(
         catpath(get_parent_directory(replay_morgue_dir), "death-replay"),
         replay_name);
-    replay_available = !non_death && !is_death_replay()
+    replay_available = death_replay_enabled() && !non_death && !is_death_replay()
         && (file_exists(replay_morgue + ".replay-0.cs")
             || file_exists(replay_morgue + ".replay-1.cs")
             || file_exists(replay_archive + ".replay-0.cs")
@@ -519,7 +519,8 @@ NORETURN void end_game(scorefile_entry &se)
     tiles.json_write_int("tex", get_tile_texture(death_tile.tile));
     tiles.json_close_object();
     tiles.json_write_bool("postmortem_available", postmortem_available);
-    tiles.json_write_bool("death_replay_available", replay_available);
+    if (death_replay_enabled())
+        tiles.json_write_bool("death_replay_available", replay_available);
     tiles.json_write_string("title", goodbye_title);
     tiles.json_write_string("body", goodbye_msg
             + hiscores_print_list(11, SCORE_TERSE, hiscore_index, start));

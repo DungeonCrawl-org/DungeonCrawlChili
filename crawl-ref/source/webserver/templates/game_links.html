@@ -1,5 +1,5 @@
 {% comment Death Replay at the end of its game row %}
-{% set death_replay_ids = [key for key in games if key == "dcchili" or "chili" in games[key]["name"].lower()] %}
+{% set death_replay_ids = [key for key in games if config.get("enable_death_replay", False) and (key == "dcchili" or "chili" in games[key]["name"].lower())] %}
 {% set death_replay_game_id = death_replay_ids[0] if death_replay_ids else None %}
 {% set death_replay_group = [key for key in games if death_replay_game_id and games[key]["rcfile_path"] == games[death_replay_game_id]["rcfile_path"]] %}
 {% set death_replay_last_id = death_replay_group[-1] if death_replay_group else None %}

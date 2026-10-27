@@ -748,7 +748,8 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
         return "allowed_with_hold" not in game or game["allowed_with_hold"]
 
     def list_death_replays(self, game_id):
-        if not self.username or not self.game_id_allowed(game_id):
+        if (not config.get("enable_death_replay", False)
+                or not self.username or not self.game_id_allowed(game_id)):
             return
         from webtiles.death_replay import list_replays, morgue_directory
         directory = morgue_directory(config.games[game_id], "")
@@ -764,6 +765,9 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
                           entries=entries)
 
     def start_crawl(self, game_id, death_replay=None, death_replay_player=None):
+        if death_replay is not None and not config.get("enable_death_replay", False):
+            self.go_lobby()
+            return
         replay_root = None
         replay_entries = None
         if config.get('dgl_mode') and game_id not in config.games:

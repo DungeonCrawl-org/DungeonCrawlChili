@@ -1076,7 +1076,8 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             scroller_handle_key(s, event);
         });
 
-        if (desc.death_replay_available && !client.is_watching()) {
+        var replay_available = is_dcf_server() && desc.death_replay_available;
+        if (replay_available && !client.is_watching()) {
             var replay = $("<button>").attr("type", "button").text("Death Replay [R]");
             replay.on("click", function (event) {
                 event.stopPropagation();
@@ -1089,7 +1090,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             }
         }
 
-        if ((desc.postmortem_available || desc.death_replay_available) && !client.is_watching()) {
+        if ((desc.postmortem_available || replay_available) && !client.is_watching()) {
             if (desc.postmortem_available) {
                 var analysis = $("<button>").attr("type", "button").text("Post-Mortem Analysis [P]");
                 analysis.on("click", function (event) {
@@ -1103,7 +1104,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
                 var key = event.key || String.fromCharCode(event.which);
                 if (!event.ctrlKey && !event.altKey && !event.metaKey
                     && ((key.toLowerCase() === "p" && desc.postmortem_available)
-                        || (key.toLowerCase() === "r" && desc.death_replay_available))) {
+                        || (key.toLowerCase() === "r" && replay_available))) {
                     event.preventDefault();
                     event.stopImmediatePropagation();
                     if (event.type === "keydown")

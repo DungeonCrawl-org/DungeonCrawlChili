@@ -1,6 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
+const elementsById = {};
 
 class Element {
     constructor(tag = 'div') { this.tag = tag; this.handlers = {}; this.nodes = []; this.dataValues = {}; this[0] = this; }
@@ -8,7 +9,11 @@ class Element {
     find() { return new Element(); }
     children() { return new Element(); }
     html() { return this; }
-    attr() { return this; }
+    attr(key, value) {
+        const values = typeof key === 'object' ? key : {[key]: value};
+        if (values.id) { this.id = values.id; elementsById[this.id] = this; }
+        return this;
+    }
     text() { return this; }
     addClass() { return this; }
     css() { return this; }
@@ -18,9 +23,11 @@ class Element {
     }
     empty() { this.nodes = []; return this; }
     append(node) { this.nodes.push(node); return this; }
+    appendTo(parent) { parent.append(this); return this; }
+    prop() { return this; }
     first() { return this.nodes[0] || new Element(); }
     trigger() { return this; }
-    remove() { this.removed = true; return this; }
+    remove() { this.removed = true; if (this.id) delete elementsById[this.id]; return this; }
     contains() { return false; }
     on(names, fn) { for (const name of names.split(' ')) this.handlers[name] = fn; return this; }
     off() { this.handlers = {}; return this; }
@@ -28,22 +35,30 @@ class Element {
 }
 let gameOver, watching = false, hostname = 'dcf.dungeoncrawlforks.org';
 const messages = [];
+const commHandlers = {};
 const document = {
-    body: new Element('body'), listeners: {},
+    body: new Element('body'), listeners: {}, contains: node => !node.removed,
     addEventListener(type, fn) { this.listeners[type] = fn; },
     removeEventListener(type, fn) {
         if (this.listeners[type] === fn) delete this.listeners[type];
     }
 };
-const $ = value => value instanceof Element ? value : new Element(value === '<button>' ? 'button' : 'div');
+const $ = value => {
+    if (value instanceof Element) return value;
+    if (typeof value === 'string' && value.startsWith('#')) {
+        return elementsById[value.slice(1)] || {length: 0};
+    }
+    return new Element(value === '<button>' ? 'button' : 'div');
+};
 const source = fs.readFileSync(__dirname + '/../game_data/static/ui-layouts.js', 'utf8')
     .replace('register_handlers: register_ui_handlers,', 'register_handlers: register_ui_handlers, game_over: game_over,');
 vm.runInNewContext(source, {
-    document,
+    document, setTimeout, clearTimeout,
     window: {location: {get hostname() { return hostname; }}},
     define(_, factory) {
         gameOver = factory($, {
-            register_handlers() {}, send_message(type, data) { messages.push({type, data}); }
+            register_handlers(handlers) { Object.assign(commHandlers, handlers); },
+            send_message(type, data) { messages.push({type, data}); }
         }, { is_watching: () => watching }, {}, {}, {
             DungeonCellRenderer: class { init() {} draw_from_texture() {} }
         }, { formatted_string_to_html: value => value, init_canvas() {} }, () => ({})).game_over;
@@ -90,30 +105,32 @@ replayButton.handlers.click({stopPropagation() {}});
 assert.equal(messages.at(-1).data.keycode, 114);
 const recommendationOverlay = document.body.nodes.at(-1);
 const recommendation = recommendationOverlay.nodes[0];
-assert.equal(recommendation.nodes.length, 4);
+assert.equal(recommendation.nodes.length, 5);
 let stopped = false, prevented = false;
-recommendationOverlay.handlers.keydown({type: 'keydown', key: 'Escape',
-    preventDefault() { prevented = true; }, stopImmediatePropagation() { stopped = true; }});
-assert(prevented && stopped, 'The required recommendation modal blocks Escape');
-assert.equal(recommendationOverlay.removed, undefined, 'Escape cannot dismiss the modal');
-prevented = false;
-stopped = false;
 document.listeners.mousedown({target: {}, preventDefault() { prevented = true; },
     stopImmediatePropagation() { stopped = true; }});
 assert(prevented && stopped, 'Clicks outside the modal cannot dismiss the death dialog');
 recommendation.nodes[2].handlers.click({preventDefault() {}, stopPropagation() {}});
 assert.equal(messages.at(-1).type, 'record_death_replay_recommendation');
 assert.equal(messages.at(-1).data.vote, 1);
-assert.equal(recommendationOverlay.removed, true, 'A vote closes the required modal');
+assert.equal(recommendationOverlay.removed, undefined, 'Wait for the vote acknowledgement');
+commHandlers.death_replay_recommendation_result({ok: true});
+assert.equal(recommendationOverlay.removed, true, 'A saved vote closes the modal');
 assert.equal(document.listeners.mousedown, undefined, 'Vote removes the outside-click guard');
+gameOver({title: 'Goodbye', body: 'Final score', death_replay_available: true, tile: {}});
+const ignoredOverlay = document.body.nodes.at(-1);
+const messagesBeforeIgnore = messages.length;
+document.listeners.keydown({type: 'keydown', key: 'Escape', preventDefault() {}, stopImmediatePropagation() {}});
+assert.equal(ignoredOverlay.removed, true, 'Escape ignores the recommendation');
+assert.equal(messages.length, messagesBeforeIgnore, 'Ignoring does not submit a vote');
 hostname = 'crawl.xtahua.com';
 const cxcPopup = gameOver({title: 'Goodbye', body: 'Final score',
     death_replay_available: true, tile: {}});
-assert.equal(cxcPopup.nodes.length, 1, 'CXC does not ask for DCF feedback');
+assert.equal(cxcPopup.nodes.length, 0, 'CXC has no Death Replay button or feedback');
 hostname = 'crawl.project357.org';
 const cpoPopup = gameOver({title: 'Goodbye', body: 'Final score',
     death_replay_available: true, tile: {}});
-assert.equal(cpoPopup.nodes.length, 1, 'CPO does not ask for DCF feedback');
+assert.equal(cpoPopup.nodes.length, 0, 'CPO has no Death Replay button or feedback');
 const unavailablePopup = gameOver({title: 'Goodbye', body: 'Quit game',
     postmortem_available: false, death_replay_available: false, tile: {}});
 assert.equal(unavailablePopup.nodes.length, 0,

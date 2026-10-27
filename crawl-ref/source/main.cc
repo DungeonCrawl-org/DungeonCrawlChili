@@ -531,7 +531,8 @@ static void _show_commandline_options_help()
     puts("  -help                 prints this list of options");
     puts("  -name <string>        character name");
 #ifdef USE_TILE_WEB
-    puts("  -death-replay <file>  replay an archived death belonging to -name");
+    if (death_replay_enabled())
+        puts("  -death-replay <file>  replay an archived death belonging to -name");
 #endif
     puts("  -species <arg>        preselect character species (by letter, abbreviation, or name)");
     puts("  -background <arg>     preselect character background (by letter, abbreviation, or name)");
