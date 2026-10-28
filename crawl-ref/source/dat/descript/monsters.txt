@@ -45,7 +45,7 @@ his demonic heritage manifested. As his body twisted, Amaemon was forced to flee
 far from the surface. The passage of time has only left him more obsessed with
 what he has lost - consumed by poison both physical and spiritual.
 
-<brown>DC Chili change: Uniques have a 50% chance to drop an item when killed. For Amaemon, the item is Snakebite (if available).</brown>
+<brown>DC Chili change: Amaemon has a 5% chance to carry Snakebite (if available), which he drops when killed.</brown>
 %%%%
 Antaeus
 
