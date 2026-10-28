@@ -1365,7 +1365,7 @@ int make_mons_weapon(monster_type type, int level, bool melee_only)
         break;
 
     case MONS_AMAEMON:
-        if (coinflip() && !get_unique_item_status(UNRAND_SNAKEBITE))
+        if (one_chance_in(20) && !get_unique_item_status(UNRAND_SNAKEBITE))
         {
             make_item_unrandart(item, UNRAND_SNAKEBITE);
             force_item = true;
