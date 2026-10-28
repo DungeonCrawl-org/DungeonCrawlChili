@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import os
 import subprocess
 import sys
@@ -28,8 +29,17 @@ def main():
     # %s = subject
     # %b = body
     pretty = '--pretty=%h%x1F%cn%x1F%s%x1F%b%x1E'
-    branch_to_check = os.environ.get("GITHUB_HEAD_REF","HEAD")
-    base_branch = os.environ.get("GITHUB_BASE_REF", "origin/master")
+    branch_to_check = "HEAD"
+    base_branch = "origin/master"
+    event_path = os.environ.get("GITHUB_EVENT_PATH")
+    if event_path:
+        with open(event_path, encoding="utf-8") as event_file:
+            pull_request = json.load(event_file).get("pull_request")
+        if pull_request:
+            # Checkout fetches commit objects, but a fork's branch name need
+            # not exist locally. Use the exact commits from the PR event.
+            branch_to_check = pull_request["head"]["sha"]
+            base_branch = pull_request["base"]["sha"]
     print(f"Checking commits being merged from {branch_to_check} to {base_branch}")
 
     git_args = [ "git", "log", "--no-merges", pretty, branch_to_check, f"^{base_branch}" ]
