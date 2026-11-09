@@ -116,6 +116,7 @@ static monster_type _mons_merge_genus(monster_type mc)
         case MONS_ZOMBIE:
         case MONS_SIMULACRUM:
         case MONS_DRAUGR:
+        case MONS_MANNEQUIN:
             return mons_genus(mc);
 
         default:
@@ -322,8 +323,8 @@ static string _describe_monsters_from_species(const vector<details> &species,
         {
             string name = det.name;
             const monster_type base_type =
-                mons_is_zombified(*(det.mon)) ? det.mon->base_monster
-                                              : det.mon->type;
+                det.mon->is_derived() ? det.mon->base_monster
+                                      : det.mon->type;
             // Treat all monsters with unique base types as named, since zombified
             // uniques keep their names.
             if ((det.mon->is_named() || mons_is_unique(base_type)) && det.count == 1)
@@ -705,8 +706,10 @@ void seen_monster(monster* mons, bool do_encounter_message)
         && coinflip()
         && mons->get_experience_level() >= random2(you.experience_level))
     {
-        mprf(MSGCH_GOD, GOD_GOZAG, "Gozag incites %s against you.",
-                mons->name(DESC_THE).c_str());
+        mprf(MSGCH_GOD, GOD_GOZAG, "Gozag grants %s a complimentary blessing in "
+                                   "exchange for %s services.",
+                mons->name(DESC_THE).c_str(),
+                mons->pronoun(PRONOUN_POSSESSIVE).c_str());
         gozag_incite(mons);
     }
 

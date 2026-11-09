@@ -53,6 +53,7 @@
 #include "traps.h"
 #include "viewchar.h"
 #include "view.h"
+#include "xom.h"
 
 static shared_ptr<quiver::action> _fire_prompt_for_item();
 static int  _get_dart_chance(const int hd);
@@ -657,6 +658,8 @@ static void _fire_player_ranged_attacks(vector<ranged_attack_beam>& atks, bool a
 
         if (you.has_mutation(MUT_WARMUP_STRIKES) && !you.triggers_done[DID_REV_UP] && missile == NUM_MISSILES)
             you.rev_up(you.attack_delay().roll());
+
+        xom_end_disguise();
     }
 }
 
@@ -1001,7 +1004,11 @@ bool mons_throw(monster* mons, ranged_attack_beam& ratk, bool teleport, bool was
 
     // dubious...
     if (mons->alive())
+    {
         _handle_cannon_fx(*mons, weapon, target);
+        if (mons->type == MONS_MANNEQUIN)
+            mons->hurt(mons, div_rand_round(mons->max_hit_points, 15));
+    }
 
     return true;
 }

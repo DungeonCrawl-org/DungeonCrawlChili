@@ -4218,7 +4218,7 @@ mons_list::mons_spec_slot mons_list::parse_mons_spec(string spec,
             {
                 // Is this a modified monster?
                 if (nspec.monbase != MONS_PROGRAM_BUG
-                    && mons_class_is_zombified(static_cast<monster_type>(nspec.type)))
+                    && mons_class_is_derived(static_cast<monster_type>(nspec.type)))
                 {
                     mspec.monbase = static_cast<monster_type>(nspec.type);
                 }
@@ -4364,24 +4364,22 @@ static monster_type _fixup_mon_type(monster_type orig)
         orig = MONS_PROGRAM_BUG;
 
     monster_type dummy_mons = MONS_PROGRAM_BUG;
-    coord_def dummy_pos;
     level_id place = level_id::current();
-    return resolve_monster_type(orig, dummy_mons, PROX_ANYWHERE, &dummy_pos, 0,
-                                &place);
+    return resolve_monster_type(orig, dummy_mons, &place);
 }
 
 void mons_list::get_zombie_type(string s, mons_spec &spec) const
 {
     static const char *zombie_types[] =
     {
-        " zombie", " draugr", " simulacrum", " spectre", nullptr
+        " zombie", " draugr", " simulacrum", " spectre", " mannequin", nullptr
     };
 
     // This order must match zombie_types, indexed from one.
     static const monster_type zombie_montypes[] =
     {
         MONS_PROGRAM_BUG, MONS_ZOMBIE, MONS_DRAUGR, MONS_SIMULACRUM,
-        MONS_SPECTRAL_THING,
+        MONS_SPECTRAL_THING, MONS_MANNEQUIN,
     };
 
     int mod = ends_with(s, zombie_types);
@@ -4418,6 +4416,10 @@ void mons_list::get_zombie_type(string s, mons_spec &spec) const
     spec.type = zombie_montypes[mod];
     switch (spec.type)
     {
+    case MONS_MANNEQUIN:
+        if (!mons_is_unique(spec.monbase))
+            return;
+        break;
     case MONS_SIMULACRUM:
     case MONS_SPECTRAL_THING:
         if (mons_class_can_be_spectralised(spec.monbase))
@@ -5564,7 +5566,9 @@ bool item_list::parse_single_spec(item_spec& result, string s)
         result.base_type = OBJ_BOOKS;
         result.sub_type = BOOK_PARCHMENT;
 
-        strip_tag(s, "of");
+        // Strip the first 'of' (but don't mess up spells with 'of' in their names...)
+        if (starts_with(s, "of "))
+            s = s.substr(3);
 
         // Allow specifing the school of spell, rather than the spell itself.
         string school_str = strip_tag_prefix(s, "disc:");

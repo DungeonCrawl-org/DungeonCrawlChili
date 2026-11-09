@@ -77,6 +77,8 @@ constexpr int ENKINDLE_CHARGE_COST = 40;
 
 #define PYROMANIA_TRIGGERED_KEY "pyromania_triggered"
 
+#define XOM_DISGUISE_APPEARANCE_KEY "xom_disguise_appearance"
+
 // display/messaging breakpoints for penalties from Ru's MUT_HORROR
 #define HORROR_LVL_EXTREME  3
 #define HORROR_LVL_OVERWHELMING  5
@@ -134,6 +136,7 @@ enum player_trigger_type
     DID_SOLAR_EMBER,     // Sun scarab ember attack
     DID_REV_UP,          // Coglin rev
     DID_WEST_WIND_SHOT,  // Gale Centaur West Wind ranged attack
+    DID_BATTLESHAPE_SHOT, // Xom chaos battleshape melee trigger
     NUM_PLAYER_TRIGGER_TYPES,
 };
 
@@ -450,6 +453,9 @@ public:
     mid_t          prev_targ;
     // Examining spell library spells for Sif Muna's ability
     bool           divine_exegesis;
+
+    // Casting a spell via Xom's temporary ability
+    bool           chaos_eisegesis;
 
     // Coordinates of last travel target; note that this is never used by
     // travel itself, only by the level-map to remember the last travel target.
@@ -788,7 +794,8 @@ public:
 
     bool      has_any_mutations() const;
     int       how_mutated(bool normal = true, bool silver = false, bool all_innate = false,
-                          bool include_temp = false, bool levels = true) const;
+                          bool include_temp = false, bool levels = true,
+                          bool only_good = false) const;
 
     int wearing(object_class_type obj_type, int sub_type,
                 bool count_plus = 0, bool check_attuned = false) const override;
@@ -925,7 +932,7 @@ public:
     bool res_petrify(bool include_temp = true) const override;
     bool res_constrict() const override;
     int res_blind() const override;
-    int willpower() const override;
+    int willpower(bool items = true) const override;
     bool no_tele(bool blink = false, bool include_temp = true) const override;
     string no_tele_reason(bool blink = false, bool include_temp = true) const;
     int slaying(bool throwing = false, bool random = true) const override;
@@ -1214,7 +1221,7 @@ int player_res_poison(bool allow_random = true, bool include_temp = true,
                       bool items = true, bool forms = true);
 int player_res_corrosion(bool allow_random = true, bool include_temp = true,
                          bool items = true);
-int player_willpower(bool include_temp = true);
+int player_willpower(bool include_temp = true, bool items = true);
 
 int player_shield_class(int scale = 1, bool random = true,
                         bool include_temp = true);
@@ -1354,7 +1361,7 @@ bool spell_slow_player(int pow);
 bool slow_player(int turns);
 void dec_slow_player(int delay);
 void barb_player(int turns, int pow);
-void blind_player(int turns, colour_t flavour_colour = WHITE);
+void blind_player(int turns, colour_t flavour_colour = WHITE, bool quiet = false);
 int player_blind_miss_chance(int distance);
 void dec_berserk_recovery_player(int delay);
 

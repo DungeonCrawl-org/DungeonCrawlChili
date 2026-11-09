@@ -1840,9 +1840,9 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
 
     const monster orig = *mon;
 
-    // Use the original monster type as the zombified type here, to get
+    // Use the original monster type as the derived type here, to get
     // the proper stats from it.
-    define_zombie(mon, mon->type, MONS_BOUND_SOUL);
+    define_derived_monster(mon, mon->type, MONS_BOUND_SOUL);
 
     if (orig.has_hydra_multi_attack())
         mons_set_starting_heads(*mon, orig.props[ORIGINAL_HEADS_KEY].get_int());
@@ -2415,8 +2415,7 @@ static string ashenzari_curse_knowledge_list()
 
     const CrawlVector& curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
-    return lowercase_string(comma_separated_fn(curses.begin(), curses.end(),
-                              curse_name));
+    return comma_separated_fn(curses.begin(), curses.end(), curse_name);
 }
 
 string desc_curse_skills(const CrawlVector& curse)
@@ -3437,14 +3436,14 @@ static void _gozag_add_potions(CrawlVector &vec, potion_type *which)
 
 #define ADD_POTIONS(a,b) _gozag_add_potions(a, b[random2(ARRAYSZ(b))])
 
-bool gozag_setup_potion_petition(bool quiet)
+bool gozag_setup_purchase_blessing(bool quiet)
 {
-    if (you.gold < GOZAG_POTION_PETITION_AMOUNT)
+    if (you.gold < GOZAG_PURCHASE_BLESSING_COST)
     {
         if (!quiet)
         {
             mprf("You need at least %d gold to purchase potions right now!",
-                 GOZAG_POTION_PETITION_AMOUNT);
+                 GOZAG_PURCHASE_BLESSING_COST);
         }
         return false;
     }
@@ -3452,7 +3451,7 @@ bool gozag_setup_potion_petition(bool quiet)
     return true;
 }
 
-bool gozag_potion_petition()
+bool gozag_purchase_blessing()
 {
     CrawlVector *pots[GOZAG_MAX_POTIONS];
     int prices[GOZAG_MAX_POTIONS];
@@ -3498,7 +3497,7 @@ bool gozag_potion_petition()
                 key = make_stringf(GOZAG_PRICE_KEY, i);
                 you.props[key].get_int() = prices[i];
 
-                if (prices[i] <= GOZAG_POTION_PETITION_AMOUNT)
+                if (prices[i] <= GOZAG_PURCHASE_BLESSING_COST)
                     affordable_potions = true;
             }
         }
@@ -3532,7 +3531,7 @@ bool gozag_potion_petition()
             line += comma_separated_line(pot_names.begin(), pot_names.end());
             mpr_nojoin(MSGCH_PLAIN, line);
         }
-        mprf(MSGCH_PROMPT, "Purchase which effect?");
+        mprf(MSGCH_PROMPT, "Purchase which blessing?");
         keyin = toalower(get_ch()) - 'a';
         if (keyin < 0 || keyin > GOZAG_MAX_POTIONS - 1)
             continue;
@@ -3554,7 +3553,7 @@ bool gozag_potion_petition()
     for (auto pot : *pots[keyin])
     {
         potionlike_effect(static_cast<potion_type>(pot.get_int()), 40);
-        flash_tile(you.pos(), YELLOW, 120, TILE_BOLT_POTION_PETITION);
+        flash_tile(you.pos(), YELLOW, 120, TILE_BOLT_PURCHASE_BLESSING);
     }
 
     for (int i = 0; i < GOZAG_MAX_POTIONS; i++)
@@ -6688,9 +6687,9 @@ void okawaru_remove_finesse()
     you.duration[DUR_FINESSE] = 0;
 }
 
-// Gathers all items on the arena floor and saves them in a prop, to deposit
+// Gathers all items on an arena floor and saves them in a prop, to deposit
 // at the player's feet once the duel is over.
-static void _owakwaru_gather_arena_items()
+static void _gather_arena_items()
 {
     CrawlVector& vec = you.props[OKAWARU_DUEL_ITEMS_KEY].get_vector();
     for (int i = 0; i < MAX_ITEMS; ++i)
@@ -6723,7 +6722,7 @@ void okawaru_end_duel(bool kicked_out)
         }
     }
 
-    _owakwaru_gather_arena_items();
+    _gather_arena_items();
 
     if (you.props.exists(OKAWARU_DUEL_ORIG_HP_KEY))
     {
@@ -7474,6 +7473,28 @@ void makhleb_crucible_kill(monster& victim)
 
         return;
     }
+}
+
+// End a 'duel' and return the player to where they were
+void xom_end_duel()
+{
+    ASSERT(player_in_branch(BRANCH_XOM_ARENA));
+
+    _gather_arena_items();
+
+    god_speaks(GOD_XOM, getSpeakString("Xom arena win").c_str());
+
+    stop_delay(true);
+    down_stairs(DNGN_EXIT_XOM_ARENA);
+}
+
+bool xom_duel_active()
+{
+    for (monster_iterator mi; mi; ++mi)
+        if (mi->hostile() && !mi->is_peripheral())
+            return true;
+
+    return false;
 }
 
 // A simplified version of Chei's time step, used for catching up off-level

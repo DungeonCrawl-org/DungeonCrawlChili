@@ -101,6 +101,7 @@
 #include "unicode.h"
 #include "view.h"
 #include "wiz-dgn.h"
+#include "xom.h"
 
 struct generic_cost
 {
@@ -695,7 +696,7 @@ static vector<ability_def> &_get_ability_list()
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
 
         // Gozag
-        { ABIL_GOZAG_POTION_PETITION, "Potion Petition",
+        { ABIL_GOZAG_PURCHASE_BLESSING, "Purchase Blessing",
             0, 0, 0, -1, {fail_basis::invo}, abflag::gold },
         { ABIL_GOZAG_CALL_MERCHANT, "Call Merchant",
             0, 0, 0, -1, {fail_basis::invo}, abflag::gold },
@@ -767,6 +768,10 @@ static vector<ability_def> &_get_ability_list()
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
         { ABIL_PIVARRA_DRAGON_BOOK, "Receive the Book of the Dragon",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
+
+        // Xom
+        { ABIL_XOM_CHAOS_EISEGESIS, "Chaos Eisegesis",
+            0, 0, 0, -1, {fail_basis::xl}, abflag::none },
 
         { ABIL_RENOUNCE_RELIGION, "Renounce Religion",
             0, 0, 0, -1, {fail_basis::invo}, abflag::silence_ok },
@@ -953,8 +958,8 @@ int get_gold_cost(ability_type ability)
     {
     case ABIL_GOZAG_CALL_MERCHANT:
         return gozag_price_for_shop(true);
-    case ABIL_GOZAG_POTION_PETITION:
-        return GOZAG_POTION_PETITION_AMOUNT;
+    case ABIL_GOZAG_PURCHASE_BLESSING:
+        return GOZAG_PURCHASE_BLESSING_COST;
     case ABIL_GOZAG_BRIBE_BRANCH:
         return GOZAG_BRIBE_AMOUNT;
     default:
@@ -981,6 +986,13 @@ static string _ashenzari_curse_text()
            + ")";
 }
 
+static int _xom_eisegesis_max_contam()
+{
+    const int lv = spell_difficulty(static_cast<spell_type>(you.props[EISEGESIS_SPELL].get_int()));
+    int lv_diff = pow(max(0, lv * 7 / 2 - you.experience_level), 1.4) * 10;
+    return 350 + lv_diff;
+}
+
 const string make_cost_description(ability_type ability)
 {
     const ability_def& abil = get_ability_def(ability);
@@ -998,6 +1010,9 @@ const string make_cost_description(ability_type ability)
 
     if (ability == ABIL_CACOPHONY)
         ret += ", Noise";
+
+    if (ability == ABIL_XOM_CHAOS_EISEGESIS)
+        ret += make_stringf(", Contam (up to %d%%)", _xom_eisegesis_max_contam() / 10);
 
     if (ability == ABIL_ASHENZARI_BIND
         && !you.props[CURSE_KNOWLEDGE_KEY].get_vector().empty())
@@ -1052,10 +1067,6 @@ const string make_cost_description(ability_type ability)
         const int amount = get_gold_cost(ability);
         if (amount)
             ret += make_stringf(", %d Gold", amount);
-        else if (ability == ABIL_GOZAG_POTION_PETITION)
-            ret += ", Free";
-        else
-            ret += ", Gold";
     }
 
     if (abil.flags & abflag::sacrifice)
@@ -1119,8 +1130,6 @@ static const string _detailed_cost_description(ability_type ability)
         int gold_amount = get_gold_cost(ability);
         if (gold_amount)
             ret << gold_amount;
-        else if (ability == ABIL_GOZAG_POTION_PETITION)
-            ret << "free";
         else
             ret << "variable";
     }
@@ -1136,6 +1145,13 @@ static const string _detailed_cost_description(ability_type ability)
         have_cost = true;
         ret << "\nTorchlight";
     }
+
+    if (abil.ability == ABIL_XOM_CHAOS_EISEGESIS)
+    {
+        have_cost = true;
+        ret << "\nMagic contamination";
+    }
+
     if (!have_cost)
         ret << "nothing.";
 
@@ -1410,6 +1426,12 @@ string ability_name(ability_type ability, bool dbname)
             else
                 return make_stringf("Recast %s", spell_title(static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int())));
 
+        case ABIL_XOM_CHAOS_EISEGESIS:
+            if (dbname || !you.props.exists(EISEGESIS_SPELL))
+                return "Chaos Eisegesis";
+            else
+                return make_stringf("Eisegesis: %s", spell_title(static_cast<spell_type>(you.props[EISEGESIS_SPELL].get_int())));
+
         default:
             return get_ability_def(ability).name;
     }
@@ -1640,8 +1662,28 @@ string get_ability_desc(const ability_type ability, bool need_title)
 
         case ABIL_SIF_MUNA_REPEAT_EXEGESIS:
         {
-            const char* spell_name = spell_title(static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int()));
+            unwind_var<bool> exegesis(you.divine_exegesis, true);
+            spell_type spell = static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int());
+            const char* spell_name = spell_title(spell);
             lookup = getLongDescription(make_stringf("%s spell", spell_name));
+            lookup += player_spell_desc(spell);
+        }
+        break;
+
+        case ABIL_XOM_CHAOS_EISEGESIS:
+        {
+            unwind_var<bool> exegesis(you.chaos_eisegesis, true);
+
+            lookup = getLongDescription(name + " ability");
+
+            spell_type spell = static_cast<spell_type>(you.props[EISEGESIS_SPELL].get_int());
+            const char* spell_name = spell_title(spell);
+            lookup += "\n";
+            lookup += getLongDescription(make_stringf("%s spell", spell_name));
+            lookup += player_spell_desc(spell);
+
+            lookup += make_stringf("\nUsing this now could inflict up to %d%% magic contamination.",
+                                   _xom_eisegesis_max_contam() / 10);
         }
         break;
 
@@ -1660,7 +1702,8 @@ string get_ability_desc(const ability_type ability, bool need_title)
 
     if (damage_str != "")
         lookup += make_stringf("Damage: %s\n ", damage_str.c_str());
-    lookup += make_stringf("Range: %s\n", range_str.c_str());
+    if (range_str != "")
+        lookup += make_stringf("Range: %s\n", range_str.c_str());
 
     ostringstream res;
     if (need_title)
@@ -2373,8 +2416,8 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         }
         return true;
 
-    case ABIL_GOZAG_POTION_PETITION:
-        return gozag_setup_potion_petition(quiet);
+    case ABIL_GOZAG_PURCHASE_BLESSING:
+        return gozag_setup_purchase_blessing(quiet);
 
     case ABIL_GOZAG_CALL_MERCHANT:
         return gozag_setup_call_merchant(quiet);
@@ -2799,7 +2842,7 @@ unique_ptr<targeter> find_ability_targeter(ability_type ability)
     case ABIL_CHEIBRIADOS_TIME_STEP:
     case ABIL_CHEIBRIADOS_DISTORTION:
     case ABIL_RU_DRAW_OUT_POWER:
-    case ABIL_GOZAG_POTION_PETITION:
+    case ABIL_GOZAG_PURCHASE_BLESSING:
     case ABIL_GOZAG_CALL_MERCHANT:
     case ABIL_HEPLIAKLQANA_RECALL:
     case ABIL_WU_JIAN_SERPENTS_LASH:
@@ -2952,6 +2995,8 @@ bool handle_post_ability_effects(ability_type ability,
                 if (x_chance_in_y(10 + 2 * abil.avg_piety_cost(), 100))
                     _invoke_dragons();
             }
+
+            xom_end_disguise();
 
             // XXX: Merge Dismiss Apostle #1/2/3 into a single count
             ability_type log_type = abil.ability;
@@ -3837,6 +3882,20 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         return cast_a_spell(false, static_cast<spell_type>(you.props[EXEGESIS_SPELL].get_int()), nullptr);
     }
 
+    case ABIL_XOM_CHAOS_EISEGESIS:
+    {
+        const int contam_cost = _xom_eisegesis_max_contam();
+        if (warn_about_contam_cost(contam_cost))
+            return spret::abort;
+
+        unwind_var<bool> eisegesis(you.chaos_eisegesis, true);
+        spell_type spell = static_cast<spell_type>(you.props[EISEGESIS_SPELL].get_int());
+        spret ret = your_spells(spell, 0, false);
+        if (ret == spret::success)
+            contaminate_player(random_range(contam_cost / 2, contam_cost));
+        return ret;
+    }
+
     case ABIL_ELYVILON_HEAL_SELF:
     {
         fail_check();
@@ -4059,8 +4118,8 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     case ABIL_DITHMENOS_PRIMORDIAL_NIGHTFALL:
         return dithmenos_nightfall(fail);
 
-    case ABIL_GOZAG_POTION_PETITION:
-        return run_ability_uncancel(UNC_POTION_PETITION, piety_cost, mp_cost,
+    case ABIL_GOZAG_PURCHASE_BLESSING:
+        return run_ability_uncancel(UNC_PURCHASE_BLESSING, piety_cost, mp_cost,
                                     hp_cost);
 
     case ABIL_GOZAG_CALL_MERCHANT:
@@ -4468,7 +4527,8 @@ string describe_talent(const talent& tal)
 
     ostringstream desc;
     desc << left
-         << chop_string(ability_name(tal.which), 32)
+         << chop_string(ability_name(tal.which), 31)
+         << " "
          << chop_string(make_cost_description(tal.which), 32)
          << chop_string(failure, 12);
     return trimmed_string(desc.str());
@@ -4586,6 +4646,8 @@ bool player_has_ability(ability_type abil, bool include_unusable)
     case ABIL_END_TRANSFORMATION:
         return you.form != you.default_form && !you.transform_uncancellable;
     // TODO: other god abilities
+    case ABIL_XOM_CHAOS_EISEGESIS:
+        return you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CHAOS_EISEGESIS;
     case ABIL_RENOUNCE_RELIGION:
         return !you_worship(GOD_NO_GOD);
     case ABIL_CONVERT_TO_BEOGH:
@@ -4659,6 +4721,7 @@ vector<talent> your_talents(bool include_unusable, bool ignore_piety)
             ABIL_IMBUE_SERVITOR,
             ABIL_IMPRINT_WEAPON,
             ABIL_END_TRANSFORMATION,
+            ABIL_XOM_CHAOS_EISEGESIS,
             ABIL_RENOUNCE_RELIGION,
             ABIL_CONVERT_TO_BEOGH,
             ABIL_EVOKE_BLINK,

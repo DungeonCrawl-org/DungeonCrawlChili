@@ -495,6 +495,92 @@ static void _handle_hoarding()
     }
 }
 
+// Hande Xom delayed gifting of a mannequin army (and tracking of continuous
+// time spent with no enemies in sight)
+static void _handle_xom_mannequins(int time_taken)
+{
+    if (you.attribute[ATTR_XOM_BLESSING] != XOM_BLESSING_MANNEQUINS)
+        return;
+
+    const bool hostiles = there_are_monsters_nearby(true, true, false);
+    if (hostiles)
+        you.duration[DUR_XOM_MANNEQUIN_TIMER] = 70;
+    else if (!hostiles && you.duration[DUR_XOM_MANNEQUIN_TIMER])
+    {
+        if (you.duration[DUR_XOM_MANNEQUIN_TIMER] <= time_taken)
+        {
+            you.duration[DUR_XOM_MANNEQUIN_TIMER] = 0;
+
+            CrawlVector& mon_list = you.props[XOM_MANNEQUIN_TROUPE].get_vector();
+            int created_count = 0;
+            for (int i = 0; i < mon_list.size(); ++i)
+            {
+                mgen_data mg = mgen_data(MONS_MANNEQUIN, BEH_COPY, you.pos(),
+                                          MHITYOU, MG_AUTOFOE | MG_FORCE_PLACE,
+                                          GOD_XOM)
+                         .set_summoned(&you, MON_SUMM_XOM_MANNEQUIN, 0, false)
+                         .set_range(1, LOS_RADIUS);
+                mg.base_type = static_cast<monster_type>(mon_list[i].get_int());
+
+                if (create_monster(mg))
+                    ++created_count;
+            }
+
+            if (created_count > 1 && one_chance_in(8))
+                god_speaks(GOD_XOM, getSpeakString("Xom mannequin gift").c_str());
+
+            if (created_count > 1)
+                mpr("Some mannequins begin to dance....");
+            else if (created_count > 0)
+                mpr("A mannequin begins to dance....");
+
+            you.props.erase(XOM_MANNEQUIN_TROUPE);
+        }
+        else
+            you.duration[DUR_XOM_MANNEQUIN_TIMER] -= time_taken;
+    }
+}
+
+static void _handle_xom_battleshape()
+{
+    if (you.attribute[ATTR_XOM_BLESSING] != XOM_BLESSING_BATTLESHAPE
+        || you.duration[DUR_XOM_BATTLESHAPE_COOLDOWN])
+    {
+        return;
+    }
+
+    const bool hostiles = there_are_monsters_nearby(true, true, false);
+
+    monster* battleshape = find_chaos_battleshape();
+
+    // If enemies are around, create a battleshape.
+    if (!battleshape && hostiles)
+    {
+        mgen_data mg(MONS_CHAOS_BATTLESHAPE, BEH_FRIENDLY, you.pos(), MHITYOU);
+        mg.set_summoned(&you, MON_SUMM_XOM_BATTLESHAPE, 0, false);
+        mg.set_range(1, you.current_vision);
+        mg.hd = 1 + you.experience_level / 3;
+        mg.hp = 10 + you.experience_level * 3 / 2;
+        if (battleshape = create_monster(mg))
+        {
+            you.props[CHAOS_BATTLESHAPE_KEY].get_int() = battleshape->mid;
+            mprf("A chaotic battlecube coalesces beside you.");
+        }
+    }
+    // If a battleshape exists and the battle is over, start to time it out.
+    else if (battleshape && !hostiles)
+    {
+        if (!battleshape->has_ench(ENCH_SUMMON_TIMER))
+            battleshape->add_ench(mon_enchant(ENCH_SUMMON_TIMER, &you, random_range(50, 80)));
+    }
+    // But in case it started timing out and new hostiles appear, remove the timer.
+    else if (battleshape && hostiles)
+    {
+        if (battleshape->has_ench(ENCH_SUMMON_TIMER))
+            battleshape->del_ench(ENCH_SUMMON_TIMER, true, false);
+    }
+}
+
 /**
  * Player reactions after monster and cloud activities in the turn are finished.
  */
@@ -564,7 +650,6 @@ void player_reacts_to_monsters()
             mprf(MSGCH_DURATION, "Your orb has finished recharging its magic.");
     }
 
-
     if (_decrement_a_duration(DUR_PHALANX_BARRIER, you.time_taken))
         you.redraw_armour_class = true;
 
@@ -574,10 +659,19 @@ void player_reacts_to_monsters()
     if (you_worship(GOD_USKAYAW))
         _handle_uskayaw_time(you.time_taken);
 
+    if (you_worship(GOD_XOM))
+        xom_check_guardian_revival();
+
+    _handle_xom_mannequins(you.time_taken);
+    _handle_xom_battleshape();
+
     announce_beogh_conversion_offer();
 
     if (player_in_branch(BRANCH_ARENA) && !okawaru_duel_active())
         okawaru_end_duel();
+
+    if (player_in_branch(BRANCH_XOM_ARENA) && !xom_duel_active())
+        xom_end_duel();
 
     if (you.duration[DUR_BLINKITIS])
     {
@@ -730,8 +824,8 @@ static void _handle_trickster_decay(int delay)
 
     int& stacks = you.props[TRICKSTER_POW_KEY].get_int();
 
-    // Decay at a rate of ~1 AC per 30 aut.
-    const int reduction = div_rand_round(3, delay);
+    // Decay at a rate of 0.8 AC per turn.
+    const int reduction = delay * 8;
     stacks -= reduction;
     if (stacks <= 0)
     {
@@ -1073,6 +1167,9 @@ static void _decrement_durations()
     if (you.duration[DUR_FUSILLADE] && you.time_taken > 0)
         fire_fusillade();
 
+    if (you.duration[DUR_PLINKING] && you.time_taken > 0)
+        do_plinking_effect();
+
     if (you.duration[DUR_CELEBRANT_COOLDOWN] && you.hp == you.hp_max)
     {
         mprf(MSGCH_DURATION, "You are ready to perform a blood rite again.");
@@ -1097,7 +1194,7 @@ static void _decrement_durations()
 
     if (you.duration[DUR_MEDUSA_COOLDOWN] && you.hp == you.hp_max)
     {
-        mprf(MSGCH_DURATION, "You feel your defenses recover.");
+        mprf(MSGCH_DURATION, "You feel your defences recover.");
         you.duration[DUR_MEDUSA_COOLDOWN] = 0;
     }
 
@@ -1112,6 +1209,10 @@ static void _decrement_durations()
 
     if (you.has_mutation(MUT_TRICKSTER))
         _handle_trickster_decay(delay);
+
+    if (you.duration[DUR_STUMBLING])
+        if (--you.duration[DUR_STUMBLING] <= 0)
+            you.redraw_evasion = true;
 
     // these should be after decr_ambrosia, transforms, liquefying, etc.
     for (int i = 0; i < NUM_DURATIONS; ++i)

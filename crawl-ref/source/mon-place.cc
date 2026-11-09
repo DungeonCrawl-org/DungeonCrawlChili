@@ -52,9 +52,7 @@
 #include "stringutil.h"
 #include "tag-version.h"
 #include "terrain.h"
-#ifdef USE_TILE
- #include "rltiles/tiledef-player.h"
-#endif
+#include "rltiles/tiledef-player.h"
 #include "tilepick.h"
 #include "traps.h"
 #include "travel.h"
@@ -400,7 +398,7 @@ void spawn_random_monsters()
     if (crawl_state.game_is_arena())
         return;
 
-    if (!player_on_orb_run()
+    if (!(player_on_orb_run() && !player_in_branch(BRANCH_ARENA))
         && !player_in_branch(BRANCH_ABYSS)
         && !player_in_branch(BRANCH_PANDEMONIUM))
     {
@@ -426,8 +424,7 @@ void spawn_random_monsters()
 
     // Orb spawns. Don't generate orb spawns in Abyss to show some mercy to
     // players that get banished there on the orb run.
-    if (player_on_orb_run() && !player_in_branch(BRANCH_ABYSS)
-        && !player_in_branch(BRANCH_ARENA))
+    if (player_on_orb_run())
     {
         mg.proximity = PROX_CLOSE_TO_PLAYER;
         mg.foe = MHITYOU;
@@ -529,9 +526,6 @@ bool needs_resolution(monster_type mon_type)
 
 monster_type resolve_monster_type(monster_type mon_type,
                                   monster_type &base_type,
-                                  proximity_type proximity,
-                                  coord_def *pos,
-                                  unsigned mmask,
                                   level_id *place,
                                   bool *want_band,
                                   bool allow_ood)
@@ -618,7 +612,6 @@ monster_type resolve_monster_type(monster_type mon_type,
                 {
                     mon_type =
                         resolve_monster_type(mon_type, base_type,
-                                             proximity, pos, mmask,
                                              place, want_band, allow_ood);
                 }
                 return mon_type;
@@ -631,7 +624,6 @@ monster_type resolve_monster_type(monster_type mon_type,
         {
             mon_type =
                 resolve_monster_type(mon_type, base_type,
-                                        proximity, pos, mmask,
                                         place, want_band, allow_ood);
         }
     }
@@ -651,8 +643,9 @@ monster_type fixup_zombie_type(const monster_type cls,
     // habitat they had in life.
     // XXX: consider replacing the latter check with monster_class_flies(cls)
     // and adjusting vaults that use spectral krakens.
-    if (!mons_class_is_zombified(cls) || cls == MONS_BOUND_SOUL
-        || cls == MONS_SPECTRAL_THING || cls == MONS_SIMULACRUM)
+    if (!mons_class_is_derived(cls) || cls == MONS_BOUND_SOUL
+        || cls == MONS_SPECTRAL_THING || cls == MONS_SIMULACRUM
+        || cls == MONS_MANNEQUIN)
     {
         return cls;
     }
@@ -779,8 +772,7 @@ monster* place_monster(mgen_data mg, bool force_pos, bool dont_place)
     const bool allow_ood = !(mg.flags & MG_NO_OOD);
     bool want_band = false;
     level_id place = mg.place;
-    mg.cls = resolve_monster_type(mg.cls, mg.base_type, mg.proximity,
-                                  &mg.pos, mg.map_mask,
+    mg.cls = resolve_monster_type(mg.cls, mg.base_type,
                                   &place, &want_band, allow_ood);
     // D:2's decorative plants are withered, including those placed by vaults.
     // Keep player-created plants and tutorial maps unchanged.
@@ -1004,6 +996,27 @@ static void _place_twister_clouds(monster *mon)
     polar_vortex_damage(mon, -10);
 }
 
+// Give melee-range mannequins Blink Close, give ranged attacking mannequins
+// Blink Range, and increase overall cast rates of mannequin spells to make
+// mages more consistent at doing their thing while they're alive.
+static void _adjust_mannequin_spells(monster* mon)
+{
+    if (mon->threat_range(true, true) > 2)
+    {
+        mon->spells.push_back({SPELL_BLINK_RANGE, 30, MON_SPELL_NATURAL | MON_SPELL_SHORT_RANGE});
+        mon->flags |= MF_CAUTIOUS;
+    }
+    else
+        mon->spells.push_back({SPELL_BLINK_CLOSE, 35, MON_SPELL_NATURAL | MON_SPELL_LONG_RANGE});
+
+    int total_freq = 0;
+    for (mon_spell_slot& spell : mon->spells)
+        total_freq += spell.freq;
+
+    mon->props[CUSTOM_SPELLS_KEY] = true;
+    normalize_spell_freq(mon->spells, min(150, total_freq * 3 / 2));
+}
+
 static void _place_monster_maybe_override_god(monster *mon, monster_type cls,
                                               level_id place)
 {
@@ -1036,6 +1049,56 @@ static void _abort_monster_creation(monster *mon)
     mon->destroy_inventory();
     env.mid_cache.erase(mon->mid);
     mon->reset();
+}
+
+static void _assign_living_spell_appearance(monster* mon)
+{
+    switch (mon->spells[0].spell)
+    {
+        case SPELL_LEHUDIBS_CRYSTAL_SPEAR:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_CRYSTAL;
+            mon->colour = YELLOW;
+            break;
+
+        case SPELL_PETRIFY:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_EARTH;
+            mon->colour = BROWN;
+            break;
+
+        case SPELL_BOLT_OF_LIGHT:
+        case SPELL_SMITING:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_HOLY;
+            mon->colour = LIGHTGREEN;
+            break;
+
+        case SPELL_ICEBLAST:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_ICE;
+            mon->colour = LIGHTBLUE;
+            break;
+
+        case SPELL_CORROSIVE_BOLT:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_ACID;
+            mon->colour = YELLOW;
+            break;
+
+        case SPELL_BOLT_OF_FLESH:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_FLESH;
+            mon->colour = LIGHTRED;
+            break;
+
+        case SPELL_BOLT_OF_ANTIMAGIC:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_ANTIMAGIC;
+            mon->colour = MAGENTA;
+            break;
+
+        case SPELL_QUICKSILVER_BOLT:
+            mon->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_QUICKSILVER;
+            mon->colour = ETC_MAGIC;
+            break;
+
+        default:
+        break;
+    }
 }
 
 static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
@@ -1142,14 +1205,14 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     }
 
     // Generate a brand shiny new monster, or zombie.
-    if (mons_class_is_zombified(mg.cls))
+    if (mons_class_is_derived(mg.cls))
     {
         monster_type ztype = mg.base_type;
 
         if (ztype == MONS_NO_MONSTER || ztype == RANDOM_MONSTER)
             ztype = pick_local_zombifiable_monster(place, mg.cls, fpos);
 
-        define_zombie(mon, ztype, mg.cls);
+        define_derived_monster(mon, ztype, mg.cls);
 
         if (!mg.mname.empty())
             name_zombie_from_class(*mon, ztype, mg.mname);
@@ -1368,6 +1431,12 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
 
         mon->colour = wpn->get_colour();
     }
+    // Give them items by pretending to be the base monster
+    else if (mg.cls == MONS_MANNEQUIN)
+    {
+        unwind_var<monster_type> rewind(mon->type, mon->base_monster);
+        give_item(mon, place.absdepth());
+    }
     else if (mons_class_itemuse(mg.cls) >= MONUSE_STARTING_EQUIPMENT
              && !mg.props.exists(KIKU_WRETCH_KEY))
     {
@@ -1414,6 +1483,9 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
         mon->props[SLYMDRA_SLIMES_EATEN_KEY].get_int() = max(0, mon->num_heads - 4);
         slymdra_scale_hp(*mon);
     }
+
+    if (mon->type == MONS_LIVING_SPELL && !mon->spells.empty())
+        _assign_living_spell_appearance(mon);
 
     // Set attitude, behaviour and target.
     mon->base_attitude  = ATT_HOSTILE;
@@ -1578,7 +1650,7 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
         if (mg.summon_type == SPELL_SPECTRAL_CLOUD)
             blame_prefix = "called from beyond by ";
     }
-    else if (mons_class_is_zombified(mg.cls))
+    else if (mons_class_is_derived(mg.cls))
         blame_prefix = "animated by ";
     else if (mg.cls == MONS_ELDRITCH_TENTACLE
              || mg.cls == MONS_ELDRITCH_TENTACLE_SEGMENT)
@@ -1681,6 +1753,9 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     // done after come in view ones.
     if (mon->type == MONS_TWISTER && !dont_place)
         _place_twister_clouds(mon);
+
+    if (mon->type == MONS_MANNEQUIN)
+        _adjust_mannequin_spells(mon);
 
     if (!(mg.flags & MG_FORCE_BEH)
         && !crawl_state.game_is_arena()
@@ -1794,14 +1869,14 @@ bool zombie_picker::veto(monster_type mt)
 static bool _mc_too_slow_for_slow_zombies(monster_type mon)
 {
     // zombies slower than the player are boring!
-    return mons_class_zombie_base_speed(mons_species(mon), true) < BASELINE_DELAY;
+    return mons_class_derived_base_speed(MONS_ZOMBIE, mons_species(mon)) < BASELINE_DELAY;
 }
 
 // Use this one for spectrals and draugr, who don't get a speed penalty.
 static bool _mc_too_slow_for_normal_undead(monster_type mon)
 {
     // zombies slower than the player are boring!
-    return mons_class_zombie_base_speed(mons_species(mon), false) < BASELINE_DELAY;
+    return mons_class_base_speed(mons_species(mon)) < BASELINE_DELAY;
 }
 
 static bool _mc_bad_wretch(monster_type mon)
@@ -1857,7 +1932,8 @@ monster_type pick_local_zombifiable_monster(level_id place,
     place.depth = min(place.depth, branch_zombie_cap(place.branch));
     place.depth = max(1, place.depth);
 
-    const bool is_slow = (cs != MONS_SPECTRAL_THING && cs != MONS_DRAUGR);
+    const bool is_slow = (cs != MONS_SPECTRAL_THING && cs != MONS_DRAUGR
+                          && cs != MONS_MANNEQUIN);
     mon_pick_vetoer veto = for_wretch ? _mc_bad_wretch :
                            really_in_d ? (is_slow ? _mc_too_slow_for_slow_zombies
                                                   : _mc_too_slow_for_normal_undead)
@@ -1875,23 +1951,23 @@ monster_type pick_local_zombifiable_monster(level_id place,
     return mt;
 }
 
-void roll_zombie_hp(monster* mon)
+void roll_derived_mon_hp(monster* mon)
 {
     ASSERT(mon); // TODO: change to monster &mon
-    ASSERT(mons_class_is_zombified(mon->type));
+    ASSERT(mons_class_is_derived(mon->type));
 
-    const int avg_hp_10x = derived_undead_avg_hp(mon->type,
-                                                 mon->get_hit_dice());
+    const int avg_hp_10x = derived_mon_avg_hp(mon->type,
+                                              mon->get_hit_dice());
     const int hp = hit_points(avg_hp_10x);
     mon->max_hit_points = max(hp, 1);
     mon->hit_points     = mon->max_hit_points;
 }
 
-void define_zombie(monster* mon, monster_type ztype, monster_type cs)
+void define_derived_monster(monster* mon, monster_type ztype, monster_type cs)
 {
     ASSERT(ztype != MONS_NO_MONSTER);
     ASSERT(!invalid_monster_type(ztype));
-    ASSERT(mons_class_is_zombified(cs));
+    ASSERT(mons_class_is_derived(cs));
 
     // Set type to the original type to calculate appropriate stats.
     mon->type         = ztype;
@@ -1900,11 +1976,14 @@ void define_zombie(monster* mon, monster_type ztype, monster_type cs)
 
     // Zombies and such can't cast spells, except they should still be
     // able to make tentacles!
-    monster_spells oldspells = mon->spells;
-    mon->spells.clear();
-    for (const mon_spell_slot &slot : oldspells)
-        if (slot.spell == SPELL_CREATE_TENTACLES)
-            mon->spells.push_back(slot);
+    if (cs != MONS_MANNEQUIN)
+    {
+        monster_spells oldspells = mon->spells;
+        mon->spells.clear();
+        for (const mon_spell_slot &slot : oldspells)
+            if (slot.spell == SPELL_CREATE_TENTACLES)
+                mon->spells.push_back(slot);
+    }
 
     // handle zombies with jobs & ghostdemon zombies; they otherwise
     // wouldn't store enough information for us to recreate them right.
@@ -1918,10 +1997,7 @@ void define_zombie(monster* mon, monster_type ztype, monster_type cs)
     mon->base_monster = ztype;
 
     mon->colour       = COLOUR_INHERIT;
-    mon->speed        = ((cs == MONS_SPECTRAL_THING || cs == MONS_BOUND_SOUL
-                          || cs == MONS_DRAUGR)
-                            ? mons_class_base_speed(mon->base_monster)
-                            : mons_class_zombie_base_speed(mon->base_monster, true));
+    mon->speed        = mons_class_derived_base_speed(cs, mon->base_monster);
 
     // Turn off all melee ability flags except dual-wielding.
     mon->flags       &= (~MF_MELEE_MASK | MF_TWO_WEAPONS);
@@ -1932,7 +2008,7 @@ void define_zombie(monster* mon, monster_type ztype, monster_type cs)
     if (!mons_class_can_regenerate(mon->base_monster))
         mon->flags   |= MF_NO_REGEN;
 
-    roll_zombie_hp(mon);
+    roll_derived_mon_hp(mon);
 }
 
 /// Under what conditions should a band spawn with a monster?
@@ -3025,9 +3101,7 @@ static monster_type _band_member(band_type band, int which,
     case BAND_RANDOM_SINGLE:
     {
         monster_type tmptype = MONS_PROGRAM_BUG;
-        coord_def tmppos;
         return resolve_monster_type(RANDOM_BANDLESS_MONSTER, tmptype,
-                                    PROX_ANYWHERE, &tmppos, 0,
                                     &parent_place, nullptr, allow_ood);
     }
 
@@ -3286,8 +3360,8 @@ bool god_hates_monster(monster_type type)
     dummy.type = type;
 
     // no spellcasting/etc zombies currently; pick something that always works
-    if (mons_class_is_zombified(type))
-        define_zombie(&dummy, MONS_GOBLIN, type);
+    if (mons_class_is_derived(type))
+        define_derived_monster(&dummy, MONS_GOBLIN, type);
     else
         define_monster(dummy);
 
@@ -3359,8 +3433,8 @@ monster* create_monster(mgen_data mg, bool fail_msg)
     if (_is_random_monster(mg.cls))
     {
         mg.flags |= MG_PERMIT_BANDS;
-        mg.cls = resolve_monster_type(mg.cls, mg.base_type, mg.proximity,
-                                      &mg.pos, mg.map_mask, &mg.place,
+        mg.cls = resolve_monster_type(mg.cls, mg.base_type,
+                                      &mg.place,
                                       nullptr, false);
     }
 
@@ -3413,12 +3487,15 @@ monster* create_monster(mgen_data mg, bool fail_msg)
  *                       excludes nothing. 0 will exclude only the center.)
  * @param in_sight_of  If not null, spots will only be considered valid so long
  *                     as they are in sight of the given actor.
+ * @param avoid_traps  If true, this will not return tiles on which friendly
+ *                     monsters would refuse to step.
  *
  * @return Whether a valid spot was found. (If true, empty will be set to this spot)
  */
 bool find_habitable_spot_near(const coord_def& where, monster_type mon_type,
                               int radius, coord_def& result, int exclude_radius,
-                              const actor* in_sight_of, bool no_sanctuary)
+                              const actor* in_sight_of, bool no_sanctuary,
+                              bool avoid_traps)
 {
     int good_count = 0;
 
@@ -3441,6 +3518,9 @@ bool find_habitable_spot_near(const coord_def& where, monster_type mon_type,
             continue;
 
         if (no_sanctuary && is_sanctuary(*ri))
+            continue;
+
+        if (avoid_traps && trap_is_bad_for_player(env.grid(*ri)))
             continue;
 
         if (one_chance_in(++good_count))

@@ -59,6 +59,7 @@
 #include "options.h"
 #include "random.h"
 #include "religion.h"
+#include "shout.h"
 #include "showsymb.h"
 #include "skills.h"
 #include "species.h"
@@ -75,6 +76,7 @@
 #include "traps.h"
 #include "unicode.h"
 #include "unwind.h"
+#include "xom.h"
 
 static FixedVector < int, NUM_MONSTERS > mon_entry;
 
@@ -811,7 +813,7 @@ bool mons_class_is_test(monster_type mc)
 bool mons_class_angered_by_attacks(monster_type mc)
 {
     return !mons_is_avatar(mc)
-           && !mons_class_is_zombified(mc)
+           && !mons_class_is_derived(mc)
            && !((mons_class_holiness(mc) & MH_NONLIVING)
                  && mons_class_intel(mc) == I_BRAINLESS);
 }
@@ -1206,13 +1208,14 @@ int max_corpse_chunks(monster_type mc)
     }
 }
 
-int derived_undead_avg_hp(monster_type mtype, int hd, int scale)
+int derived_mon_avg_hp(monster_type mtype, int hd, int scale)
 {
     static const map<monster_type, int> hp_per_hd_by_type = {
         { MONS_BOUND_SOUL,     100 },
         { MONS_ZOMBIE,          85 },
         { MONS_SPECTRAL_THING,  60 },
         { MONS_DRAUGR,          55 },
+        { MONS_MANNEQUIN,       45 },
         // Simulacra aren't tough, but you can create piles of them. - bwr
         { MONS_SIMULACRUM,      30 },
     };
@@ -1316,7 +1319,7 @@ int get_shout_noise_level(const shout_type shout)
 // "says" verb used for insults.
 static bool _shout_fits_monster(monster_type mc, int shout)
 {
-    if (shout == NUM_SHOUTS || shout >= NUM_LOUDNESS || shout == S_SILENT)
+    if (shout == S_SILENT || shout == NUM_SHOUTS || shout >= NUM_LOUDNESS)
         return false;
 
     // Chaos spawns can do anything but demon taunts, since they're
@@ -1520,7 +1523,7 @@ mon_itemuse_type mons_class_itemuse(monster_type mc)
 mon_itemuse_type mons_itemuse(const monster& mon)
 {
     if (mon.type == MONS_BOUND_SOUL)
-        return mons_class_itemuse(mons_zombie_base(mon));
+        return mons_class_itemuse(mon.base_monster);
 
     return mons_class_itemuse(mon.type);
 }
@@ -1608,18 +1611,14 @@ int mons_zombie_size(monster_type mc)
     return smc->size > SIZE_MEDIUM ? Z_BIG : Z_SMALL;
 }
 
-monster_type mons_zombie_base(const monster& mon)
-{
-    return mon.base_monster;
-}
-
-bool mons_class_is_zombified(monster_type mc)
+bool mons_class_is_derived(monster_type mc)
 {
     return mc == MONS_ZOMBIE
         || mc == MONS_DRAUGR
         || mc == MONS_SIMULACRUM
         || mc == MONS_SPECTRAL_THING
-        || mc == MONS_BOUND_SOUL;
+        || mc == MONS_BOUND_SOUL
+        || mc == MONS_MANNEQUIN;
 }
 
 bool mons_class_is_animated_weapon(monster_type type)
@@ -1639,15 +1638,10 @@ bool mons_class_is_animated_object(monster_type type)
         || type == MONS_HAUNTED_ARMOUR;
 }
 
-bool mons_is_zombified(const monster& mon)
-{
-    return mons_class_is_zombified(mon.type);
-}
-
 monster_type mons_base_type(const monster& mon)
 {
-    if (mons_class_is_zombified(mon.type))
-        return mons_zombie_base(mon);
+    if (mons_class_is_derived(mon.type))
+        return mon.base_monster;
     return mon.type;
 }
 
@@ -1712,9 +1706,30 @@ bool mons_can_be_spectralised(const monster& mon, bool divine, bool only_known)
                || divine && mon.has_spells());
 }
 
+bool mons_class_can_be_mannequin(monster_type mc)
+{
+    return !mons_is_unique(mc)
+           && !mons_class_flag(mc, M_INSUBSTANTIAL)
+           && !mons_class_is_derived(mc)
+           && !mons_class_is_animated_object(mc);
+}
+
+bool mons_can_be_mannequin(const monster& mon, bool only_known)
+{
+    return mons_class_can_be_mannequin(mon.type)
+           && !mon.is_peripheral()
+           && (!mon.is_summoned()
+               || only_known && mon.has_ench(ENCH_PHANTOM_MIRROR)
+                    && mon.mons_species() != MONS_PLAYER_ILLUSION)
+           && !mons_is_tentacle_or_tentacle_segment(mon.type)
+           && (!testbits(mon.flags, MF_NO_REWARD)
+               || mon.props.exists(KIKU_WRETCH_KEY))
+           && (mons_has_attacks(mon, true) || mon.has_spells());
+}
+
 bool mons_class_can_use_stairs(monster_type mc)
 {
-    return (!mons_class_is_zombified(mc) || mc == MONS_BOUND_SOUL)
+    return (!mons_class_is_derived(mc) || mc == MONS_BOUND_SOUL)
            && !mons_is_tentacle_or_tentacle_segment(mc)
            && !mons_is_seeker(mc)
            && mc != MONS_SILENT_SPECTRE
@@ -1831,12 +1846,6 @@ void name_zombie_from_mon(monster& mon, const monster& orig)
                                      | MF_NAME_DESCRIPTOR);
 }
 
-// Derived undead deal 80% of the damage of the base form.
-static int _downscale_zombie_damage(int damage)
-{
-    return max(1, 4 * damage / 5);
-}
-
 // Do not include AF_PLAIN, we want that to be overwritten for spectrals
 // and simulacra
 static const set<attack_flavour> allowed_zombie_af = {
@@ -1846,8 +1855,8 @@ static const set<attack_flavour> allowed_zombie_af = {
     AF_DOOM,
 };
 
-static mon_attack_def _downscale_zombie_attack(const monster& mons,
-                                               mon_attack_def attk)
+static mon_attack_def _downscale_derived_mon_attack(const monster& mons,
+                                                    mon_attack_def attk)
 {
     switch (attk.type)
     {
@@ -1859,7 +1868,11 @@ static mon_attack_def _downscale_zombie_attack(const monster& mons,
         break;
     }
 
-    attk.damage = _downscale_zombie_damage(attk.damage);
+    if (mons.type == MONS_MANNEQUIN)
+        attk.damage = max(1, attk.damage * 3 / 5);
+    else
+        attk.damage = max(1, attk.damage * 4 / 5);
+
     if (allowed_zombie_af.count(attk.flavour))
         return attk;
 
@@ -1971,7 +1984,7 @@ mon_attack_def mons_attack_spec(const monster& m, int attk_number,
 
     const monster& mon = get_tentacle_head(m);
 
-    const bool zombified = mons_is_zombified(mon);
+    const bool derived = mon.is_derived();
     const int max_attacks = m.has_hydra_multi_attack()
                                 ? m.heads() + (m.type == MONS_DRAUGR)
                                 : MAX_NUM_ATTACKS;
@@ -1994,8 +2007,8 @@ mon_attack_def mons_attack_spec(const monster& m, int attk_number,
     else if (mons_is_hepliaklqana_ancestor(mc))
         return _hepliaklqana_ancestor_attack(mon, attk_number);
 
-    if (zombified && mc != MONS_KRAKEN_TENTACLE)
-        mc = mons_zombie_base(mon);
+    if (derived && mc != MONS_KRAKEN_TENTACLE)
+        mc = mon.base_monster;
 
     ASSERT_smc();
     mon_attack_def attk = smc->attack[attk_number];
@@ -2156,7 +2169,7 @@ mon_attack_def mons_attack_spec(const monster& m, int attk_number,
     if (mon.type == MONS_SLIME_CREATURE && mon.blob_size > 1)
         attk.damage *= mon.blob_size;
 
-    return zombified ? _downscale_zombie_attack(mon, attk) : attk;
+    return derived ? _downscale_derived_mon_attack(mon, attk) : attk;
 }
 
 static int _mons_damage(monster_type mc, int rt)
@@ -2567,10 +2580,10 @@ int exp_value(const monster& mon, bool real, bool legacy)
         return 0;
 
     // Derived undead will reference the base monster, with a divisor
-    const bool zombified = mons_is_zombified(mon);
+    const bool derived = mon.is_derived();
 
     // Start with the monster's base xp
-    if (zombified)
+    if (derived)
         x_val = _mons_exp(mon.base_monster) / 4;
     else
         x_val = _mons_exp(mc);
@@ -2583,7 +2596,7 @@ int exp_value(const monster& mon, bool real, bool legacy)
     // Scale weakly by the monster's actual max hp as a percentage of average
     // max hp. This randomizes exp values slightly. Derived undead and
     // special monsters skip this.
-    else if (avg_hp > 0 && !zombified)
+    else if (avg_hp > 0 && !derived)
     {
         x_val = x_val * 4 + x_val * maxhp / avg_hp;
         x_val /= 5;
@@ -2841,7 +2854,7 @@ void mons_set_starting_heads(monster& mons, int heads)
 void define_monster(monster& mons, bool friendly)
 {
     monster_type mcls         = mons.type;
-    ASSERT(!mons_class_is_zombified(mcls)); // should have called define_zombie
+    ASSERT(!mons_class_is_derived(mcls)); // should have called define_derived_monster
 
     monster_type monbase      = mons.base_monster;
     const monsterentry *m     = get_monster_data(mcls);
@@ -3284,11 +3297,13 @@ mon_energy_usage mons_energy(const monster& mon)
     return meu;
 }
 
-int mons_class_zombie_base_speed(monster_type zombie_base_mc, bool slow)
+// Apply speed penalty for zombies, draugr, and simulacra
+int mons_class_derived_base_speed(monster_type derived_type, monster_type base_mon)
 {
-    // Draugr and spectrals are both speed 10.
-    int penalty = slow ? 2 : 0;
-    return max(3, mons_class_base_speed(zombie_base_mc) - penalty);
+    const int penalty = derived_type == MONS_DRAUGR
+                        || derived_type == MONS_ZOMBIE
+                        || derived_type == MONS_SIMULACRUM ? 2 : 0;
+    return max(3, mons_class_base_speed(base_mon) - penalty);
 }
 
 /**
@@ -3305,14 +3320,8 @@ int mons_base_speed(const monster& mon)
     if (mon.props.exists(MON_SPEED_KEY))
         return mon.props[MON_SPEED_KEY];
 
-    if (mon.mons_species() == MONS_SPECTRAL_THING
-        || mon.mons_species() == MONS_DRAUGR)
-    {
-        return mons_class_base_speed(mons_zombie_base(mon));
-    }
-
-    return mons_is_zombified(mon) ? mons_class_zombie_base_speed(mons_zombie_base(mon), true)
-                                  : mons_class_base_speed(mon.type);
+    return mon.is_derived() ? mons_class_derived_base_speed(mon.type, mon.base_monster)
+                            : mons_class_base_speed(mon.type);
 }
 
 mon_intel_type mons_class_intel(monster_type mc)
@@ -3326,7 +3335,7 @@ mon_intel_type mons_intel(const monster& m)
     const monster& mon = get_tentacle_head(m);
 
     if (mon.type == MONS_BOUND_SOUL)
-        return mons_class_intel(mons_zombie_base(mon));
+        return mons_class_intel(mon.base_monster);
 
     return mons_class_intel(mon.type);
 }
@@ -3598,6 +3607,8 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
                          mon.pronoun(PRONOUN_POSSESSIVE).c_str()).c_str());
         monster_drop_things(&mon, false, item_is_horn_of_geryon);
     }
+
+    xom_reduce_floor_lock();
 
     // End constriction.
     mon.stop_constricting_all();
@@ -4389,7 +4400,7 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
                           && invalid_monster_index(mons.foe)) ?
                              &you : mons.get_foe();
 
-    if (s_type < 0 || s_type >= NUM_LOUDNESS || s_type == NUM_SHOUTS)
+    if (s_type == NUM_SHOUTS || s_type >= NUM_LOUDNESS)
         s_type = mons_shouts(mons.type);
 
     msg = maybe_pick_random_substring(msg);
@@ -4733,51 +4744,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
                                _get_species_insult(foe_genus, "noun"));
     }
 
-    static const char * sound_list[] =
-    {
-        "says",         // actually S_SILENT
-        "shouts",
-        "barks",
-        "howls",
-        "shouts",
-        "roars",
-        "screams",
-        "bellows",
-        "bleats",
-        "trumpets",
-        "screeches",
-        "buzzes",
-        "moans",
-        "gurgles",
-        "croaks",
-        "growls",
-        "hisses",
-        "skitters",
-        "skitters faintly",
-        "sneers",       // S_DEMON_TAUNT
-        "says",         // S_CHERUB -- they just speak normally.
-        "squeals",
-        "roars",
-        "rustles",      // dubious
-        "squeaks",
-        "buggily says", // NUM_SHOUTS
-        "breathes",     // S_VERY_SOFT
-        "whispers",     // S_SOFT
-        "says",         // S_NORMAL_VOLUME
-        "shouts",       // S_LOUD
-        "screams",      // S_VERY_LOUD
-        "caws",
-        "laughs",
-    };
-    COMPILE_CHECK(ARRAYSZ(sound_list) == NUM_LOUDNESS);
+    string mon_says = get_says_type(static_cast<shout_type>(s_type));
 
-    if (s_type < 0 || s_type >= NUM_LOUDNESS || s_type == NUM_SHOUTS)
-    {
-        mprf(MSGCH_DIAGNOSTICS, "Invalid @says@ type.");
-        msg = replace_all(msg, "@says@", "buggily says");
-    }
-    else
-        msg = replace_all(msg, "@says@", sound_list[s_type]);
+    msg = replace_all(msg, "@says@", mon_says.c_str());
 
     msg = maybe_capitalise_substring(msg);
 
@@ -4827,7 +4796,7 @@ mon_body_shape get_mon_shape(const monster& mon)
     monster_type base_type;
     if (mons_is_pghost(mon.type))
         base_type = species::to_mons_species(mon.ghost->species);
-    else if (mons_is_zombified(mon))
+    else if (mon.is_derived())
         base_type = mon.base_monster;
     else
         base_type = mon.type;
@@ -5732,20 +5701,20 @@ void set_ancestor_spells(monster &ancestor, bool notify)
         ancestor.spells.emplace_back(SPELL_DEFLECT_MISSILES, 200, MON_SPELL_WIZARD);
 
         if (HD < 10)
-            ancestor.spells.emplace_back(SPELL_SHOCK, 35, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_SHOCK, 45, MON_SPELL_WIZARD);
         if (HD < 13)
-            ancestor.spells.emplace_back(SPELL_STONE_ARROW, 35, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_STONE_ARROW, 45, MON_SPELL_WIZARD);
         if (HD >= 10 && HD < 16)
         {
-            ancestor.spells.emplace_back(SPELL_ICEBLAST, 35, MON_SPELL_WIZARD);
-            ancestor.spells.emplace_back(SPELL_BOLT_OF_MAGMA, 35, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_ICEBLAST, 45, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_BOLT_OF_MAGMA, 45, MON_SPELL_WIZARD);
         }
         if (HD >= 13)
-            ancestor.spells.emplace_back(SPELL_LRD, 40, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_LRD, 50, MON_SPELL_WIZARD);
         if (HD >= 16)
-            ancestor.spells.emplace_back(SPELL_PLASMA_BEAM, 30, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_PLASMA_BEAM, 37, MON_SPELL_WIZARD);
         if (HD >= 16)
-            ancestor.spells.emplace_back(SPELL_PERMAFROST_ERUPTION, 30, MON_SPELL_WIZARD);
+            ancestor.spells.emplace_back(SPELL_PERMAFROST_ERUPTION, 37, MON_SPELL_WIZARD);
 
         break;
 
@@ -5868,8 +5837,12 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
     }
     else
     {
-        if (mons_is_avatar(target->type) || target->type == MONS_SHOOTING_STAR)
+        if (mons_is_avatar(target->type)
+            || target->type == MONS_SHOOTING_STAR
+            || target->type == MONS_LIVING_SPELL)
+        {
             return true;
+        }
 
         if ((agent->is_player() && have_passive(passive_t::shoot_through_plants)
             || agent->is_monster() && agent->deity() == GOD_FEDHAS)
@@ -5901,10 +5874,10 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
             return true;
         }
 
-        if (agent->is_player() && testbits(mon->flags, MF_DEMONIC_GUARDIAN))
+        if (agent->is_player() && testbits(mon->flags, MF_GUARDIAN))
         {
-            if (announce && you.can_see(*mon))
-                mpr("Your demonic guardian avoids your attack.");
+            if (announce)
+                mpr("Your guardian avoids your attack.");
             return true;
         }
 

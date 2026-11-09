@@ -678,5 +678,6 @@ enum spell_type : int
     SPELL_CALL_BAILIFFS,
     SPELL_FUNERAL_TORCH,
     SPELL_INCITE_FURY,
+    SPELL_PLINKING,         // Dummy spell for scroll of plinking
     NUM_SPELLS
 };

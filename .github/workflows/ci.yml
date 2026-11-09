@@ -599,13 +599,14 @@ jobs:
     permissions:
       contents: read #  to fetch code (actions/checkout)
 
-    runs-on: ubuntu-latest
+    # Python 3.8 is unavailable on newer Ubuntu runner images.
+    runs-on: ${{ matrix.python-version == '3.8' && 'ubuntu-22.04' || 'ubuntu-latest' }}
     strategy:
       matrix:
         # oldest non-eol security release + current bugfix version
         #   https://devguide.python.org/versions/
         # TODO: 3.12 is currently broken because of requirements.txt brittleness
-        python-version: [3.8, 3.11, 3.13]
+        python-version: ['3.8', '3.11', '3.13']
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}

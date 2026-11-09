@@ -461,7 +461,9 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
                                     && !caster.has_ench(ENCH_REGENERATION));
         },
         [](monster &caster, mon_spell_slot, bolt&) {
-            const string god = apostrophise(god_name(caster.god));
+            const string god = apostrophise(
+                                   god_has_name(caster.god) ? god_name(caster.god)
+                                                            : "something");
             const string msg = make_stringf(" invokes %s protection!",
                                             god.c_str());
             simple_monster_message(caster, msg.c_str(), false, MSGCH_MONSTER_SPELL);
@@ -889,6 +891,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
                 if (!mi->is_peripheral() && could_harm_enemy(&caster, *mi))
                     targs.push_back(*mi);
 
+            beam.animate = false;
             const unsigned int num_targs = (targs.size() * random_range(30, 50) / 100)
                                            + 1;
             shuffle_array(targs);
@@ -1014,9 +1017,8 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
             const coord_def targ = _mons_bomblet_target(caster);
             beam.source = targ;
             beam.target = targ;
-            beam.draw_delay = 80;
+            beam.draw_delay = 100;
             beam.fire();
-            flash_tile(targ, WHITE, 110, TILE_BOLT_BOMBLET_LAUNCH);
             monarch_deploy_bomblet(caster, targ, true);
         },
         _zap_setup(SPELL_DEPLOY_BOMBLET) } },
@@ -1792,6 +1794,7 @@ static bool _cast_seismic_stomp(const monster& caster, bolt& beam, bool check_on
     }
     animation_delay(50, true);
 
+    beam.animate = false;
     for (size_t i = 0; i < targs.size() && i < num_targs; ++i)
     {
         if (!targs[i]->alive())
@@ -1842,6 +1845,8 @@ static bool _cast_landbreaker(const monster& caster, bolt& beam, bool check_only
             flash_tile(targs[i]->pos(), YELLOW, 0);
     }
     animation_delay(50, true);
+
+    beam.animate = false;
 
     mgen_data rubble(MONS_PILE_OF_DEBRIS, BEH_COPY, coord_def(), MHITNOT);
     rubble.hd = 2;
@@ -3381,6 +3386,7 @@ static bool _mons_awaken_flesh(monster& caster, const int power,
 
         bolt shockwave(caster, SPELL_AWAKEN_FLESH, power);
         shockwave.source = shockwave.target = mon->pos();
+        shockwave.ench_power = 50;
         shockwave.explode(true, true);
     }
 
@@ -4511,10 +4517,10 @@ static void _corrupting_pulse(monster *mons)
 
 // Returns the clone just created (null otherwise)
 monster* cast_phantom_mirror(monster* mons, monster* targ, int hp_perc,
-                             int summ_type, int clone_index)
+                             int summ_type, int clone_index, coord_def pos)
 {
     // Create clone.
-    monster *mirror = clone_mons(targ, true);
+    monster *mirror = clone_mons(targ, true, nullptr, targ->attitude(), pos);
 
     // Abort if we failed to place the monster for some reason.
     if (!mirror)
@@ -5383,6 +5389,14 @@ void mons_post_cast_effects(monster* mons, spell_type spell_cast, mon_spell_slot
             }
         }
     }
+
+    // Don't make mannequins fall apart merely on jumping back and forth (which
+    // they do a lot).
+    if (mons->type == MONS_MANNEQUIN
+        && !is_monster_net_escape_spell(spell_cast))
+    {
+        mons->hurt(mons, div_rand_round(mons->max_hit_points, 15));
+    }
 }
 
 /**
@@ -5401,7 +5415,8 @@ bool handle_mon_spell(monster* mons)
     if (mons->asleep()
         || mons->berserk_or_frenzied()
         || mons_is_confused(*mons, false)
-        || !mons->has_spells())
+        || !mons->has_spells()
+        || mons->has_ench(ENCH_MOSTLY_HARMLESS) && !one_chance_in(3))
     {
         return false;
     }
@@ -7947,8 +7962,9 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
         for (spell_type head_spell : *breaths)
         {
-            if (!mons->get_foe())
+            if (!mons->alive() || !mons->get_foe())
                 return;
+
             setup_mons_cast(mons, pbolt, head_spell);
             mons_cast(mons, pbolt, head_spell, slot_flags, do_noise);
         }
@@ -8412,31 +8428,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
                             .set_summoned(mons, spell_cast, summ_dur(1));
             mg.props[CUSTOM_SPELL_LIST_KEY].get_vector().push_back(spell);
             mg.hd = hd;
-            monster* living = create_monster(mg);
-
-           if (living)
-           {
-                if (spell == SPELL_LEHUDIBS_CRYSTAL_SPEAR)
-                {
-                    living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_CRYSTAL;
-                    living->colour = YELLOW;
-                }
-                else if (spell == SPELL_PETRIFY)
-                {
-                    living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_EARTH;
-                    living->colour = BROWN;
-                }
-                else if (spell == SPELL_SMITING)
-                {
-                    living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_HOLY;
-                    living->colour = LIGHTGREEN;
-                }
-                else if (spell == SPELL_ICEBLAST)
-                {
-                    living->props[MONSTER_TILE_KEY] = TILEP_MONS_LIVING_SPELL_ICE;
-                    living->colour = LIGHTBLUE;
-                }
-           }
+            create_monster(mg);
         }
         return;
     }
@@ -9732,8 +9724,8 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
                                    "out of sight";
 
         mprf("%s throws %s %s!",
-             (thrower_seen ? thrower.name(DESC_THE).c_str() : "Something"),
-             (throwee_seen ? throwee.name(DESC_THE, true).c_str() : "something"),
+             thrower.name(DESC_THE).c_str(),
+             throwee.name(DESC_THE).c_str(),
              destination.c_str());
 
         bolt beam = bolt::visual_beam(thrower.pos(), chosen_dest, 30,

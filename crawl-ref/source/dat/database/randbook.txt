@@ -1248,6 +1248,8 @@ Combustion
 
 Conflagration
 
+Ebullition
+
 Embers
 
 Fever
@@ -2866,6 +2868,8 @@ Horrible
 Horrid
 
 Imbrued
+
+Integumentary
 
 Lethal
 
