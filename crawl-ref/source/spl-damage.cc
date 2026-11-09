@@ -467,7 +467,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         beam.source = source;
         beam.target = target;
         beam.colour       = ETC_RANDOM;
-        beam.ench_power   = pow;
+        beam.ench_power   = 50;
         beam.damage       = calc_dice(3, 5 + pow / 6);
         beam.real_flavour = BEAM_CHAOS;
         beam.flavour      = BEAM_CHAOS;
@@ -1098,10 +1098,7 @@ static ai_action::goodness _fire_permafrost_at(const actor &agent, int pow,
     if (is_tracer)
         beam.fire(tracer);
     else
-    {
         beam.fire();
-        flash_tile(target, YELLOW, 0, TILE_BOLT_PERMAFROST_EARTH);
-    }
 
     // To provide a different center graphic from the rest without changing
     // effect messaging order, split the vfx off into BEAM_VISUAL explosions.
@@ -3682,6 +3679,9 @@ spret cast_unravelling(coord_def target, int pow, bool fail)
         return spret::abort;
     }
 
+    if (warn_about_contam_cost(360))
+        return spret::abort;
+
     const actor* victim = actor_at(target);
     if ((!victim || !you.aware_of(*victim))
         && !yesno("You can't see anything there. Cast anyway?", false, 'n'))
@@ -3726,6 +3726,8 @@ spret cast_unravelling(coord_def target, int pow, bool fail)
     beam.source = beam.target = target;
     beam.ex_size = 1;
     beam.fire();
+
+    contaminate_player(random_range(165, 360));
 
     return spret::success;
 }
@@ -4597,6 +4599,26 @@ vector<monster *> find_maxwells_possibles()
     return result;
 }
 
+// MCC delay is `base + U[0,range) / denom`
+static const int MCC_BASE = 30;
+static const int MCC_DENOM = 200;
+
+static int _maxwells_coupling_charge_range(int pow)
+{
+    return (200 - pow) * 40;
+}
+
+string maxwells_coupling_charge_description(int pow)
+{
+    const int min_turns = div_round_up(MCC_BASE, BASELINE_DELAY);
+    const int range = _maxwells_coupling_charge_range(pow);
+    const int max_aut = MCC_BASE + div_round_up(max(range - 1, 0), MCC_DENOM);
+    const int max_turns = div_round_up(max_aut, BASELINE_DELAY);
+    if (min_turns == max_turns)
+        return make_stringf("%d", min_turns);
+    return make_stringf("%d-%d", min_turns, max_turns);
+}
+
 spret cast_maxwells_coupling(int pow, bool fail, bool tracer)
 {
     monster* const mon = _find_maxwells_target();
@@ -4617,7 +4639,9 @@ spret cast_maxwells_coupling(int pow, bool fail, bool tracer)
     mpr("You begin accumulating electric charge.");
 
     you.props[COUPLING_TIME_KEY] =
-       you.elapsed_time + (30 + div_rand_round(random2((200 - pow) * 40), 200));
+       you.elapsed_time + MCC_BASE
+       + div_rand_round(random2(_maxwells_coupling_charge_range(pow)),
+                        MCC_DENOM);
 
     start_channelling_spell(SPELL_MAXWELLS_COUPLING, "continue charging", false);
 
@@ -5009,7 +5033,7 @@ static void _do_fusillade_hit(monster* mon, int power, beam_type flavour)
     exp.flavour       = flavour;
     exp.name          = concoction_description[flavour];
     exp.aux_source    = concoction_description[flavour];
-    exp.colour        = concoction_colour[flavour];
+    exp.animate       = false;
     exp.fire();
 
     if (flavour == BEAM_MMISSILE && mon && mon->alive())
@@ -5168,12 +5192,11 @@ spret cast_grave_claw(actor& caster, coord_def targ, int pow, bool fail)
         you.props[GRAVE_CLAW_CHARGES_KEY].get_int()--;
     }
 
-    flash_tile(targ, WHITE);
-
     bolt beam(caster, SPELL_GRAVE_CLAW, pow);
     beam.source = beam.target = targ;
     beam.hit_verb = "skewer";
     beam.plural = true;
+    beam.draw_delay = 60;
     beam.fire();
 
     if (caster.is_player())
@@ -5223,7 +5246,7 @@ spret cast_fortress_blast(actor& caster, int pow, bool fail)
     {
         const int delay = 70 - div_rand_round(pow * 10, 25);
         you.duration[DUR_FORTRESS_BLAST_TIMER] = delay;
-        mprf("You steady yourself in place and focus your resilience into a mighty blast.");
+        mprf("You anchor yourself in place and focus your resilience into a mighty blast.");
     }
     // Todo: Add monster implementation here
 

@@ -361,11 +361,15 @@ static bool _zin_retribution()
     return true;
 }
 
+// 90% chance of a bad action, 80% of which will be explore effects (with the other
+// 20% being random/combat effects)
 static bool _xom_retribution()
 {
-    const int severity = abs(you.raw_piety - HALF_MAX_PIETY);
-    const bool good = one_chance_in(10);
-    return xom_acts(severity, good) != XOM_DID_NOTHING;
+    const int tension = get_tension(GOD_XOM);
+    const xom_event_type action = xom_choose_action(one_chance_in(10), tension, !one_chance_in(5));
+    xom_take_action(action, tension);
+
+    return true;
 }
 
 static bool _cheibriados_retribution()
@@ -1930,9 +1934,21 @@ void gozag_incite(monster *mon)
         mon->go_berserk(true);
         success = true;
     }
-    else if (!mon->has_ench(ENCH_HASTE))
+    else
     {
-        enchant_actor_with_flavour(mon, mon, BEAM_HASTE);
+        if (!mon->has_ench(ENCH_HASTE))
+        {
+            enchant_actor_with_flavour(mon, mon, BEAM_HASTE);
+            success = true;
+        }
+        if (!mon->has_ench(ENCH_EMPOWERED_SPELLS)
+            && mon->antimagic_susceptible())
+        {
+            mon->add_ench(ENCH_EMPOWERED_SPELLS);
+            simple_monster_message(*mon, " spells are empowered.", true);
+            success = true;
+        }
+
         success = true;
     }
 

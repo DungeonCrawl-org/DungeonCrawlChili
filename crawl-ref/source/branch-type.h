@@ -75,6 +75,7 @@ enum branch_type                // you.where_are_you
     BRANCH_GULCH,
 #endif
     BRANCH_START_TEMPLE,
+    BRANCH_XOM_ARENA,
     NUM_BRANCHES,
 
     GLOBAL_BRANCH_INFO = 127,

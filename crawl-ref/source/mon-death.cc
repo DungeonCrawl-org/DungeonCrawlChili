@@ -88,6 +88,7 @@
 #include "viewchar.h"
 #include "viewmap.h"
 #include "view.h"
+#include "xom.h"
 
 /**
  * Initialise a corpse item.
@@ -1471,6 +1472,9 @@ static void _monster_die_cloud(const monster& mons, bool real_death)
                 place_cloud(CLOUD_MAGIC_TRAIL, mons.pos(), 3 + random2(3), &mons);
                 return;
 
+            case MONS_CHAOS_BATTLESHAPE:
+                place_cloud(CLOUD_CHAOS, mons.pos(), 3 + random2(3), &mons);
+
             default:
                 break;
         }
@@ -1549,6 +1553,7 @@ static string _derived_undead_message(const monster &mons, monster_type which_z,
     {
     case MONS_SPECTRAL_THING:
     case MONS_SIMULACRUM:
+    case MONS_MANNEQUIN:
         // XXX: print immediately instead?
         return msg;
     case MONS_DRAUGR:
@@ -1587,31 +1592,36 @@ static string _derived_undead_message(const monster &mons, monster_type which_z,
 }
 
 /**
- * Make derived undead out of a dying/dead monster.
+ * Make derived monster out of a dying/dead monster.
  *
  * @param mons           the monster that died
  * @param quiet          whether to print flavour messages
- * @param which_z        the kind of zombie
- * @param beh            the zombie's behavior
+ * @param montype        the kind of derived monster
+ * @param beh            the new monster's behavior
  * @param spell          the spell or summon type used (if any)
  * @param god            the god involved (if any)
  * @param should_trigger condition to check just before triggering the effect
  */
-static void _make_derived_undead(monster* mons, bool quiet,
-                                 monster_type which_z, beh_type beh,
-                                 int spell, god_type god,
-                                 string msg = "",
-                                 function<bool ()> should_trigger = []() {
+static void _make_derived_monster(monster* mons, bool quiet,
+                                  monster_type montype, beh_type beh,
+                                  int spell, god_type god,
+                                  string msg = "",
+                                  function<bool ()> should_trigger = []() {
                                     return true;
-                                }
-                                )
+                                   }
+                                  )
 {
-    bool requires_corpse = which_z == MONS_ZOMBIE || which_z == MONS_DRAUGR;
+    bool requires_corpse = montype == MONS_ZOMBIE || montype == MONS_DRAUGR;
     // This function is used by several different sorts of things, each with
     // their own validity conditions that are enforced here
     // - Bind Souls, Death Channel, Yred reaping of unzombifiable things, and
     //   kills with reaping-branded items:
-    if (!requires_corpse
+    if (montype == MONS_MANNEQUIN)
+    {
+        if (!mons_can_be_mannequin(*mons))
+            return;
+    }
+    else if (!requires_corpse
         && !mons_can_be_spectralised(*mons, god == GOD_YREDELEMNUL))
     {
         return;
@@ -1633,7 +1643,7 @@ static void _make_derived_undead(monster* mons, bool quiet,
 
     // Use the original monster type as the zombified type here, to
     // get the proper stats from it.
-    mgen_data mg(which_z,
+    mgen_data mg(montype,
                  beh,
                  mons->pos(),
                  // XXX: is MHITYOU really correct here?
@@ -1663,7 +1673,7 @@ static void _make_derived_undead(monster* mons, bool quiet,
     if (god == GOD_KIKUBAAQUDGHA || spell == SPELL_BIND_SOULS)
         mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
 
-    const string mist = which_z == MONS_SIMULACRUM ? "freezing" :
+    const string mist = montype == MONS_SIMULACRUM ? "freezing" :
                             god == GOD_YREDELEMNUL ? "black"
                                                    : "glowing";
 
@@ -1683,8 +1693,8 @@ static void _make_derived_undead(monster* mons, bool quiet,
 
     const string message = quiet ? "" :
                            god == GOD_KIKUBAAQUDGHA ? "Kikubaaqudgha cackles." :
-                           _derived_undead_message(*mons, which_z, msg);
-    schedule_make_derived_undead_fineff(mons->pos(), mg,
+                           _derived_undead_message(*mons, montype, msg);
+    schedule_make_derived_mon_fineff(mons->pos(), mg,
             mons->get_experience_level(), agent_name, message, should_trigger);
 }
 
@@ -1743,22 +1753,7 @@ static void _orb_of_mayhem(actor& maniac, const monster& victim)
 
 static void _protean_explosion(monster* mons)
 {
-    // This is slightly hacky, but we determine which thing to turn into by
-    // creating a dummy monster of the right hd, then making a poly set for it
-    // and picking the first one.
-    monster dummy;
-    dummy.type = MONS_SHAPESHIFTER;
-    define_monster(dummy);
-    dummy.set_hit_dice(12);
-    init_poly_set(&dummy);
-    const CrawlVector &set = dummy.props[POLY_SET_KEY];
-    monster_type target = (monster_type)set[0].get_int();
-
-    // It may be thematic to become a shapeshifter, but this also tosses off the
-    // might and haste immediately. (We can just pick the second polyset target
-    // since they should be guaranteed to be different.)
-    if (target == MONS_GLOWING_SHAPESHIFTER)
-        target = (monster_type)set[1].get_int();
+    monster_type target = get_protean_shapeshift_target(12);
 
     if (you.can_see(*mons))
     {
@@ -1996,7 +1991,7 @@ static bool _mons_reaped(actor &killer, monster& victim)
     beh_type beh = SAME_ATTITUDE(&killer);
     string msg = victim.name(DESC_ITS) + " spirit is torn from " +
                      victim.pronoun(PRONOUN_POSSESSIVE) + " body!";
-    _make_derived_undead(&victim, !you.can_see(victim), MONS_SPECTRAL_THING, beh,
+    _make_derived_monster(&victim, !you.can_see(victim), MONS_SPECTRAL_THING, beh,
                          MON_SUMM_WPN_REAP, GOD_NO_GOD, msg);
 
     return true;
@@ -2007,7 +2002,7 @@ static void _yred_reap(monster &mons, bool uncorpsed)
     monster_type which_z = !uncorpsed && mons_can_be_zombified(mons) ? MONS_ZOMBIE :
                            MONS_SPECTRAL_THING;
 
-    _make_derived_undead(&mons, false, which_z, BEH_FRIENDLY,
+    _make_derived_monster(&mons, false, which_z, BEH_FRIENDLY,
                          MON_SUMM_YRED_REAP, you.religion);
 }
 
@@ -2019,7 +2014,7 @@ static bool _animate_dead_reap(monster &mons)
     if (!x_chance_in_y(150 + div_rand_round(pow, 2), 200))
         return false;
 
-    _make_derived_undead(&mons, false, MONS_ZOMBIE, BEH_FRIENDLY,
+    _make_derived_monster(&mons, false, MONS_ZOMBIE, BEH_FRIENDLY,
                          SPELL_ANIMATE_DEAD, GOD_NO_GOD);
     return true;
 }
@@ -2048,7 +2043,7 @@ static void _kiku_wrath_raise(monster &mons, bool quiet, bool corpse_gone)
     monster_type which_z = MONS_SPECTRAL_THING;
     if (!corpse_gone && mons_can_be_zombified(mons) && !one_chance_in(3))
         which_z = coinflip() ? MONS_ZOMBIE : MONS_SIMULACRUM;
-    _make_derived_undead(&mons, quiet, which_z, BEH_HOSTILE,
+    _make_derived_monster(&mons, quiet, which_z, BEH_HOSTILE,
                          SPELL_NO_SPELL, GOD_KIKUBAAQUDGHA);
 }
 
@@ -2059,7 +2054,7 @@ static bool _apply_necromancy(monster &mons, bool quiet, bool corpse_gone,
     if (mons.has_ench(ENCH_BOUND_SOUL)
         && !have_passive(passive_t::goldify_corpses))
     {
-        _make_derived_undead(&mons, quiet, MONS_SIMULACRUM,
+        _make_derived_monster(&mons, quiet, MONS_SIMULACRUM,
                              SAME_ATTITUDE(&mons),
                              SPELL_BIND_SOULS, GOD_NO_GOD);
         return true;
@@ -2771,7 +2766,7 @@ item_def* monster_die(monster& mons, killer_type killer,
         string name = remove_prepended_the(mons_type_name(simu.base_type, DESC_PLAIN));
 
         string msg = "Your " + name + " simulacrum begins to move.";
-        schedule_make_derived_undead_fineff(simu.pos, simu,
+        schedule_make_derived_mon_fineff(simu.pos, simu,
                                             get_monster_data(simu.base_type)->HD,
                                             "the player",
                                             msg.c_str(), []() { return true; }, true);
@@ -2870,6 +2865,11 @@ item_def* monster_die(monster& mons, killer_type killer,
     }
     else if (mons.type == MONS_BATTLESPHERE)
         end_battlesphere(&mons, true);
+    else if (mons.type == MONS_CHAOS_BATTLESHAPE && !timeout && !reset)
+    {
+        you.duration[DUR_XOM_BATTLESHAPE_COOLDOWN] = random_range(70, 110);
+        you.props.erase(CHAOS_BATTLESHAPE_KEY);
+    }
     else if (mons.type == MONS_SPECTRAL_WEAPON)
         end_spectral_weapon(&mons, true, true);
     else if (mons.type == MONS_RENDING_BLADE)
@@ -2884,6 +2884,9 @@ item_def* monster_die(monster& mons, killer_type killer,
         dithmenos_cleanup_player_shadow(&mons);
     else if (mons.type == MONS_ORB_GUARDIAN
              && (real_death || killer == KILL_BANISHED)
+             // In rare situations, an orb guardian can die to environmental
+             // damage. Don't set off the alarm in this case.
+             && mons.damage_friendly > 0
              && level_id::current() == level_id(BRANCH_ZOT, 5)
              && !player_on_orb_run()
              && !you.props.exists(TESSERACT_SPAWN_COUNTER_KEY))
@@ -3298,7 +3301,8 @@ item_def* monster_die(monster& mons, killer_type killer,
                      || mons.type == MONS_CLOCKWORK_BEE_INACTIVE
                      || mons.type == MONS_PHALANX_BEETLE
                      || mons.type == MONS_WALKING_ALEMBIC
-                     || mons.type == MONS_DIAMOND_SAWBLADE)
+                     || mons.type == MONS_DIAMOND_SAWBLADE
+                     || mons.type == MONS_MANNEQUIN)
             {
                 msg = " falls apart.";
             }
@@ -3315,6 +3319,8 @@ item_def* monster_die(monster& mons, killer_type killer,
             }
             else if (mons.type == MONS_HYPNOTAIL)
                 msg = " shrivels and falls limp.";
+            else if (mons.was_created_by(MON_SUMM_XOM_PROTEAN))
+                msg = " loses form entirely.";
             else
             {
                 if (mons.props.exists(KIKU_WRETCH_KEY))
@@ -3561,7 +3567,7 @@ item_def* monster_die(monster& mons, killer_type killer,
             function<bool ()> should_trigger = []() {
                 return you.duration[DUR_DEATH_CHANNEL] > 0;
             };
-            _make_derived_undead(&mons, !death_message, MONS_SPECTRAL_THING,
+            _make_derived_monster(&mons, !death_message, MONS_SPECTRAL_THING,
                                  BEH_FRIENDLY,
                                  SPELL_DEATH_CHANNEL,
                                  static_cast<god_type>(you.attribute[ATTR_DIVINE_DEATH_CHANNEL]),
@@ -3580,6 +3586,15 @@ item_def* monster_die(monster& mons, killer_type killer,
             && (mons.holiness() & MH_NATURAL))
         {
             gain_grave_claw_soul();
+        }
+
+        // Xom's mannquin 'reaping'
+        if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_MANNEQUINS
+            && (mons.base_attitude == ATT_HOSTILE || mons.base_attitude == ATT_NEUTRAL)
+            && YOU_KILL(killer) && mons_can_be_mannequin(mons))
+        {
+            CrawlVector& vec = you.props[XOM_MANNEQUIN_TROUPE].get_vector();
+            vec.push_back(mons.type);
         }
     }
 
@@ -3820,12 +3835,21 @@ item_def* monster_die(monster& mons, killer_type killer,
         }
         else if (mons.type == MONS_ORC_APOSTLE)
             beogh_swear_vengeance(mons);
+        else if (mons_is_xom_guardian(mons))
+            xom_guardian_died(mons);
     }
     else if (mons.is_divine_companion()
              && killer == KILL_BANISHED
              && mons.type == MONS_ORC_APOSTLE)
     {
         beogh_follower_banished(mons);
+    }
+
+    if (you.attribute[ATTR_XOM_FLOOR_LOCK]
+        && !mons.is_summoned() && !mons.is_peripheral()
+        && mons.base_attitude == ATT_HOSTILE)
+    {
+        xom_reduce_floor_lock();
     }
 
     crawl_state.dec_mon_acting(&mons);

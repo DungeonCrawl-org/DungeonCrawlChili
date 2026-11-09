@@ -202,6 +202,9 @@ public:
     // Has ENCH_SHAPESHIFTER or ENCH_GLOWING_SHAPESHIFTER.
     bool is_shapeshifter() const;
 
+    // Whether this monster is of a derived type, such as a zombie or simulacrum
+    bool is_derived() const;
+
     int threat_range(bool include_lof_requiring = true, bool include_lof_ignoring = true) const;
 
 #ifdef DEBUG_ENCH_CACHE_DIAGNOSTICS
@@ -405,7 +408,7 @@ public:
     bool res_constrict() const override;
     int res_blind()  const override;
     resists_t all_resists() const;
-    int willpower() const override;
+    int willpower(bool items = true) const override;
     bool no_tele(bool blink = false, bool /*include_temp*/ = true) const override;
     int slaying(bool throwing = false, bool random = true) const override;
     bool antimagic_susceptible() const override;

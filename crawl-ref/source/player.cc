@@ -855,6 +855,16 @@ void player::finalise_movement(const actor* /*to_blame*/)
 
         if ((last_move_flags & MV_DELIBERATE) && !(last_move_flags & MV_TRANSLOCATION))
             player_did_deliberate_movement();
+
+        if (you.has_bane(BANE_STUMBLING))
+        {
+            // This duration is in player turns, not aut. This means it will
+            // last for the rest of the current turn, still be displayed on the
+            // UI at the start of the player's next turn, and then be removed at
+            // the end of it.
+            you.duration[DUR_STUMBLING] = you.turn_is_over ? 1 : 2;
+            you.redraw_evasion = true;
+        }
     }
 
     // Assuming that entering the same square means coming from above (flight)
@@ -1323,6 +1333,7 @@ bool player::weapon_is_good_stab(const item_def *weapon) const
     return wpn_skill == SK_SHORT_BLADES
            || you.get_mutation_level(MUT_PAWS)
            || you.form == transformation::spider
+           || you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_SNEAKY
            || you.unrand_equipped(UNRAND_HOOD_ASSASSIN)
               && (!weapon || is_melee_weapon(*weapon));
 }
@@ -2203,7 +2214,7 @@ bool player_acrobatic()
 
 void update_acrobat_status()
 {
-    if (!player_acrobatic() && !you.has_bane(BANE_STUMBLING))
+    if (!player_acrobatic())
         return;
 
     // Acrobat duration goes slightly into the next turn, giving the
@@ -2226,7 +2237,14 @@ int player_parrying()
             sh /= 2;
     }
 
-    sh += 10 * you.wearing_ego(OBJ_WEAPONS, SPWPN_REBUKE);
+    // Xom's blessing of cleaving(rebuke) shouldn't stack if the weapon already had it.
+    int rebuke = you.wearing_ego(OBJ_WEAPONS, SPWPN_REBUKE);
+    if (rebuke == 0 && you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE
+                    && you.props[XOM_CLEAVE_BRAND_KEY].get_int() == SPWPN_REBUKE)
+    {
+        rebuke = 1;
+    }
+    sh += 10 * rebuke;
 
     if (you.form == transformation::blade)
         sh += get_form()->get_effect_size() + max(0, you.slaying());
@@ -2331,9 +2349,8 @@ static int _player_temporary_evasion_modifiers()
     if (acrobat_boost_active())
         evbonus += 15;
 
-    // Bane of stumbling triggers on the same conditions as acrobat (thus
-    // sharing its timer).
-    if (you.has_bane(BANE_STUMBLING) && you.duration[DUR_ACROBAT])
+    // Bane of stumbling is active on any turn you move or are moved.
+    if (you.duration[DUR_STUMBLING])
         evbonus -= 25;
 
     if (you.duration[DUR_VERTIGO])
@@ -2906,6 +2923,15 @@ static void _handle_ostracism(int exp)
     player_change_ostracism(-loss);
 }
 
+static void _handle_xom_blessing(int exp)
+{
+    if (!you_worship(GOD_XOM))
+        return;
+
+    int loss = div_rand_round(exp, calc_skill_cost(you.skill_cost_level) * 4 / 3);
+    you.attribute[ATTR_XOM_BLESSING_TIMER] -= loss;
+}
+
 static void _handle_god_wrath(int exp)
 {
     for (god_iterator it; it; ++it)
@@ -3002,6 +3028,8 @@ void apply_exp()
     _handle_cacophony_recharge(skill_xp);
     _handle_batform_recharge(skill_xp);
     _handle_watery_grave_recharge(skill_xp);
+
+    _handle_xom_blessing(skill_xp);
 
     _log_form_xp(exp_gained);
 
@@ -3661,9 +3689,6 @@ int player_stealth()
         stealth -= STEALTH_PIP;
     }
 
-    if (you.duration[DUR_STEALTH])
-        stealth += STEALTH_PIP * 2;
-
     // Mutations.
     stealth += STEALTH_PIP * you.get_mutation_level(MUT_NIGHTSTALKER) / 3;
     stealth += STEALTH_PIP * you.get_mutation_level(MUT_THIN_SKELETAL_STRUCTURE);
@@ -3678,6 +3703,9 @@ int player_stealth()
     }
 
     if (you.form == transformation::hypnogecko)
+        stealth += STEALTH_PIP;
+
+    if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_SNEAKY)
         stealth += STEALTH_PIP;
 
     if (feat_is_water(env.grid(you.pos())))
@@ -3812,7 +3840,7 @@ static bool _at_min_delay(const item_def *weapon)
 static void _display_attack_delay(const item_def *offhand)
 {
     const item_def* weapon = you.weapon();
-    const float delay = you.attack_delay().expected();
+    const float delay = round(you.attack_delay().expected());
     const bool at_min_delay = _at_min_delay(weapon)
                               && (!offhand || _at_min_delay(offhand));
 
@@ -3959,7 +3987,9 @@ bool player::sunder_is_ready() const
     }
 
     return wearing_ego(OBJ_WEAPONS, SPWPN_SUNDERING)
-            || unrand_equipped(UNRAND_TROG);
+            || unrand_equipped(UNRAND_TROG)
+            || you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE
+               && you.props[XOM_CLEAVE_BRAND_KEY].get_int() == SPWPN_SUNDERING;
 }
 
 /**
@@ -4080,6 +4110,9 @@ int player::slaying(bool throwing, bool random) const
 
     if (you.duration[DUR_DEVIOUS])
         ret += you.props[DEVIOUS_KEY].get_int() * 3;
+
+    if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE)
+        ret += 5;
 
     if (you.duration[DUR_HORROR])
         ret -= you.props[HORROR_PENALTY_KEY].get_int();
@@ -4831,7 +4864,7 @@ bool poison_player(int amount, string source, string source_aux, bool force)
     const bool was_fatal = poison_is_lethal();
 
     if (player_res_poison() < 0)
-        amount *= 2;
+        amount = amount * 3 / 2;
 
     // TODO: support being poisoned by monsters wearing "harm (ha)
     if (you.extra_harm())
@@ -5344,7 +5377,7 @@ void barb_player(int turns, int pow)
  *
  * @param amount   The number of turns to increase blindness duration by.
  */
-void blind_player(int amount, colour_t flavour_colour)
+void blind_player(int amount, colour_t flavour_colour, bool quiet)
 {
     ASSERT(!crawl_state.game_is_arena());
 
@@ -5357,10 +5390,13 @@ void blind_player(int amount, colour_t flavour_colour)
     if (you.duration[DUR_BLIND] > current)
     {
         you.props[BLIND_COLOUR_KEY] = flavour_colour;
-        if (current > 0)
-            mpr("You are blinded for an even longer time.");
-        else
-            mpr("You are blinded!");
+        if (!quiet)
+        {
+            if (current > 0)
+                mpr("You are blinded for an even longer time.");
+            else
+                mpr("You are blinded!");
+        }
         learned_something_new(HINT_YOU_ENCHANTED);
         xom_is_stimulated((you.duration[DUR_BLIND] - current) / BASELINE_DELAY);
     }
@@ -5899,6 +5935,7 @@ player::player()
     // Non-saved UI state:
     prev_targ        = MID_NOBODY;
     divine_exegesis  = false;
+    chaos_eisegesis  = false;
 
     travel_x         = 0;
     travel_y         = 0;
@@ -6133,10 +6170,16 @@ int player::rampaging() const
     if (you.duration[DUR_EXECUTION])
         rampage++;
 
+    if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_SPELLSTRIDE)
+        rampage++;
+
     rampage = min(3, rampage);
 
-    if (you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS))
+    if (you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS)
+        || you.duration[DUR_RAMPAGE_MAX])
+    {
         rampage = get_los_radius();
+    }
 
     return rampage;
 }
@@ -6914,16 +6957,13 @@ int player::armour_class_scaled(int scale) const
         AC += 800;
 
     if (duration[DUR_ICY_ARMOUR])
-    {
-        AC += max(0, 500 + you.props[ICY_ARMOUR_KEY].get_int() * 8
-                     - unadjusted_body_armour_penalty() * 50);
-    }
+        AC += ice_armour_ac(you.props[ICY_ARMOUR_KEY].get_int());
 
     if (has_mutation(MUT_ICEMAIL))
         AC += 100 * player_icemail_armour_class();
 
     if (has_mutation(MUT_TRICKSTER))
-        AC += 100 * trickster_bonus();
+        AC += trickster_bonus();
 
     if (duration[DUR_FIERY_ARMOUR])
         AC += 700;
@@ -6945,7 +6985,7 @@ int player::armour_class_scaled(int scale) const
     }
 
     if (you.props.exists(PASSWALL_ARMOUR_KEY))
-        AC += you.props[PASSWALL_ARMOUR_KEY].get_int() * 100;
+        AC += you.props[PASSWALL_ARMOUR_KEY].get_int();
 
     if (you.duration[DUR_PHALANX_BARRIER])
         AC += you.props[PHALANX_BARRIER_POWER_KEY].get_int();
@@ -7467,31 +7507,34 @@ int player::res_blind() const
         return 0;
 }
 
-int player::willpower() const
+int player::willpower(bool items) const
 {
-    return player_willpower();
+    return player_willpower(true, items);
 }
 
-int player_willpower(bool include_temp)
+int player_willpower(bool include_temp, bool items)
 {
     if (include_temp && you.form == transformation::slaughter)
         return WILL_INVULN;
 
-    if (you.unrand_equipped(UNRAND_FOLLY))
+    if (items && you.unrand_equipped(UNRAND_FOLLY))
         return 0;
 
     int rm = you.experience_level * species::get_wl_modifier(you.species);
 
-    // randarts and dragon armour
-    rm += WL_PIP * you.scan_artefacts(ARTP_WILLPOWER);
+    if (items)
+    {
+        // randarts and dragon armour
+        rm += WL_PIP * you.scan_artefacts(ARTP_WILLPOWER);
 
-    // ego armours
-    rm += WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_WILLPOWER);
+        // ego armours
+        rm += WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_WILLPOWER);
 
-    rm -= 2 * WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_GUILE);
+        rm -= 2 * WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_GUILE);
 
-    // rings of willpower
-    rm += WL_PIP * you.wearing_jewellery(RING_WILLPOWER);
+        // rings of willpower
+        rm += WL_PIP * you.wearing_jewellery(RING_WILLPOWER);
+    }
 
     // Mutations
     rm += WL_PIP * you.get_mutation_level(MUT_STRONG_WILLED);
@@ -7673,7 +7716,7 @@ bool player::nightvision() const
 
 int player::reach_range(bool include_weapon) const
 {
-    const int bonus = you.form == transformation::aqua ? 2 : 0;
+    const int bonus = reach_range_bonus();
 
     if (!include_weapon)
         return 1 + bonus;
@@ -7688,7 +7731,11 @@ int player::reach_range(bool include_weapon) const
 
 int player::reach_range_bonus() const
 {
-    return you.form == transformation::aqua ? 2 : 0;
+    int bonus = you.form == transformation::aqua ? 2 : 0;
+    if (you.duration[DUR_REACH])
+        bonus += 3;
+
+    return bonus;
 }
 
 monster_type player::mons_species(bool /*zombie_base*/) const
@@ -7762,10 +7809,18 @@ int player::hurt(const actor *agent, int amount, beam_type flavour,
  */
 bool player::resists_dislodge(string event) const
 {
-    if (!you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
+    if (!you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS)
+        && !you.duration[DUR_FORTRESS_BLAST_TIMER])
+    {
         return false;
+    }
     if (!event.empty())
-        mprf("Your boots keep you from %s.", event.c_str());
+    {
+        if (you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
+            mprf("Your boots keep you from %s.", event.c_str());
+        else
+            mprf("Your magic anchors you in place.");
+    }
     return true;
 }
 
@@ -9746,9 +9801,10 @@ bool ench_triggers_trickster(enchant_type ench)
     }
 }
 
+// The max AC Trickster can give (multiplied by 100)
 static int _trickster_max_boost()
 {
-    return 6 + you.experience_level * 4 / 5;
+    return (6 + you.experience_level * 4 / 5) * 100;
 }
 
 // Increment AC boost when applying a negative status effect to a monster.
@@ -9763,7 +9819,7 @@ void trickster_trigger(const monster& victim, enchant_type ench)
         return;
     }
 
-    const int min_bonus = 3 + you.experience_level / 6;
+    const int min_bonus = (3 + you.experience_level / 6) * 100;
 
     if (!you.props.exists(TRICKSTER_POW_KEY))
     {
@@ -9776,23 +9832,28 @@ void trickster_trigger(const monster& victim, enchant_type ench)
     int& bonus = you.props[TRICKSTER_POW_KEY].get_int();
     if (bonus < min_bonus)
         bonus = min_bonus;
-    else if (bonus >= 15)
-        bonus += random2(2);
+    // Make it harder to increase the AC bonus, the more bonus you already have
+    // (down to 0.33 AC per debuff when approaching the max bonus)
     else
-        bonus += 1;
+    {
+        const int delta = _trickster_max_boost() - min_bonus;
+        bonus += 100 - min(67, max(0, (bonus - min_bonus) * 100 / delta));
+    }
 
-    const int max = _trickster_max_boost() + 10;
+    // The bonus AC can exceed the max bonus internally to make it decay slower
+    // when highly stacked (but the AC is still capped at _trickster_max_boost())
+    const int max = _trickster_max_boost() + 1000;
     if (bonus > max)
         bonus = max;
 
     // Give a few turns before the effect starts to decay.
-    if (you.duration[DUR_TRICKSTER_GRACE] < 60)
-        you.duration[DUR_TRICKSTER_GRACE] = random_range(60, 90);
+    if (you.duration[DUR_TRICKSTER_GRACE] < 50)
+        you.duration[DUR_TRICKSTER_GRACE] = random_range(50, 80);
 
     you.redraw_armour_class = true;
 }
 
-// Returns the current AC bonus from Trickster
+// Returns the current AC bonus from Trickster (multiplied by 100)
 int trickster_bonus()
 {
     if (!you.props.exists(TRICKSTER_POW_KEY))

@@ -1912,6 +1912,8 @@ bool spell_no_hostile_in_range(spell_type spell)
         return !_any_valid_targets(find_spell_targeter(spell, pow, range), range);
 
     case SPELL_POISONOUS_VAPOURS:
+    case SPELL_TELEPORT_OTHER:
+    case SPELL_DISPERSAL:
         return !_any_valid_targets(find_spell_targeter(spell, pow, range), range, true);
 
     default:
@@ -1928,7 +1930,7 @@ bool spell_no_hostile_in_range(spell_type spell)
     // For choosing default targets and prompting we don't treat Inner Flame as
     // neutral, since the seeping flames trigger conducts and harm the monster
     // before it explodes.
-    const bool allow_friends = spell == SPELL_INNER_FLAME;
+    const bool allow_friends = (spell == SPELL_INNER_FLAME || spell == SPELL_BECKONING);
 
     bolt beam;
     beam.flavour = BEAM_VISUAL;

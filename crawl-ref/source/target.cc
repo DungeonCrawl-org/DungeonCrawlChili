@@ -1032,7 +1032,7 @@ targeter_cleave::targeter_cleave(coord_def target)
 {
     agent = &you;
     origin = you.pos();
-    bonus_reach = you.form == transformation::aqua ? 2 : 0;
+    bonus_reach = you.reach_range_bonus();
     cleave_range = you.reach_range() - bonus_reach;
     set_aim(target);
 }
@@ -2028,6 +2028,20 @@ bool targeter_poisonous_vapours::valid_aim(coord_def a)
     return true;
 }
 
+targeter_mephitic::targeter_mephitic(const actor* caster, int r, int pow)
+    : targeter_beam(caster, r, ZAP_MEPHITIC, SPELL_MEPHITIC_CLOUD, pow,
+                    pow >= 100 ? 1 : 0, 1)
+{
+}
+
+bool targeter_mephitic::affects_monster(const monster_info& mon)
+{
+    if (!targeter_beam::affects_monster(mon))
+        return false;
+
+    return env.map_knowledge(mon.pos).cloud() != CLOUD_MEPHITIC;
+}
+
 targeter_boulder::targeter_boulder(const actor* caster, int boulder_hp)
     : targeter_beam(caster, LOS_MAX_RANGE, ZAP_IOOD, SPELL_BOULDER, 0, 0, 0),
       hp(boulder_hp)
@@ -2758,6 +2772,11 @@ aff_type targeter_piledriver::is_affected(coord_def loc)
             return AFF_YES;
 
     return AFF_NO;
+}
+
+bool targeter_dispersal::affects_monster(const monster_info& mon)
+{
+    return !mon.is(MB_NO_TELE);
 }
 
 targeter_teleport_other::targeter_teleport_other(const actor* act, int r) :

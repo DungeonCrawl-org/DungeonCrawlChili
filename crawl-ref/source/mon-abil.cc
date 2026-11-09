@@ -47,6 +47,7 @@
 #include "mon-poly.h"
 #include "mon-speak.h"
 #include "mon-util.h"
+#include "nearby-danger.h"
 #include "notes.h"
 #include "ouch.h"
 #include "random.h"
@@ -409,8 +410,12 @@ static void _do_merge_slimes(monster* initial_slime, monster* merge_to)
             mprf("Something merges into %s, and it vanishes!",
                  old_name.c_str());
         }
-        draw_ring_animation(merge_to->pos(), 2, LIGHTGREEN, LIGHTGREEN,
-                            false, 50, TILE_BOLT_SLIME_WAVE);
+        if (merge_to->attitude() != ATT_FRIENDLY
+            && !mons_is_irrelevant(merge_to))
+        {
+            draw_ring_animation(merge_to->pos(), 2, LIGHTGREEN, LIGHTGREEN,
+                                false, 50, TILE_BOLT_SLIME_WAVE);
+        }
         flash_tile(merge_to->pos(), LIGHTGREEN, 50, TILE_BOLT_SLIME_MERGE);
     }
     else if (you.can_see(*initial_slime))
@@ -781,7 +786,7 @@ static bool _will_starcursed_scream(monster* mon)
 static bool _lost_soul_affectable(const monster &mons)
 {
     // zombies are boring
-    if (mons_is_zombified(mons))
+    if (mons.is_derived())
         return false;
 
     // undead can be reknit, naturals ghosted, everyone else is out of luck

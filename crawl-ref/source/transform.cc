@@ -1457,7 +1457,7 @@ public:
     // HP of crystals
     int get_effect_size(int skill = -1) const override
     {
-        return max(0, scaling_value(FormScaling().Base(13).Scaling(12), skill));
+        return max(1, scaling_value(FormScaling().Base(13).Scaling(12), skill));
     }
 
     // Indomitable HP on fully charging. (...not really a 'chance')
@@ -1540,7 +1540,7 @@ public:
     // Rate of distilling mist potions
     int get_effect_chance(int skill = -1) const override
     {
-        return max(0, scaling_value(FormScaling().Base(100).Scaling(70), skill));
+        return max(0, scaling_value(FormScaling().Base(100).Scaling(50), skill));
     }
 
     // Duration multiplier for spewed clouds
@@ -2206,7 +2206,7 @@ static void _on_enter_form(transformation which_trans)
 
     case transformation::mistmane:
         if (!you.props.exists(MISTMANE_POTION_PROGRESS_KEY))
-            you.props[MISTMANE_POTION_PROGRESS_KEY] = random_range(150, 350);
+            you.props[MISTMANE_POTION_PROGRESS_KEY] = random_range(350, 600);
         break;
 
     default:
@@ -3156,11 +3156,14 @@ bool jademantle_is_fully_charged()
 
 void mistmane_distill_potions(int tiles_explored)
 {
+    // Apply distillation rate modifier
+    tiles_explored = div_rand_round(tiles_explored * get_form()->get_effect_chance(), 100);
+
     int& remaining = you.props[MISTMANE_POTION_PROGRESS_KEY].get_int();
     while (tiles_explored >= remaining)
     {
         tiles_explored -= remaining;
-        remaining = random_range(150, 350);
+        remaining = random_range(350, 600);
 
         int count = 0;
         for (const item_def& inv : you.inv)
@@ -3206,6 +3209,7 @@ cloud_type mistmane_cloud_type(potion_type potion)
             return CLOUD_BLINDING_HAZE;
 
         case POT_BERSERK_RAGE:
+        case POT_BERSERK_SAGE:
             return CLOUD_FIRE;
 
         case POT_MUTATION:
