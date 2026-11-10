@@ -51,6 +51,7 @@ bool item_is_worn(int inv_slot);
 
 bool enchant_weapon(item_def &wpn, bool quiet);
 bool enchant_armour(item_def &arm, bool quiet);
+void bless_item(item_def &item);
 
 void prompt_inscribe_item();
 

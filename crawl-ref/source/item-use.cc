@@ -2434,21 +2434,56 @@ static void _rebrand_item(item_def &item)
     set_item_ego_type(item, OBJ_ARMOUR, new_brand);
 }
 
-static void _bless_item(item_def &item)
+// Change the blessing in place while preserving the item's equipment state.
+void bless_item(item_def &item)
 {
-    you.wield_change = true;
+    const int old_flight = you.equip_flight();
 
-    const string itname = _item_name(item);
-
-    //set_item_ego_type(item, OBJ_ANY, SPARM_BLESSED);
     _rebrand_item(item);
 
-    mprf("%s glows with a holy aura!", itname.c_str());
+    if (item_is_equipped(item))
+    {
+        // Armour egos are cached. Changing the item alone leaves the old
+        // blessing active until the next equipment change.
+        you.equipment.update();
+        if (!item_is_melded(item))
+        {
+            notify_stat_change();
+            update_vision_range();
+            env.invis_knowledge.clear();
+            invalidate_agrid();
+
+            if (you.equip_flight() != old_flight)
+            {
+                if (you.equip_flight())
+                {
+                    const bool was_airborne = you.airborne();
+                    you.attribute[ATTR_PERM_FLIGHT] = 1;
+                    if (!was_airborne)
+                        float_player();
+                }
+                else
+                    land_player();
+            }
+        }
+    }
 
     item_set_appearance(item);
-    mprf_nocap("%s", item.name(DESC_INVENTORY_EQUIP).c_str());
+    you.gear_change = true;
+    you.wield_change = true;
+    you.redraw_armour_class = true;
+    you.redraw_evasion = true;
     // Might be removing antimagic.
     calc_mp();
+}
+
+static void _bless_item(item_def &item)
+{
+    const string itname = _item_name(item);
+    bless_item(item);
+
+    mprf("%s glows with a holy aura!", itname.c_str());
+    mprf_nocap("%s", item.name(DESC_INVENTORY_EQUIP).c_str());
     flash_view_delay(UA_PLAYER, WHITE, 300);
 }
 

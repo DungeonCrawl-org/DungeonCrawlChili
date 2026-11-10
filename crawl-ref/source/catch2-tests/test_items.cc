@@ -12,11 +12,16 @@
 #include "item-status-flag-type.h"
 #include "invent.h"
 #include "player-equip.h"
+#include "player-stats.h"
 #include "potion-type.h"
+#include "random.h"
 #include "species.h"
 #include "tags.h"
 #include "makeitem.h"
 #include "env.h"
+#include "spl-util.h"
+#include "state.h"
+#include "unwind.h"
 #include "uncancellable-type.h"
 
 #include "test_player_fixture.h"
@@ -275,6 +280,145 @@ TEST_CASE_METHOD( MockPlayerYouTestsFixture,
 
 TEST_CASE("armour_prop_test", "[single-file]"){
     REQUIRE(armour_prop(ARM_SCALE_MAIL, PARM_AC) == 6);
+}
+
+struct BlessItemFixture : MockPlayerYouTestsFixture
+{
+    rng::subgenerator random_scope{1234};
+    unwind_var<int> time_step{you.duration[DUR_TIME_STEP], 1};
+
+    BlessItemFixture()
+    {
+        init_show_table();
+        init_spell_descs();
+        you.set_position(coord_def(10, 10));
+        env.grid(you.pos()) = DNGN_FLOOR;
+        update_vision_range();
+    }
+
+    item_def& armour(armour_type type, special_armour_type ego, bool worn = true)
+    {
+        item_def created = simple_create_item(OBJ_ARMOUR, type, 0, ego);
+        move_item_to_inv(created);
+        item_def& item = you.inv[find_inv_index_with_exact_item(OBJ_ARMOUR, type)];
+        if (worn)
+            equip_item(get_armour_slot(item), item.link, false, true);
+        return item;
+    }
+};
+
+TEST_CASE_METHOD(BlessItemFixture, "Bless Item immediately updates worn stat bonuses",
+                 "[bless-item]")
+{
+    const bool cursed = GENERATE(false, true);
+    int base[NUM_STATS];
+    for (int stat = 0; stat < NUM_STATS; ++stat)
+        base[stat] = you.stat(static_cast<stat_type>(stat));
+    item_def& gloves = armour(ARM_GLOVES, SPARM_STRENGTH);
+    if (cursed)
+        gloves.flags |= ISFLAG_CURSED;
+    REQUIRE(you.strength() == base[STAT_STR] + 3);
+    you.equipment.get_entry_for(gloves).attuned = true;
+    const auto entry = you.equipment.get_entry_for(gloves);
+    const int turn = you.num_turns;
+    you.redraw_stats.init(false);
+    you.redraw_armour_class = you.redraw_evasion = you.gear_change = false;
+
+    bless_item(gloves);
+
+    const auto ego = get_armour_ego_type(gloves);
+    REQUIRE(ego != SPARM_STRENGTH);
+    CHECK(you.wearing_ego(OBJ_ARMOUR, SPARM_STRENGTH) == 0);
+    CHECK(you.wearing_ego(OBJ_ARMOUR, ego) == 1);
+    CHECK(you.strength() == base[STAT_STR]);
+    CHECK(you.dex() == base[STAT_DEX] + (ego == SPARM_DEXTERITY ? 3 : 0));
+    CHECK(you.intel() == base[STAT_INT]);
+    for (int stat = 0; stat < NUM_STATS; ++stat)
+        CHECK(you.redraw_stats[stat]);
+    CHECK(you.redraw_armour_class);
+    CHECK(you.redraw_evasion);
+    CHECK(you.gear_change);
+    CHECK(gloves.cursed() == cursed);
+    CHECK(you.equipment.get_entry_for(gloves).item == entry.item);
+    CHECK(you.equipment.get_entry_for(gloves).slot == entry.slot);
+    CHECK(you.equipment.get_entry_for(gloves).attuned == entry.attuned);
+    CHECK(you.num_turns == turn);
+}
+
+TEST_CASE_METHOD(BlessItemFixture, "Bless Item immediately removes the old resistance",
+                 "[bless-item]")
+{
+    const int fire = player_res_fire();
+    const int cold = player_res_cold();
+    item_def& scarf = armour(ARM_SCARF, SPARM_RESISTANCE);
+    REQUIRE(player_res_fire() == fire + 1);
+    REQUIRE(player_res_cold() == cold + 1);
+
+    bless_item(scarf);
+
+    REQUIRE(get_armour_ego_type(scarf) != SPARM_RESISTANCE);
+    CHECK(player_res_fire() == fire);
+    CHECK(player_res_cold() == cold);
+    CHECK(item_is_equipped(scarf));
+}
+
+TEST_CASE_METHOD(BlessItemFixture, "Bless Item does not activate carried or melded gear",
+                 "[bless-item]")
+{
+    const bool melded = GENERATE(false, true);
+    const int strength = you.strength();
+    const int dexterity = you.dex();
+    item_def& gloves = armour(ARM_GLOVES, SPARM_STRENGTH, melded);
+    if (melded)
+    {
+        you.equipment.get_entry_for(gloves).melded = true;
+        you.equipment.update();
+    }
+
+    bless_item(gloves);
+
+    CHECK(you.strength() == strength);
+    CHECK(you.dex() == dexterity);
+    CHECK(you.wearing_ego(OBJ_ARMOUR, get_armour_ego_type(gloves)) == 0);
+    CHECK(item_is_equipped(gloves) == melded);
+    if (melded)
+        CHECK(item_is_melded(gloves));
+}
+
+TEST_CASE_METHOD(BlessItemFixture, "Bless Item immediately refreshes flight",
+                 "[bless-item]")
+{
+    item_def& boots = armour(ARM_BOOTS, SPARM_FLYING);
+    you.attribute[ATTR_PERM_FLIGHT] = 1;
+    REQUIRE(you.airborne());
+
+    bless_item(boots);
+
+    REQUIRE(get_armour_ego_type(boots) != SPARM_FLYING);
+    CHECK_FALSE(you.airborne());
+    CHECK(you.attribute[ATTR_PERM_FLIGHT] == 0);
+    // Exercise gaining flight too, using a private, deterministic RNG stream.
+    for (int roll = 0; roll < 32 && !you.equip_flight(); ++roll)
+        bless_item(boots);
+    REQUIRE(get_armour_ego_type(boots) == SPARM_FLYING);
+    CHECK(you.airborne());
+    CHECK(you.attribute[ATTR_PERM_FLIGHT] == 1);
+    CHECK(item_is_equipped(boots));
+}
+
+TEST_CASE_METHOD(BlessItemFixture, "Bless Item immediately refreshes shadow scarf vision",
+                 "[bless-item]")
+{
+    const int vision = you.current_vision;
+    item_def& scarf = armour(ARM_SCARF, SPARM_SHADOWS);
+    update_vision_range();
+    REQUIRE(you.current_vision == vision - 1);
+
+    bless_item(scarf);
+
+    REQUIRE(get_armour_ego_type(scarf) != SPARM_SHADOWS);
+    CHECK(you.current_vision == vision);
+    CHECK(item_is_equipped(scarf));
 }
 
 TEST_CASE("Test all_item_subtypes() does not include removed items",
