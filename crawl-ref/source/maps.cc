@@ -1291,6 +1291,7 @@ static bool verify_file_version(const string &file, time_t mtime)
     try
     {
         reader inf(fp);
+        inf.set_safe_read(true);
         const auto version = get_save_version(inf);
         const auto major = version.major, minor = version.minor;
         const int8_t word = unmarshallByte(inf);
@@ -1322,9 +1323,51 @@ static bool _load_map_index(const string& cache, const string &base,
                             time_t mtime)
 {
     // If there's a global prelude, load that first.
-    if (FILE *fp = fopen_u((base + ".lux").c_str(), "rb"))
+    const string luxfile = base + ".lux";
+    if (FILE *fp = fopen_u(luxfile.c_str(), "rb"))
+    {
+        try
+        {
+            reader inf(fp, TAG_MINOR_VERSION);
+            inf.set_safe_read(true);
+            const auto version = get_save_version(inf);
+            const auto major = version.major, minor = version.minor;
+            int8_t word = unmarshallByte(inf);
+            int64_t t = unmarshallSigned(inf);
+            if (major != TAG_MAJOR_VERSION || minor > TAG_MINOR_VERSION
+                || word != WORD_LEN || t != mtime)
+            {
+                fclose(fp);
+                return false;
+            }
+
+#if TAG_MAJOR_VERSION == 34
+            // Throw out des cache with bytecode generated under Lua 5.1.
+            if (minor < TAG_MINOR_LUA_5_4)
+                return false;
+
+#endif
+            lc_global_prelude.read(inf);
+        }
+        catch (const short_read_exception&)
+        {
+            end(1, false, "Des cache file %s is truncated", luxfile.c_str());
+        }
+        fclose(fp);
+
+        global_preludes.push_back(lc_global_prelude);
+    }
+
+    const string idxfile = base + ".idx";
+    FILE* fp = fopen_u(idxfile.c_str(), "rb");
+    if (!fp)
+        end(1, true, "Unable to read %s", idxfile.c_str());
+
+    try
     {
         reader inf(fp, TAG_MINOR_VERSION);
+        inf.set_safe_read(true);
+        // Re-check version, might have been modified in the meantime.
         const auto version = get_save_version(inf);
         const auto major = version.major, minor = version.minor;
         int8_t word = unmarshallByte(inf);
@@ -1339,49 +1382,25 @@ static bool _load_map_index(const string& cache, const string &base,
         // Throw out des cache with bytecode generated under Lua 5.1.
         if (minor < TAG_MINOR_LUA_5_4)
             return false;
-
 #endif
-        lc_global_prelude.read(inf);
-        fclose(fp);
+        const int nmaps = unmarshallShort(inf);
+        const int nexist = vdefs.size();
+        vdefs.resize(nexist + nmaps, map_def());
+        for (int i = 0; i < nmaps; ++i)
+        {
+            map_def &vdef(vdefs[nexist + i]);
+            vdef.read_index(inf);
+            vdef.description = unmarshallString(inf);
+            vdef.order = unmarshallInt(inf);
 
-        global_preludes.push_back(lc_global_prelude);
+            vdef.set_file(cache);
+            lc_loaded_maps[vdef.name] = vdef.place_loaded_from;
+            vdef.place_loaded_from.clear();
+        }
     }
-
-    FILE* fp = fopen_u((base + ".idx").c_str(), "rb");
-    if (!fp)
-        end(1, true, "Unable to read %s", (base + ".idx").c_str());
-
-    reader inf(fp, TAG_MINOR_VERSION);
-    // Re-check version, might have been modified in the meantime.
-    const auto version = get_save_version(inf);
-    const auto major = version.major, minor = version.minor;
-    int8_t word = unmarshallByte(inf);
-    int64_t t = unmarshallSigned(inf);
-    if (major != TAG_MAJOR_VERSION || minor > TAG_MINOR_VERSION
-        || word != WORD_LEN || t != mtime)
+    catch (const short_read_exception&)
     {
-        return false;
-    }
-
-#if TAG_MAJOR_VERSION == 34
-    // Throw out des cache with bytecode generated under Lua 5.1.
-    if (minor < TAG_MINOR_LUA_5_4)
-        return false;
-
-#endif
-    const int nmaps = unmarshallShort(inf);
-    const int nexist = vdefs.size();
-    vdefs.resize(nexist + nmaps, map_def());
-    for (int i = 0; i < nmaps; ++i)
-    {
-        map_def &vdef(vdefs[nexist + i]);
-        vdef.read_index(inf);
-        vdef.description = unmarshallString(inf);
-        vdef.order = unmarshallInt(inf);
-
-        vdef.set_file(cache);
-        lc_loaded_maps[vdef.name] = vdef.place_loaded_from;
-        vdef.place_loaded_from.clear();
+        end(1, false, "Des cache file %s is truncated", idxfile.c_str());
     }
     fclose(fp);
 
@@ -1409,6 +1428,31 @@ static bool _load_map_cache(const string &filename, const string &cachename)
     return _load_map_index(cachename, descache_base, mtime);
 }
 
+static string _cache_tmp_path(const string &file)
+{
+    return file + ".tmp";
+}
+
+// Helpers for atomic writes using temporary files. We open the file with
+// _open_atomic_file, then after all writes close it with _close_atomic_file.
+static FILE *_open_atomic_file(const string &file)
+{
+    string tmp_name = _cache_tmp_path(file);
+    FILE *fp = fopen_u(tmp_name.c_str(), "wb");
+    if (!fp)
+        end(1, true, "Failed to open %s for writing", tmp_name.c_str());
+    return fp;
+}
+
+static void _close_atomic_file(FILE *fp, const string &file)
+{
+    const string tmp_name = _cache_tmp_path(file);
+    if (fclose(fp) != 0)
+        end(1, true, "Error writing to %s", tmp_name.c_str());
+    if (rename_u(tmp_name.c_str(), file.c_str()) != 0)
+        end(1, true, "Failed to rename %s to %s", tmp_name.c_str(), file.c_str());
+}
+
 static void _write_map_prelude(const string &filebase, time_t mtime)
 {
     const string luafile = filebase + ".lux";
@@ -1418,22 +1462,20 @@ static void _write_map_prelude(const string &filebase, time_t mtime)
         return;
     }
 
-    FILE *fp = fopen_u(luafile.c_str(), "wb");
+    FILE *fp = _open_atomic_file(luafile);
     writer outf(luafile, fp);
     write_save_version(outf, save_version::current());
     marshallByte(outf, WORD_LEN);
     marshallSigned(outf, mtime);
     lc_global_prelude.write(outf);
-    fclose(fp);
+    _close_atomic_file(fp, luafile);
 }
 
 static void _write_map_full(const string &filebase, size_t vs, size_t ve,
                             time_t mtime)
 {
     const string cfile = filebase + ".dsc";
-    FILE *fp = fopen_u(cfile.c_str(), "wb");
-    if (!fp)
-        end(1, true, "Unable to open %s for writing", cfile.c_str());
+    FILE *fp = _open_atomic_file(cfile);
 
     writer outf(cfile, fp);
     write_save_version(outf, save_version::current());
@@ -1441,16 +1483,14 @@ static void _write_map_full(const string &filebase, size_t vs, size_t ve,
     marshallSigned(outf, mtime);
     for (size_t i = vs; i < ve; ++i)
         vdefs[i].write_full(outf);
-    fclose(fp);
+    _close_atomic_file(fp, cfile);
 }
 
 static void _write_map_index(const string &filebase, size_t vs, size_t ve,
                              time_t mtime)
 {
     const string cfile = filebase + ".idx";
-    FILE *fp = fopen_u(cfile.c_str(), "wb");
-    if (!fp)
-        end(1, true, "Unable to open %s for writing", cfile.c_str());
+    FILE *fp = _open_atomic_file(cfile);
 
     writer outf(cfile, fp);
     write_save_version(outf, save_version::current());
@@ -1465,7 +1505,7 @@ static void _write_map_index(const string &filebase, size_t vs, size_t ve,
         vdefs[i].place_loaded_from.clear();
         vdefs[i].strip();
     }
-    fclose(fp);
+    _close_atomic_file(fp, cfile);
 }
 
 static void _write_map_cache(const string &filename, size_t vs, size_t ve,

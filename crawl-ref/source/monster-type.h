@@ -1490,7 +1490,7 @@ enum monster_type                      // env.mons[].type
 #endif
 
     // Append new monsters to preserve saved monster IDs.
-    MONS_BOREAS,
+    MONS_AQUILO,
     MONS_CERBERUS,
     MONS_MINOS,
     MONS_ALECTO,
@@ -1499,6 +1499,9 @@ enum monster_type                      // env.mons[].type
     MONS_MANNEQUIN,
     MONS_CHAOS_BATTLESHAPE,
 #endif
+
+    // Append the upstream centaur after existing Chili monster IDs.
+    MONS_BOREAS,
 
     NUM_MONSTERS,               // used for polymorph
 

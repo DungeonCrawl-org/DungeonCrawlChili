@@ -314,7 +314,7 @@ fontwrapper-ft.o
 TEST_OBJECTS = \
 catch2-tests/test_coaching.o \
 catch2-tests/test_branch.o \
-catch2-tests/test_boreas.o \
+catch2-tests/test_aquilo.o \
 catch2-tests/test_cerberus.o \
 catch2-tests/test_minos.o \
 catch2-tests/test_alecto.o \

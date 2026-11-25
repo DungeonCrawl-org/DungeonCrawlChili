@@ -1649,7 +1649,7 @@ A prank scroll that creates a loud noise when read.
 %%%%
 scroll of plinking
 
-A scroll that causes a flurry of pebbles to continuously pelt nearby ceatures
+A scroll that causes a flurry of pebbles to continuously pelt nearby creatures
 over several turns, doing minimal damage. As the effect ends, slightly more
 unusual detritus may be thrown at them, impairing or distracting them in some
 way for a short period of time.
@@ -1975,7 +1975,7 @@ vision talisman
 A small charm bearing the likeness of an eye. It gives the wearer supernatural
 sight, allowing them to perceive the clouds of magical residue left behind
 whenever beings cast spells. Touching those clouds allows them to convert that
-leftover magic into unnerring projectiles against nearby foes.
+leftover magic into unerring projectiles against nearby foes.
 
 This third eye even allows one to see from further distances than would
 otherwise be possible{{

@@ -3608,7 +3608,7 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
         monster_drop_things(&mon, false, item_is_horn_of_geryon);
     }
 
-    xom_reduce_floor_lock();
+    xom_maybe_reduce_floor_lock(mon);
 
     // End constriction.
     mon.stop_constricting_all();
@@ -5599,7 +5599,7 @@ int max_mons_charge(monster_type m)
     switch (m)
     {
         case MONS_ORB_SPIDER:
-        case MONS_BOREAS:
+        case MONS_AQUILO:
             return 1;
         default:
             return 0;

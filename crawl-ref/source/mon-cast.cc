@@ -7144,8 +7144,8 @@ static bool _spell_charged(monster *mons)
     {
         if (ench.ench == ENCH_NONE)
         {
-            // Boreas warns for one action; keep orb spiders' longer wind-up.
-            const int initial_charge = mons->type == MONS_BOREAS ? 1 : 0;
+            // Aquilo warns for one action; keep orb spiders' longer wind-up.
+            const int initial_charge = mons->type == MONS_AQUILO ? 1 : 0;
             mons->add_ench(mon_enchant(ENCH_SPELL_CHARGED, mons,
                                       INFINITE_DURATION, initial_charge));
         }
@@ -8047,6 +8047,9 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     default:
         break;
 
+    case SPELL_CANTRIP:
+        return;
+
     case SPELL_WATERSTRIKE:
     {
         pbolt.flavour    = BEAM_WATER;
@@ -8758,7 +8761,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         if (!foe || !cell_see_cell(mons->pos(), foe->pos(), LOS_SOLID))
             return;
 
-        // Start the freezing vapour near Boreas so the wind carries it
+        // Start the freezing vapour near Aquilo so the wind carries it
         // towards the foe, along with any clouds already in the cone.
         targeter_cone cone(mons, 3);
         cone.set_aim(foe->pos());
@@ -9974,6 +9977,9 @@ ai_action::goodness monster_spell_goodness(monster* mon, spell_type spell)
     case SPELL_BATTLESPHERE:
         return ai_action::good_or_bad((!mon->friendly() || mon->get_foe())
                                       && !find_battlesphere(mon));
+
+    case SPELL_LAUNCH_SPORANGIUM:
+        return ai_action::good_or_bad(foe != nullptr);
 
     case SPELL_INJURY_BOND:
         for (monster_near_iterator mi(mon, LOS_NO_TRANS); mi; ++mi)

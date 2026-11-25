@@ -715,15 +715,15 @@ void aim_player_ranged_attack(quiver::action &a)
 // Make the player immediately perform a ranged attack at a given target, optionally
 // with a specific projectile. Does not handle spending time.
 bool do_player_ranged_attack(const coord_def& targ, item_def* thrown_projectile,
-                             const ranged_attack* prototype, bool no_harm_allies,
-                             bool allow_salvo)
+                             const function<void(ranged_attack_beam&)>& setup,
+                             bool no_harm_allies, bool allow_salvo)
 {
     vector<ranged_attack_beam> atks = _construct_player_ranged_beams(thrown_projectile);
     for (ranged_attack_beam& atk : atks)
     {
         atk.beam.target = targ;
-        if (prototype)
-            prototype->copy_params_to(atk.atk);
+        if (setup)
+            setup(atk);
     }
     if (_trace_player_ranged_attacks(atks, no_harm_allies))
         return false;
@@ -1043,17 +1043,7 @@ bool do_west_wind_shot()
     you.did_trigger(DID_WEST_WIND_SHOT);
 
     const coord_def targ = (you.pos() - you.pos_at_turn_start).sgn() + you.pos();
-    ranged_attack prototype(&you, nullptr, wpn);
-
-    prototype.dmg_mult = 33;
-    prototype.pierce = true;
-    prototype.set_projectile_prefix("wind-blessed");
-
-    // Downscale damage from slow weapons versus the player's movement speed.
-    const int attack_delay = you.attack_delay().roll() * BASELINE_DELAY;
-    const int move_delay = player_overall_move_delay(BASELINE_DELAY);
-    if (attack_delay > move_delay)
-        prototype.dmg_mult += (move_delay * 100 / attack_delay) - 100;
+    const int dmg_mult = 33 + move_speed_dmg_mult_offset();
 
     if (_salvo_shot_tracer(you.pos(), targ, true, nullptr))
     {
@@ -1067,7 +1057,14 @@ bool do_west_wind_shot()
                 mon->knockback(you, dist, 0, "wind");
         }
 
-        do_player_ranged_attack(targ, nullptr, &prototype, true, false);
+        do_player_ranged_attack(targ, nullptr,
+            [dmg_mult](ranged_attack_beam& atk)
+            {
+                atk.atk.dmg_mult = dmg_mult;
+                atk.atk.pierce = true;
+                atk.atk.set_projectile_prefix("wind-blessed");
+            },
+            true, false);
 
         you.duration[DUR_SALVO] = random_range(20, 40);
         int& stacks = you.props[SALVO_KEY].get_int();

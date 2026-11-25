@@ -406,6 +406,7 @@ living_spell_flesh MONS_LIVING_SPELL_FLESH
 living_spell_holy MONS_LIVING_SPELL_HOLY
 living_spell_ice MONS_LIVING_SPELL_ICE
 living_spell_quicksilver MONS_LIVING_SPELL_QUICKSILVER
+living_spell_warp MONS_LIVING_SPELL_WARP
 splinterfrost_barricade MONS_SPLINTERFROST_BARRICADE
 %rim 1
 ball_lightning MONS_BALL_LIGHTNING /*'*'*/
@@ -1237,8 +1238,10 @@ orb_guardian MONS_ORB_GUARDIAN
 %sdir mon/unique
 nessos MONS_NESSOS
 nessos_bowless MONS_NESSOS_BOWLESS
-%sdir mon/demihumanoids/taurs
 %rim 0
+boreas MONS_BOREAS
+boreas_stampede MONS_BOREAS_STAMPEDE
+%sdir mon/demihumanoids/taurs
 # 'melee' tiles must be immediately following the normal ones
 centaur MONS_CENTAUR
 centaur-melee MONS_CENTAUR_MELEE
@@ -1651,7 +1654,7 @@ mule MONS_MULE
 # entries instead of drawing their static tiles.
 %sdir mon/unique
 %rim 0
-boreas MONS_BOREAS
+aquilo MONS_AQUILO
 cerberus MONS_CERBERUS
 minos MONS_MINOS
 alecto MONS_ALECTO

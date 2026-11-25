@@ -382,6 +382,22 @@ static bool _can_shoot_with(const item_def *weapon)
         && !you.berserk();
 }
 
+static bool _fight_is_ranged()
+{
+    return you.weapon() && !you.confused()
+           && _can_shoot_with(you.weapon())
+           && !you.duration[DUR_CONFUSING_TOUCH];
+}
+
+bool confirm_player_fight(const monster &defender)
+{
+    if (!you.aware_of(defender))
+        return true;
+    if (_fight_is_ranged())
+        return check_warning_inscriptions(*you.weapon(), OPER_FIRE);
+    return wielded_weapon_check();
+}
+
 static void _do_medusa_stinger()
 {
     vector<monster*> targs;
@@ -443,6 +459,17 @@ static void _knight_pinning_attack(monster* mon)
     }
 }
 
+// Rampage attacks happen at movement speed, so proportionally lower the
+// damage of an attack which would otherwise have been slower than this.
+int move_speed_dmg_mult_offset()
+{
+    const int attack_delay = you.attack_delay().roll() * BASELINE_DELAY;
+    const int move_delay = player_overall_move_delay(BASELINE_DELAY);
+    if (attack_delay > move_delay)
+        return (move_delay * 100 / attack_delay) - 100;
+    return 0;
+}
+
 /**
  * Handle combat between the player and some monster. This is usually a standard
  * melee attack, but can also be a ranged attack performed at melee range.
@@ -460,34 +487,47 @@ static void _knight_pinning_attack(monster* mon)
  * @return Whether the attack took time (i.e. wasn't cancelled).
  */
 bool player_fight(monster* defender, bool is_rampage,
-                  bool *did_hit, bool simu)
+                  bool *did_hit, bool simu, bool confirmed)
 {
     if (!simu && you.weapon() && !you.confused())
     {
-        if (Options.auto_switch && _autoswitch_to_melee())
-            return true; // Is this right? We did take time, but we didn't melee
-
-        // If wielding a ranged weapon, perform a ranged attack instead.
-        if (_can_shoot_with(you.weapon()) && !you.duration[DUR_CONFUSING_TOUCH])
+        if (Options.auto_switch
+            // No weapon switching as part of a rampage/stampede
+            && you.pos() == you.pos_at_turn_start
+            && _autoswitch_to_melee())
         {
-            if (you.can_see(*defender)
-                && !check_warning_inscriptions(*you.weapon(), OPER_FIRE))
-            {
-                return false;
-            }
-
-            defender->sense_if_invisible();
-            if (do_west_wind_shot())
-                return true;
-            else if (do_player_ranged_attack(defender->pos()))
-            {
-                you.time_taken = you.attack_delay().roll();
-                you.turn_is_over = true;
-                return true;
-            }
-            else
-                return false;
+            // XXX returning true here is not great; it gives a path to
+            // switching weapons while counting as an attack for the purposes
+            // of berserking.
+            return true;
         }
+    }
+
+    // If wielding a ranged weapon, perform a ranged attack instead.
+    if (!simu && _fight_is_ranged())
+    {
+        if (!confirmed && !confirm_player_fight(*defender))
+            return false;
+
+        defender->sense_if_invisible();
+        if (do_west_wind_shot())
+            return true;
+
+        function<void(ranged_attack_beam&)> setup;
+        if (is_rampage)
+        {
+            const int dmg_mult = move_speed_dmg_mult_offset();
+            setup = [dmg_mult](ranged_attack_beam& atk)
+            {
+                atk.atk.dmg_mult += dmg_mult;
+            };
+        }
+        if (!do_player_ranged_attack(defender->pos(), nullptr, setup))
+            return false;
+
+        you.time_taken = you.attack_delay().roll();
+        you.turn_is_over = true;
+        return true;
     }
 
     melee_attack attk(&you, defender);
@@ -500,21 +540,14 @@ bool player_fight(monster* defender, bool is_rampage,
 
     // Check if the player is fighting with something unsuitable,
     // or someone unsuitable.
-    if (you.can_see(*defender) && !simu && !wielded_weapon_check())
+    if (!simu && !confirmed && !confirm_player_fight(*defender))
     {
         you.turn_is_over = false;
         return false;
     }
 
-    // Rampage attacks happen at movement speed, so proportionally lower the
-    // damage of an attack which would otherwise have been slower than this.
     if (is_rampage)
-    {
-        const int attack_delay = you.attack_delay().roll() * BASELINE_DELAY;
-        const int move_delay = player_overall_move_delay(BASELINE_DELAY);
-        if (attack_delay > move_delay)
-            attk.dmg_mult = (move_delay * 100 / attack_delay) - 100;
-    }
+        attk.dmg_mult += move_speed_dmg_mult_offset();
 
     const bool success = attk.launch_attack_set();
     if (attk.cancel_attack)
