@@ -569,6 +569,8 @@ animal_skin2 ARM_ANIMAL_SKIN_MAGIC
 animal_skin3 ARM_ANIMAL_SKIN_RANDART
 
 troll_leather_armour ARM_TROLL_LEATHER_ARMOUR
+%enchant_variation ARM_TROLL_LEATHER_ARMOUR shiny runed glowing
+troll_leather_armour2 ARM_TROLL_LEATHER_ARMOUR_MAGIC
 %enchant_variation ARM_TROLL_LEATHER_ARMOUR randart
 troll_leather_armour_art ARM_TROLL_LEATHER_ARMOUR_RANDART
 fire_dragon_armour ARM_FIRE_DRAGON_ARMOUR
@@ -603,7 +605,9 @@ pearl_dragon_armour ARM_PEARL_DRAGON_ARMOUR
 pearl_dragon_armour_art ARM_PEARL_DRAGON_ARMOUR_RANDART
 
 deep_troll_leather DEEP_TROLL_LEATHER
+deep_troll_leather2 DEEP_TROLL_LEATHER_ENCH
 iron_troll_leather IRON_TROLL_LEATHER
+iron_troll_leather2 IRON_TROLL_LEATHER_ENCH
 
 %rim 1
 cloak1_leather ARM_CLOAK
@@ -698,6 +702,11 @@ helmet2
 helmet3
 helmet4
 helmet5
+helmet1_ench THELM_HELM_ENCH
+helmet2_ench THELM_HELM_1_ENCH
+helmet3_ench THELM_HELM_2_ENCH
+helmet4_ench THELM_HELM_3_ENCH
+helmet5_ench THELM_HELM_4_ENCH
 %enchant_variation THELM_HELM shiny runed glowing
 helmet_ego1 THELM_HELM_MAGIC
 helmet_ego2

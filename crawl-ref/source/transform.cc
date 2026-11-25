@@ -68,8 +68,6 @@ constexpr int SLOTF(equipment_slot s) {
     return 1 << s;
 }
 
-static constexpr int EQF_NONE = 0;
-
 // Weapons and offhand items
 static constexpr int EQF_HELD = SLOTF(SLOT_WEAPON) | SLOTF(SLOT_OFFHAND)
                                 | SLOTF(SLOT_WEAPON_OR_OFFHAND);
@@ -1945,6 +1943,7 @@ bool transforming_is_unsafe(transformation which_trans)
 
     // Now check if there are any items that would break if we changed form in
     // this way.
+    const transformation old_form = you.form;
     unwind_var<player_equip_set> unwind_eq(you.equipment);
     unwind_var<transformation> unwind_default_form(you.default_form);
     unwind_var<transformation> unwind_form(you.form);
@@ -1953,6 +1952,11 @@ bool transforming_is_unsafe(transformation which_trans)
     you.form = which_trans;
 
     you.equipment.unmeld_all_equipment(true);
+
+    if (old_form == transformation::fortress_crab)
+        you.equipment.shift_twohander_to_slot(SLOT_OFFHAND);
+
+    you.equipment.update();
     you.equipment.meld_equipment(get_form(which_trans)->blocked_slots, true);
 
     // Pretend incompatible items fell away.

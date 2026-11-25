@@ -1168,6 +1168,7 @@ void enter_glimmer_cloud(const actor& triggerer, const coord_def& pos)
     }
 
     bolt beam(you, ZAP_GLIMMER_BOLT, 10);
+    beam.damage = get_form()->get_special_damage();
     for (distance_iterator di(pos, true, true, you.current_vision); di; ++di)
     {
         if (!cell_see_cell(pos, *di, LOS_SOLID_SEE))
@@ -2056,7 +2057,10 @@ static void _spread_cloud(coord_def pos, cloud_type type, int radius, int pow,
     for (distance_iterator di(pos, true, false); di; ++di)
     {
         // Beam can still return solid cells thanks to wall monsters
-        if (cell_is_solid(*di) || di.radius() > radius)
+        if (cell_is_solid(*di))
+            continue;
+
+        if (di.radius() > radius)
             return;
 
         if ((exp_map(*di - pos + centre) < INT_MAX) && !cloud_at(*di)

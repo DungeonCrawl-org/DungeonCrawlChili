@@ -456,9 +456,9 @@ DEPTH:  Depths, Vaults:2-, Crypt
 # Uniques which appear in neither the Dungeon nor the Depths:
 ################################################################################
 
-NAME:   uniq_boreas
+NAME:   uniq_aquilo
 DEPTH:  Coc:1-5
-: place_unique(_G, "Boreas")
+: place_unique(_G, "Aquilo")
 
 NAME:   uniq_cerberus
 DEPTH:  Tar:1-5
@@ -485,6 +485,10 @@ DEPTH:  Crypt, !Crypt:$, Elf, Orc:$
 NAME:   uniq_mlioglotl
 DEPTH:  Swamp, Snake, Shoals, Spider
 : place_unique(_G, "Mlioglotl")
+
+NAME:   uniq_boreas
+DEPTH:  Swamp, Snake, Shoals, Spider
+: place_unique(_G, "Boreas")
 
 NAME:   uniq_wiglaf
 DEPTH:  Elf, Snake, Spider, Vaults:1-3

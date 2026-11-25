@@ -53,6 +53,7 @@
 #include "potion.h"
 #include "prompt.h"
 #include "religion.h"
+#include "rltiles/tiledef-main.h"
 #include "shout.h"
 #include "skills.h"
 #include "sound.h"
@@ -68,6 +69,7 @@
 #include "target.h"
 #include "terrain.h"
 #include "throw.h"
+#include "tilepick.h"
 #include "tiles-build-specific.h"
 #include "transform.h"
 #include "uncancel.h"
@@ -2715,7 +2717,15 @@ bool enchant_armour(item_def &arm, bool quiet)
     string iname = _item_name(arm);
 
     arm.plus++;
+
     // Make sure newly enchanted items appear as such.
+    string new_tile_name = make_stringf("%s_ENCH", tile_main_name(tileidx_item(arm)));
+    tileidx_t dummy;
+    if (tile_main_index(new_tile_name.c_str(), &dummy))
+    {
+        arm.props[ITEM_TILE_NAME_KEY] = new_tile_name;
+        bind_item_tile(arm);
+    }
     item_set_appearance(arm);
 
     if (!quiet)
@@ -3307,7 +3317,6 @@ bool read(item_def* scroll, dist *target)
         const string reason = you.no_tele_reason();
         if (!reason.empty())
         {
-            mpr(pre_succ_msg);
             mpr(reason);
             break;
         }

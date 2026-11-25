@@ -21,6 +21,8 @@ Highlights
   WebTiles servers, including CXC and CPO, do not create replay checkpoints or
   display replay controls; WebTiles replay requires a server-level opt-in.
 * 16 new Uniques including a new Unique for each of the 4 Hell branches.
+* Chili's Cocytus unique Boreas is now named Aquilo. The upstream centaur
+  Boreas is a separate unique found in the Lair's rune branches.
 * Nine retired uniques return exclusively in the Necropolis: Michael, Duane,
   Francis, Norbert, Terpsichore, Jozef, Pan, Lamia and Maud. One awake unique
   roams each Necropolis, chosen to suit the entrance's difficulty level.
